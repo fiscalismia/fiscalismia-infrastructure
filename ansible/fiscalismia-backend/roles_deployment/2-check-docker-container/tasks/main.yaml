@@ -1,0 +1,31 @@
+
+- name: Sleep for a few seconds for the docker-container to start
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Confirm docker container is running
+  ansible.builtin.shell: "docker ps"
+  register: docker_ps_output
+  become: yes
+- ansible.builtin.debug: msg={{ docker_ps_output.stdout_lines }}
+
+- name: Confirm health check of container succeeds
+  ansible.builtin.shell: "curl localhost:80/hc"
+  register: health_check_output
+- ansible.builtin.debug: msg={{ health_check_output.stdout_lines }}
+
+- name: Confirm health check of container succeeds on remote domain
+  when: remote_domain | default('') | length > 0 # run only when remote_domain env var is set
+  ansible.builtin.shell: "curl {{ remote_domain }}/hc"
+  register: health_check_output_remote
+- ansible.builtin.debug:
+    msg: "{{ health_check_output_remote.stdout_lines }}"
+  when: remote_domain | default('') | length > 0 # run only when remote_domain env var is set
+
+- name: Inspect deployed container to get its build version
+  ansible.builtin.shell: "docker inspect -f '{% raw %}{{json .Config.Env}}{% endraw %}' {{ docker_remote_container_name }}"
+  become: yes
+  register: container_env_vars
+  changed_when: false
+-  ansible.builtin.debug:
+    msg: "Successfully deployed and verified container with BUILD_VERSION: {{ (container_env_vars.stdout | from_json | select('match', '^ANSIBLE_BUILD_VERSION=') | first | split('='))[1] }}"

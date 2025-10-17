@@ -1,0 +1,26 @@
+- name: Create User Group
+  ansible.builtin.group:
+    name: "{{ user_group }}"
+    system: true
+
+- name: Create linux user
+  ansible.builtin.user:
+    name: "{{ linux_user }}"
+    comment: "{{ linux_user_comment }}"
+    password: "{{ docker_runner_pw | password_hash('sha512') }}"
+    group: "{{ user_group }}"
+    create_home: True
+    shell: /bin/bash
+    password_expire_max: 99999 # Set password to never expire - debug with sudo chage -l docker-runner
+
+- name: Add linux_user to sudoers group
+  ansible.builtin.user:
+    name: "{{ linux_user }}"
+    groups: wheel
+    append: yes
+
+- name: Add ec2-user to docker group
+  ansible.builtin.user:
+    name: ec2-user
+    groups: "{{ user_group }}"
+    append: yes # Important to append, not replace existing groups

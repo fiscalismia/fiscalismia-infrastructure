@@ -1,0 +1,5 @@
+# variables applying to all groups
+ansible_python_interpreter: /usr/bin/python3
+ansible_user: hetzner-user
+# can be overwritten when run in a pipeline via "ansible-playbook site.yaml -e "ssh_key_override=path"
+ansible_ssh_private_key_file: "{{ ssh_key_override | default('/home/hetzner-user/.ssh/PLACEHOLDER.pem') }}"

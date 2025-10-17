@@ -1,0 +1,27 @@
+- name: Login to Docker Repository on Remote Machine
+  hosts: all
+  become: true
+  become_user: "{{ linux_user }}"
+  become_method: sudo
+  vars:
+    docker_username: "{{ docker_username }}"      # pass as env var to ansible-playbook
+    docker_password: "{{ docker_password }}"      # pass as env var to ansible-playbook
+    docker_repository: "{{ docker_repository }}"  # pass as env var to ansible-playbook
+  roles:
+    - roles_deployment/0-docker-login
+
+- name: Start Backend docker container on Remote Machine
+  hosts: all
+  become: true
+  become_user: "{{ linux_user }}" # runs the container as docker-runner user
+  become_method: sudo
+  roles:
+    - roles_deployment/1-run-docker-container
+
+- name: Check Backend docker container on Remote Machine
+  hosts: all
+  become: true
+  become_user: "{{ linux_user }}" # runs the checks as docker-runner user
+  become_method: sudo
+  roles:
+    - roles_deployment/2-check-docker-container

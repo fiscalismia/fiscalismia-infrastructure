@@ -1,0 +1,8 @@
+# see https://docs.ansible.com/ansible-core/2.17/playbook_guide/playbooks_privilege_escalation.html#risks-of-becoming-an-unprivileged-user
+- name: Update yum repo cache
+  ansible.builtin.dnf:
+    update_cache: yes
+- name: Install Access Control List
+  ansible.builtin.dnf:
+    pkg:
+      - acl

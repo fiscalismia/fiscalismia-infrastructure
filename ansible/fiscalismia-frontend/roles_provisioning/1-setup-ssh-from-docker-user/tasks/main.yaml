@@ -1,0 +1,23 @@
+- name: Ensure linux user home directory exists
+  ansible.builtin.file:
+    path: "/home/{{ linux_user }}/.ssh/"
+    state: directory
+    mode: '0700'
+    owner: "{{ linux_user }}"
+  become_method: sudo
+  become_user: "{{ linux_user }}"
+
+- name: Copy authorized keys file from ec2-user to linux user
+  ansible.builtin.copy:
+    src: /home/ec2-user/.ssh/authorized_keys
+    remote_src: true
+    dest: /home/{{ linux_user }}/.ssh/authorized_keys
+    mode: '0600'
+    owner: "{{ linux_user }}"
+
+- name: Confirm authorized_keys setup is correct
+  # this checks for a public key with eliptic curve ed25519 encryption which we use for linux machine key pairs
+  ansible.builtin.shell: "cat /home/{{ linux_user }}/.ssh/authorized_keys | grep ssh-ed25519"
+  register: authorized_keys_output
+  become: yes
+- ansible.builtin.debug: msg={{ authorized_keys_output.stdout_lines }}

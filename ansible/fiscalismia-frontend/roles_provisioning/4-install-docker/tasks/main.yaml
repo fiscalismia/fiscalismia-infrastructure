@@ -1,0 +1,49 @@
+# see https://docs.docker.com/engine/install/fedora/
+
+- name: Remove prior / legacy docker installations
+  ansible.builtin.dnf:
+    name:
+    # sudo dnf remove docker docker-compose-plugin docker-ce docker-ce-cli containerd.io docker buildx docker-buildx-plugin docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd
+      - docker
+      - docker-compose-plugin
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx
+      - docker-buildx-plugin
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-selinux
+      - docker-engine-selinux
+      - docker-engine
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - docker-compose-v2
+      - podman-docker
+      - containerd
+    state: absent
+
+- name: Clean all dnf metadata and cache
+  ansible.builtin.shell: dnf clean all
+
+- name: Install required system packages
+  ansible.builtin.dnf:
+    name:
+      - dnf-plugins-core
+      - ca-certificates
+    state: latest
+    update_cache: true
+
+- name: Install Docker from Amazon Linux 2023 repositories
+  ansible.builtin.dnf:
+    name:
+      - docker # Docker Engine from AL2023 repos
+    state: latest
+    update_cache: true
+  notify:
+    - Start docker daemon

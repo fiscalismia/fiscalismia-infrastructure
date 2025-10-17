@@ -1,0 +1,3 @@
+linux_user: docker-runner
+linux_user_comment: "Default service-user defined in ansible role"
+user_group: docker

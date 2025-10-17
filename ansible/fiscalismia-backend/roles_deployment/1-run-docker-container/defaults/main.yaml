@@ -1,0 +1,2 @@
+linux_user: docker-runner
+docker_remote_container_name: fiscalismia-backend
