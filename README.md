@@ -51,7 +51,7 @@ export BACKEND_DOMAIN_NAME="backend.fiscalismia.net"
 export DOCKER_BACKEND_CONTAINER_NAME="fiscalismia-backend:latest"
 export ANSIBLE_CONFIG="ansible/fiscalismia-backend/ansible.cfg"
 ansible-playbook ansible/fiscalismia-backend/deploy.yaml
-  -e "docker_dev_container_name=${DOCKER_BACKEND_CONTAINER_NAME}"
+  -e "docker_container_name=${DOCKER_BACKEND_CONTAINER_NAME}"
   -e "docker_username=${ENV_DOCKER_USERNAME}"
   -e "docker_password=${ENV_DOCKER_PASSWORD}"
   -e "docker_repository=${ENV_DOCKER_REPOSITORY}"
@@ -65,10 +65,16 @@ export FRONTEND_DOMAIN_NAME="fiscalismia.net"
 DOCKER_FRONTEND_CONTAINER_NAME="fiscalismia-frontend:latest"
 export ANSIBLE_CONFIG=${CI_PROJECT_DIR}/UNIFYY-operations-hub-webapp/ansible.cfg
 ansible-playbook ${CI_PROJECT_DIR}/UNIFYY-operations-hub-webapp/deploy.yaml
-  -e "docker_dev_container_name=${DOCKER_FRONTEND_CONTAINER_NAME}"
+  -e "docker_container_name=${DOCKER_FRONTEND_CONTAINER_NAME}"
   -e "docker_username=${ENV_DOCKER_USERNAME}"
   -e "docker_password=${ENV_DOCKER_PASSWORD}"
   -e "docker_repository=${ENV_DOCKER_REPOSITORY}"
   -e "ssh_key_override=${PRIVATE_KEY_FILE}"
   -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
 ```
+
+*** S3 Terraform using AWS Provider with Hetzner endpoint and flags**
+
+For using S3 as terraform state backend:
+See https://buduroiu.com/blog/hetzner-terraform-s3-backend/
+
