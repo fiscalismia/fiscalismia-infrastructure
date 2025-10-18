@@ -44,7 +44,7 @@ ansible-playbook ansible/fiscalismia-frontend/provision.yaml
   -e "ssh_key_override=${PRIVATE_KEY_FILE}"
   -e "docker_runner_pw=${DOCKER_RUNNER_PSWD}"
 ```
-
+export 
 **Deploy Backend**
 ```bash
 export BACKEND_DOMAIN_NAME="backend.fiscalismia.net"
@@ -62,9 +62,9 @@ ansible-playbook ansible/fiscalismia-backend/deploy.yaml
 **Deploy Frontend**
 ```bash
 export FRONTEND_DOMAIN_NAME="fiscalismia.net"
-DOCKER_FRONTEND_CONTAINER_NAME="fiscalismia-frontend:latest"
-export ANSIBLE_CONFIG=${CI_PROJECT_DIR}/UNIFYY-operations-hub-webapp/ansible.cfg
-ansible-playbook ${CI_PROJECT_DIR}/UNIFYY-operations-hub-webapp/deploy.yaml
+export DOCKER_FRONTEND_CONTAINER_NAME="fiscalismia-frontend:latest"
+export ANSIBLE_CONFIG="ansible/fiscalismia-frontend/ansible.cfg"
+ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
   -e "docker_container_name=${DOCKER_FRONTEND_CONTAINER_NAME}"
   -e "docker_username=${ENV_DOCKER_USERNAME}"
   -e "docker_password=${ENV_DOCKER_PASSWORD}"

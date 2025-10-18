@@ -1,7 +1,7 @@
 - name: Run and expose Unifyy Auth API Server container on Port 80
   community.docker.docker_container:
     name: "{{ docker_remote_container_name }}"
-    image: "{{ docker_dev_container_name }}"
+    image: "{{ docker_container_name }}"
     state: started    # Ensures the container is present and running.
     detach: true      # Runs the container in the background.
     pull: true        # Always attempts to pull the latest version of the image.
