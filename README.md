@@ -2,6 +2,33 @@
 Terraform files for provisioning AWS &amp; Hetzner Cloud Infrastructure &amp; k8s manifests for ArgoCD deployment
 
 
+### Terraform for Hetzner Cloud
+
+**Setup SSH Keys:**
+
+```bash
+cd ~/.ssh/
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-infrastructure-master-key.hcloud.ed25519 -C "Fiscalismia Infrastructure OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-key.hcloud.ed25519 -C "Fiscalismia Demo Instance OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key.hcloud.ed25519 -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+```
+
+**Apply Terraform IaC:**
+
+```bash
+cd ~/git/fiscalismia-infrastructure/terraform/hetzner-cloud/
+source ../.env
+terraform init
+terraform apply
+```
+
+*** S3 Terraform using AWS Provider with Hetzner endpoint and flags**
+
+For using S3 as terraform state backend:
+See https://buduroiu.com/blog/hetzner-terraform-s3-backend/
+
+
+
 ### Setup Ansible Control Node
 
 ```bash
@@ -29,6 +56,8 @@ chmod 400 ${PRIVATE_KEY_FILE}
 echo "set ${PRIVATE_KEY_FILE} to read-only"
 ```
 
+### Ansible Provisioning
+
 **Provision Backend**
 ```bash
 export ANSIBLE_CONFIG="ansible/fiscalismia-backend/ansible.cfg"
@@ -44,7 +73,9 @@ ansible-playbook ansible/fiscalismia-frontend/provision.yaml
   -e "ssh_key_override=${PRIVATE_KEY_FILE}"
   -e "docker_runner_pw=${DOCKER_RUNNER_PSWD}"
 ```
-export 
+
+### Ansible Deployment
+
 **Deploy Backend**
 ```bash
 export BACKEND_DOMAIN_NAME="backend.fiscalismia.net"
@@ -72,9 +103,3 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
   -e "ssh_key_override=${PRIVATE_KEY_FILE}"
   -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
 ```
-
-*** S3 Terraform using AWS Provider with Hetzner endpoint and flags**
-
-For using S3 as terraform state backend:
-See https://buduroiu.com/blog/hetzner-terraform-s3-backend/
-

@@ -2,13 +2,14 @@ terraform {
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "~> 1.53.1"
+      version = "~> 1.54"
     }
   }
 }
 
 provider "hcloud" {
-  token = var.hcloud_token
+  # set HCLOUD_TOKEN environment variable instead
+  # token = var.hcloud_token
 }
 
 locals {

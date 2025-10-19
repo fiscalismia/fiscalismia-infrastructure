@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source ../.env
+##############################################################
+# Call Script with API_ENDPOINT Selection String at Position 1
+##############################################################
+
+source ../terraform/.env
 if [[ -z "${HCLOUD_TOKEN}" ]]; then
   echo "❌ Error: Please provide HCLOUD_TOKEN in your .env file in root directory. Exiting"
   exit 1
