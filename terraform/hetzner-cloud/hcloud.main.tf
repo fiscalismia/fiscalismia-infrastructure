@@ -20,8 +20,10 @@ module "fiscalismia_demo" {
   unix_distro       = "fedora-42"
   server_type       = "cx33" # 5.93€/Month
   firewall_ids      = [
+    hcloud_firewall.ssh_access.id,
     hcloud_firewall.all_egress.id,
-    hcloud_firewall.public_http_ingress.id,
+    hcloud_firewall.http_ingress.id,
+    hcloud_firewall.https_ingress.id,
     hcloud_firewall.icmp_ping_ingress.id
   ]
   ssh_key_name      = hcloud_ssh_key.demo_instance.name

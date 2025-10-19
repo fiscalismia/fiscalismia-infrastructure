@@ -51,8 +51,8 @@ resource "hcloud_firewall" "all_egress" {
     }
 }
 
-resource "hcloud_firewall" "public_http_ingress" {
-    name = "public-ingress"
+resource "hcloud_firewall" "http_ingress" {
+    name = "http-ingress"
 
     rule {
         direction   = "in"
@@ -64,6 +64,11 @@ resource "hcloud_firewall" "public_http_ingress" {
         ]
         description = "Allow HTTP from anywhere"
     }
+}
+
+
+resource "hcloud_firewall" "https_ingress" {
+    name = "https-ingress"
 
     rule {
         direction   = "in"
@@ -75,17 +80,8 @@ resource "hcloud_firewall" "public_http_ingress" {
         ]
         description = "Allow HTTPS from anywhere"
     }
-
-    rule {
-        direction   = "in"
-        protocol    = "icmp"
-        source_ips  = [
-        "0.0.0.0/0",
-        "::/0"
-        ]
-        description = "Allow Ping (ICMP) from anywhere"
-    }
 }
+
 
 
 resource "hcloud_firewall" "icmp_ping_ingress" {

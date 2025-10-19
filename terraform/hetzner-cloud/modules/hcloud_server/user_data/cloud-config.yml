@@ -34,6 +34,8 @@ runcmd:
   - systemctl start fail2ban
   - ufw allow 'OpenSSH'
   - ufw enable
+  #TODO research against sshd_config best practices
+  #TODO  assure non-existend settings are added instead of replace
   - sed -ie '/^PermitRootLogin/s/^.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
   - sed -ie '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
   - sed -ie '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
