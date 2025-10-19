@@ -1,0 +1,3 @@
+application: fiscalismia
+github_repository: fiscalismia-infrastructure
+provisioned_by: terraform
