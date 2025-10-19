@@ -27,7 +27,7 @@
 
 - name: Install Docker & Docker Compose
   hosts: all
-  become: yes
+  become: true
   roles:
     - roles_provisioning/4-install-docker-and-compose
 

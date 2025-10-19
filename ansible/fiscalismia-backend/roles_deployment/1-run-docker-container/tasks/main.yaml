@@ -16,4 +16,4 @@
     restart_policy: unless-stopped # Restarts the container unless it's explicitly stopped.
     # env: # Optional: Pass environment variables if your container needs them
     #   YOUR_ENV_VAR: "value"
-  become: yes
+  become: true

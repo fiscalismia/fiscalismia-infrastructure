@@ -27,6 +27,6 @@
 
 - name: Install Docker
   hosts: all
-  become: yes
+  become: true
   roles:
     - roles_provisioning/4-install-docker

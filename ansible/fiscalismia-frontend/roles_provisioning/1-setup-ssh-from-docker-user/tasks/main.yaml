@@ -19,5 +19,5 @@
   # this checks for a public key with eliptic curve ed25519 encryption which we use for linux machine key pairs
   ansible.builtin.shell: "cat /home/{{ linux_user }}/.ssh/authorized_keys | grep ssh-ed25519"
   register: authorized_keys_output
-  become: yes
+  become: true
 - ansible.builtin.debug: msg={{ authorized_keys_output.stdout_lines }}

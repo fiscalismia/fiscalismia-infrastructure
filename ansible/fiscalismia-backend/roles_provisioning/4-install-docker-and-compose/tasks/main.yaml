@@ -53,7 +53,7 @@
     path: /usr/local/lib/docker/cli-plugins
     state: directory
     mode: '0755'
-  become: yes
+  become: true
 
 - name: Install Docker Compose V2 plugin from Github
   ansible.builtin.get_url:
@@ -61,7 +61,7 @@
     dest: /usr/local/lib/docker/cli-plugins/docker-compose
     mode: '0755'
     owner: "{{ linux_user }}"
-  become: yes
+  become: true
   register: download_result
 
 - name: Verify docker compose V2 installation and get version
