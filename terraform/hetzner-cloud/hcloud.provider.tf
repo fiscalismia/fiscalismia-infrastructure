@@ -13,5 +13,11 @@ provider "hcloud" {
 }
 
 locals {
-  default_labels = yamldecode(file("${path.module}/.config/default.labels.yml"))
+  file_labels = yamldecode(file("${path.module}/.config/default.labels.yml"))
+  default_labels = merge(
+    local.file_labels,
+    {
+      environment = "development"
+    }
+  )
 }

@@ -30,3 +30,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 .env
+terraform/hetzner-cloud/server-ips.txt

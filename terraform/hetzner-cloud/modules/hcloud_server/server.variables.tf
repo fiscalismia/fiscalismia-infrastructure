@@ -53,6 +53,11 @@ variable "labels" {
   type           = map(string)
 }
 
+variable "firewall_ids" {
+  description    = "A map ids of firewalls (like security groups in AWS) to assign to the instance"
+  type           = list(string)
+}
+
 variable "ssh_key_name" {
   description    = "the SSH Key to assign to these specific instances."
   type           = string

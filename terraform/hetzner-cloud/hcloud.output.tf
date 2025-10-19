@@ -3,8 +3,8 @@ output "server_ips" {
 
   value = join("\n", concat(
     try(module.ansible_control_node.server_ipv4_list, []),
-    try(module.fiscalismia_backend.server_ipv4_list, []),
-    try(module.fiscalismia_frontend.server_ipv4_list, []),
+    # try(module.fiscalismia_backend.server_ipv4_list, []),
+    # try(module.fiscalismia_frontend.server_ipv4_list, []),
     try(module.fiscalismia_demo.server_ipv4_list, []),
   ))
 }

@@ -44,3 +44,6 @@ runcmd:
   - systemctl restart ssh
   - rm /var/www/html/*
   - echo "Hello! I am Nginx @ $(curl -s ipinfo.io/ip)! This record added at $(date -u)." >>/var/www/html/index.html
+  - echo "Hello from cloud-config.yml!" > ~/hello_world.txt
+  - echo "" >> ~/hello_world.txt
+  - cat /etc/ssh/sshd_config >> ~/hello_world.txt

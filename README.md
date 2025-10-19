@@ -8,9 +8,9 @@ Terraform files for provisioning AWS &amp; Hetzner Cloud Infrastructure &amp; k8
 
 ```bash
 cd ~/.ssh/
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-infrastructure-master-key.hcloud.ed25519 -C "Fiscalismia Infrastructure OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-key.hcloud.ed25519 -C "Fiscalismia Demo Instance OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key.hcloud.ed25519 -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-infrastructure-master-key-hcloud -C "Fiscalismia Infrastructure OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-key-hcloud -C "Fiscalismia Demo Instance OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
 ```
 
 **Apply Terraform IaC:**
