@@ -13,6 +13,13 @@ ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-key-hcloud -C "Fiscalismia 
 ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
 ```
 
+**Install Terraform:**
+
+```bash
+cd ~/git/fiscalismia-infrastructure/scripts/
+./install-terraform-fedora.sh
+```
+
 **Apply Terraform IaC:**
 
 ```bash
@@ -26,8 +33,6 @@ terraform apply
 
 For using S3 as terraform state backend:
 See https://buduroiu.com/blog/hetzner-terraform-s3-backend/
-
-
 
 ### Setup Ansible Control Node
 
