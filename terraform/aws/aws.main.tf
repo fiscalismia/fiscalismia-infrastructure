@@ -1,15 +1,18 @@
 module "route_53_dns" {
-  source = "./modules/route_53"
-  domain_name           = "fiscalismia.com"
-  demo_subdomain        = "demo"
-  backend_subdomain     = "backend"
-  resource_prefix       = "fiscalismia"
+  source                    = "./modules/route_53"
+  domain_name               = "fiscalismia.com"
+  demo_subdomain            = "demo"
+  backend_subdomain         = "backend"
+  resource_prefix           = "fiscalismia"
+  backend_instance_ipv4     = var.backend_instance_ipv4
+  demo_instance_ipv4        = var.demo_instance_ipv4
+  frontend_instance_ipv4    = var.frontend_instance_ipv4
 }
 
 
 # S3 bucket for persisting uploaded user images
 module "s3_image_storage" {
-  source = "./modules/s3"
+  source                        = "./modules/s3"
   bucket_name                   = var.image_processing_bucket_name
   bucket_description            = "Fiscalismia Image Upload Storage"
   fqdn                          = var.fqdn
@@ -20,7 +23,7 @@ module "s3_image_storage" {
 
 # S3 bucket for ETL on Google Sheets/TSV file transformations
 module "s3_raw_data_etl_storage" {
-  source = "./modules/s3"
+  source                       = "./modules/s3"
   bucket_name                  = var.etl_bucket_name
   bucket_description           = "Fiscalismia ETL Repository for Raw Data Transformation for PSQL"
   fqdn                         = var.fqdn
@@ -31,7 +34,7 @@ module "s3_raw_data_etl_storage" {
 
 # endpoint to connect fiscalismia containers (file upload) to lambdas for further processing
 module "api_gateway" {
-  source = "./modules/api_gateway"
+  source                            = "./modules/api_gateway"
   api_name                          = "fiscalismia-http-api-gw"
   api_description                   = "Fiscalismia HTTP API Gateway"
   fqdn                              = var.fqdn
@@ -62,7 +65,7 @@ module "lambda_image_processing" {
 
 # Lambda for receiving google sheets/tsv files and transforming them into queries to fiscalismia rest api
 module "lambda_raw_data_etl" {
-  source = "./modules/lambda"
+  source                        = "./modules/lambda"
   function_purpose              = "raw_data_etl"
   layer_description             = "Python Dependencies for RAW Data ETL Lambda Function"
   runtime_env                   = "python3.13"

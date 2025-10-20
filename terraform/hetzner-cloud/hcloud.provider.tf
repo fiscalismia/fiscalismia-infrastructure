@@ -5,6 +5,12 @@ terraform {
       version = "~> 1.54"
     }
   }
+  backend "s3" {
+    bucket = "hangrybear-tf-backend-state-bucket"
+    key = "fiscalismia-infrastructure/hcloud/state.tfstate"
+    region = "eu-central-1"
+    encrypt = true
+  }
 }
 
 provider "hcloud" {

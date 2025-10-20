@@ -1,7 +1,3 @@
-variable "subdomain_list" {
-  description   = "List of subdomains to register for main domain, e.g. ['backend', 'demo']"
-  type          = list(string)
-}
 variable "ip_whitelist_lambda_processing" {
   default = "0.0.0.0" # Override ONLY IN terraform.tfvars to hide whitelist from git repository
   description = "Comma separated list to allow only specific ips access to Lambda functions. Passed in lambda env vars. Default is allowing all (0.0.0.0)."
@@ -57,4 +53,16 @@ variable "image_processing_bucket_name" {
   description = "Bucket Name for Image Downsizing"
   type = string
   default = "hangrybear-fiscalismia-image-storage"
+}
+
+variable "backend_instance_ipv4" {
+  description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
+  type = string
+  default = "127.0.0.1"
+}
+
+variable "demo_instance_ipv4" {
+  description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
+  type = string
+  default = "127.0.0.1"
 }

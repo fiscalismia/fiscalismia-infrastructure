@@ -3,14 +3,19 @@ Terraform files for provisioning AWS &amp; Hetzner Cloud Infrastructure &amp; k8
 
 ### Prerequisites
 
-**Install Terraform:**
+**Install Terraform**
 
 ```bash
-cd ~/git/fiscalismia-infrastructure/scripts/
-./install-terraform-fedora.sh
+cd ~/git/fiscalismia-infrastructure/scripts/ && ./install-terraform-fedora.sh
 ```
 
-**Setup SSH Keys:**
+**Setup Secrets in .env**
+
+```bash
+cd ~/git/fiscalismia-infrastructure/scripts/ && ./setup-env-vars.sh
+```
+
+**Setup SSH Keys**
 
 ```bash
 cd ~/.ssh/
