@@ -18,7 +18,7 @@ resource "aws_acm_certificate" "my_tls_cert" {
 
 resource "aws_acm_certificate_validation" "cert_validation" {
   timeouts {
-    create = "3m"
+    create = "15m"
   }
   certificate_arn         = aws_acm_certificate.my_tls_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation_record : record.fqdn]

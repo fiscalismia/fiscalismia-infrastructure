@@ -60,8 +60,12 @@ variable "backend_instance_ipv4" {
   type = string
   default = "127.0.0.1"
 }
-
 variable "demo_instance_ipv4" {
+  description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
+  type = string
+  default = "127.0.0.1"
+}
+variable "frontend_instance_ipv4" {
   description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
   type = string
   default = "127.0.0.1"

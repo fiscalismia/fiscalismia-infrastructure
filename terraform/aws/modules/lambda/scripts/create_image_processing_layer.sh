@@ -28,9 +28,7 @@ if [[ -z "$docker_dir" ]]
     exit 1
 fi
 
-docker pull $DOCKER_IMG
-
-docker run --rm --entrypoint /bin/bash -v $LAYER_DIR:/var/task $DOCKER_IMG -c "
+docker run --rm --entrypoint /bin/bash -v $LAYER_DIR:/var/task:z $DOCKER_IMG -c "
 ################## DEPENDENCY INSTALLATION BEGIN ###############
 npm i sharp@0.33.5
 ################## DEPENDENCY INSTALLATION END #################
@@ -39,8 +37,10 @@ npm i sharp@0.33.5
 # create zip
 cd $ZIP_DIR
 zip -r -q $ZIP_NAME nodejs
-echo "" && echo ">>>>>>>>>>>>>>>> Zipped installed dependencies to [$ZIP_NAME] <<<<<<<<<<<<<<<<<<<" && echo ""
+echo "" && echo ">>>>>>>>>>>>>>>> Zipped installed dependencies to <<<<<<<<<<<<<<<<<<<"
+echo "[$(pwd)/$ZIP_NAME] "
 
-docker run --rm --entrypoint /bin/bash -v $ZIP_DIR:/var/task $DOCKER_IMG -c "
+docker run --rm --entrypoint /bin/bash -v $ZIP_DIR:/var/task:z $DOCKER_IMG -c "
 rm -rf nodejs/
 "
+# ls -hla

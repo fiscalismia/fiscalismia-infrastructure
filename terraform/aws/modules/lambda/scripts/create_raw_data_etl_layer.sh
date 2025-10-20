@@ -31,7 +31,7 @@ fi
 
 docker pull $DOCKER_IMG
 
-docker run --rm --entrypoint /bin/bash -v $LAYER_DIR:/var/task $DOCKER_IMG -c "
+docker run --rm --entrypoint /bin/bash -v $LAYER_DIR:/var/task:z $DOCKER_IMG -c "
 mkdir -p $DOCKER_VENV_FOLDER
 python -m venv $DOCKER_VENV_FOLDER
 source $DOCKER_VENV_FOLDER/bin/activate
@@ -49,7 +49,7 @@ zip -r -q $ZIP_NAME python/
 echo "" && echo ">>>>>>>>>>>>>>>> Zipped installed dependencies to [$ZIP_NAME] <<<<<<<<<<<<<<<<<<<" && echo ""
 
 # clean up local workspace
-docker run --rm --entrypoint /bin/bash -v $ZIP_DIR:/var/task $DOCKER_IMG -c "
+docker run --rm --entrypoint /bin/bash -v $ZIP_DIR:/var/task:z $DOCKER_IMG -c "
 rm -rf $DOCKER_VENV_FOLDER
 rm -rf /var/task/python
 "

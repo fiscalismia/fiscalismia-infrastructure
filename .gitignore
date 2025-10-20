@@ -31,3 +31,11 @@ override.tf.json
 terraform.rc
 .env
 terraform/hetzner-cloud/server-ips.txt
+
+# AWS Lambda Artifacts
+node_modules/
+payload.zip
+nodejs*_layer.zip
+python*_layer.zip
+response.json
+aws_lambda/terraform/output.txt
