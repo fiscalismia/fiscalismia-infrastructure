@@ -2,16 +2,16 @@
 
 if [[ -z $1 ]]
 then
-  echo "no api endpoint supplied as script parameter. defaulting to hardcoded version"
-  API_ENDPOINT="https://tn30dnepf3.execute-api.eu-central-1.amazonaws.com/api/fiscalismia/post/sheet_url/process_lambda/return_tsv_file_urls"
-else
-  API_ENDPOINT=$1
+  echo "please provide an API_KEY"
+  exit 1
 fi
 
 if [[ -z $2 ]]
 then
-  echo "please provide an API_KEY"
-  exit 1
+  echo "no api endpoint supplied as script parameter. defaulting to hardcoded version"
+  API_ENDPOINT="https://f8wnpdy1ab.execute-api.eu-central-1.amazonaws.com/api/fiscalismia/post/sheet_url/process_lambda/return_tsv_file_urls"
+else
+  API_ENDPOINT=$2
 fi
 
 if [[ -z $3 ]]
@@ -22,8 +22,7 @@ else
   SHEET_URL=$3
 fi
 
-
-API_KEY=$2
+API_KEY=$1
 curl "$API_ENDPOINT" \
   -H "Authorization: $API_KEY" \
   -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0' \

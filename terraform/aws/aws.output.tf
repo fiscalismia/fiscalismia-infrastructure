@@ -23,30 +23,31 @@ output "route_post_sheet_url" {
 
 output "lambda_invoke_cmd_upload_img" {
   description = "aws cli invoke command to test the lambda function for uploading images"
-  value = <<EOF
+  value = <<EOT
 ##### INVOKE UPLOAD IMG LAMBDA
 aws lambda invoke --function-name ${module.lambda_image_processing.function_name} /dev/stdout && echo "" && \
   aws lambda invoke --function-name ${module.lambda_image_processing.function_name} --log-type Tail /dev/null | jq -r '.LogResult' | base64 --decode
-EOF
+EOT
 }
 
 output "lambda_invoke_cmd_raw_etl_processing" {
   description = "aws cli invoke command to test the lambda function for processing raw data such as google sheets and tsv files"
-  value = <<EOF
+  value = <<EOT
 ##### INVOKE RAW DATA ETL LAMBDA
 aws lambda invoke --function-name ${module.lambda_raw_data_etl.function_name} \
   --payload '${jsonencode({key1 = "cli-test-value", sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSVcmgixKaP9LC-rrqS4D2rojIz48KwKA8QBmJloX1h7f8BkUloVuiw19eR2U5WvVT4InYgnPunUo49/pub?output=xlsx"})}' \
   --cli-binary-format raw-in-base64-out /dev/stdout
-EOF
+EOT
 }
 
 output "lambda_invoke_cmd_upload_img_with_payload" {
   description = "Curl API Gateway Endpoints with Secret Key. Do not persist"
-  value = <<EOF
-bash modules/lambda/scripts/curl-api-sheet-url.sh https://dvtkxey9mk.execute-api.eu-central-1.amazonaws.com/api/fiscalismia/post/sheet_url/process_lambda/return_tsv_file_urls lkasdkljadskl28281291dasfasfasf
+  value = <<EOT
+
 ##### CURL ENDPOINT WITH BASE ENCODED IMAGE
 bash modules/lambda/scripts/curl-api-img-upload.sh ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_img_route}
+
 # WARNING: Replace with actual secret api key
-bash modules/lambda/scripts/curl-api-sheet-url.sh ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} var.secret_api_key ${var.test_sheet_url}
-EOF
+bash modules/lambda/scripts/curl-api-sheet-url.sh [tfvars.secret_api_key] ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} [tfvars.test_sheet_url]
+EOT
 }
