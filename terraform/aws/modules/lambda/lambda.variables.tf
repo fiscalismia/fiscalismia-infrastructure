@@ -1,0 +1,11 @@
+variable "function_purpose" {}
+variable "service_name" {}
+variable "runtime_env" {}
+variable "s3_bucket_name" {}
+variable "layer_description" {}
+variable "layer_name" {}
+variable "timeout_seconds" {}
+variable "ip_whitelist_lambda_processing" {}
+variable "secret_api_key" {}
+variable "layer_docker_img" {}
+variable "memory_size" {}

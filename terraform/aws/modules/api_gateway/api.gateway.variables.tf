@@ -1,0 +1,10 @@
+variable "fqdn" {}
+variable "lambda_function_name_upload_img" {}
+variable "lambda_invoke_arn_upload_img" {}
+variable "lambda_function_name_raw_data_etl" {}
+variable "lambda_invoke_arn_raw_data_etl" {}
+variable "api_name" {}
+variable "api_description" {}
+variable "post_img_route" {}
+variable "post_raw_data_route" {}
+variable "default_stage" {}
