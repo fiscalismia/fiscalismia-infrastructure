@@ -17,9 +17,8 @@ resource "aws_apigatewayv2_api" "aws_api" {
 # If you add another route, refactor these resources to a dynamic loop
 ####################################################################################
 resource "aws_apigatewayv2_integration" "upload_img" {
-  api_id           = aws_apigatewayv2_api.aws_api.id
-  integration_type = "AWS_PROXY"
-
+  api_id                    = aws_apigatewayv2_api.aws_api.id
+  integration_type          = "AWS_PROXY"
   connection_type           = "INTERNET"
   description               = "Lambda Upload Image Integration"
   integration_method        = "POST"
@@ -27,9 +26,8 @@ resource "aws_apigatewayv2_integration" "upload_img" {
 }
 
 resource "aws_apigatewayv2_integration" "post_sheet_url" {
-  api_id           = aws_apigatewayv2_api.aws_api.id
-  integration_type = "AWS_PROXY"
-
+  api_id                    = aws_apigatewayv2_api.aws_api.id
+  integration_type          = "AWS_PROXY"
   connection_type           = "INTERNET"
   description               = "Lambda Post Sheet URL Integration"
   integration_method        = "POST"
@@ -56,11 +54,8 @@ resource "aws_apigatewayv2_route" "upload_img" {
   api_id    = aws_apigatewayv2_api.aws_api.id
   route_key = "${var.post_img_route}"
   target    = "integrations/${aws_apigatewayv2_integration.upload_img.id}"
-
   # authorization_type = "JWT"
   # authorizer_id      = aws_apigatewayv2_authorizer.example.id
-
-
   depends_on = [aws_apigatewayv2_integration.upload_img]
 }
 
@@ -68,10 +63,8 @@ resource "aws_apigatewayv2_route" "post_sheet_url" {
   api_id    = aws_apigatewayv2_api.aws_api.id
   route_key = "${var.post_raw_data_route}"
   target    = "integrations/${aws_apigatewayv2_integration.post_sheet_url.id}"
-
   # authorization_type = "JWT"
   # authorizer_id      = aws_apigatewayv2_authorizer.example.id
-  
   depends_on = [aws_apigatewayv2_integration.post_sheet_url]
 }
 

@@ -6,7 +6,7 @@
 
 source ../terraform/.env
 if [[ -z "${HCLOUD_TOKEN}" ]]; then
-  echo "❌ Error: Please provide HCLOUD_TOKEN in your .env file in root directory. Exiting"
+  echo "Error: Please provide HCLOUD_TOKEN in your .env file in root directory. Exiting"
   exit 1
 fi
 
@@ -38,7 +38,7 @@ for page_num in `seq 5`; do
         }
       '
   else
-    echo "❌ Error: Provide either Images or Servers as pos1 Variable to Bash script"
+    echo "Error: Provide either Images or Servers as pos1 Variable to Bash script"
     exit 1
   fi
 done

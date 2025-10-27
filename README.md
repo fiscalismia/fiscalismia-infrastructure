@@ -26,8 +26,6 @@ ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key-hcloud -C "Fiscal
 
 ### Terraform for Hetzner Cloud
 
-**Apply Terraform IaC:**
-
 ```bash
 cd ~/git/fiscalismia-infrastructure/terraform/hetzner-cloud/
 source ../.env
@@ -35,9 +33,7 @@ terraform init
 terraform apply
 ```
 
-### Terraform for Hetzner Cloud
-
-**Apply Terraform IaC:**
+### Terraform for AWS
 
 ```bash
 cd ~/git/fiscalismia-infrastructure/terraform/aws/
@@ -137,13 +133,13 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
 - When integrating with SQS use batch processing with x seconds wait window after queueing a message to collect multiple messages at once to avoid spamming lambda invocations (Optionally enable lambda to report failed message IDs in the batch to avoid reprocessing the entire batch)
 
 #### Architectural Overview
-![img_upload lambda architecture](terraform/aws/docs/img_upload_architecture_darkmode.png)
-![raw_data_etl lambda architecture](terraform/aws/docs/raw_data_etl_architecture_darkmode.png)
+![img_upload lambda architecture](docs/img_upload_architecture_darkmode.png)
+![raw_data_etl lambda architecture](docs/raw_data_etl_architecture_darkmode.png)
 
 <u>Included Resources:</u>
 
-- API HTTP Gateway that can invoke Lambda functions
-- 2 Lambda Functions for Img Upload and Google Sheets Raw Data ETL
+- Public API HTTP Gateway with POST Routes that can invoke Lambda functions
+- 2 Lambda Functions for Img Upload and Google Sheets Raw Data ETL protected via `secret_api_key`
 - 2 Lambda Layers containing the runtime dependencies not included in aws by default
 - 2 S3 Buckets accessed by Lambda for storing processed images and sheet output
 - Respective IAM Roles and Permissions to allow access between API GW - Lambda - S3
