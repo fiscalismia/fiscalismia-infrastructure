@@ -7,6 +7,12 @@ variable "secret_api_key" {
   default = ""  # Override ONLY IN terraform.tfvars to hide whitelist from git repository
   description = "API KEY to allow lambda processing. Passed in lambda env vars."
   type = string
+  sensitive   = true
+}
+variable "forecasted_budget_notification_email" {
+  description = "Email address receiving aws cost budget notifications"
+  type = string
+  sensitive   = true
 }
 variable "test_sheet_url" {
   default = ""  # Override ONLY IN terraform.tfvars to hide google sheets link from git repo
@@ -34,12 +40,12 @@ variable "default_stage" {
   description = "HTTP API can be separated into stages that change the endpoint routes to start with /stage/"
 }
 variable "post_img_route" {
-  default = "/fiscalismia/upload/img/process_lambda/return_s3_img_url"
+  default = "/fiscalismia/post/img/invoke_lambda/return_s3_img_url"
   type = string
   description = "http api route for aws. the default stage is prepended."
 }
 variable "post_raw_data_route" {
-  default = "/fiscalismia/post/sheet_url/process_lambda/return_tsv_file_urls"
+  default = "/fiscalismia/post/sheet_url/invoke_lambda/return_tsv_file_urls"
   type = string
   description = "http api route for google sheets url post to trigger lambda etl and s3 storage. Returns S3 URLS to exported TSV files"
 }

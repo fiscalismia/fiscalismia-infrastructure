@@ -148,8 +148,9 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
 
 Create `terraform/aws/terraform.tfvars` file and change any desired variables by overwriting the default values within `variables.tf`
 ```bash
-secret_api_key = "xxx"
-test_sheet_url = "https://docs.google.com/spreadsheets/d/{YOUR_ID}/edit"
+secret_api_key                        = "klmasfdjlkfaedf7z77DAw___020"
+test_sheet_url                        = "https://docs.google.com/spreadsheets/d/{YOUR_ID}/edit"
+forecasted_budget_notification_email  = "example@domain.com"
 ```
 
 </details>

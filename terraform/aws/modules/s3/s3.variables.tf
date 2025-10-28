@@ -12,3 +12,8 @@ variable "data_archival" {
   type    = bool
   description = "whether objects are moved to cheaper storage tiers after a certain period"
 }
+variable "prevent_destroy" {
+  default = true
+  type    = bool
+  description = "whether s3 bucket is being protected from deletion"
+}
