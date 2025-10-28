@@ -12,7 +12,6 @@ resource "aws_apigatewayv2_api" "aws_api" {
     max_age           = 3600 # Cache CORS preflight response for 1 hour
   }
 }
-
 ####################################################################################
 # If you add another route, refactor these resources to a dynamic loop
 ####################################################################################

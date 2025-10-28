@@ -12,6 +12,12 @@ resource "aws_cloudwatch_metric_alarm" "apigw_count_exceeded_post_img_route" {
   threshold                 = var.apigw_count_exceeded_post_img_route_threshold
   actions_enabled           = true
   alarm_actions             = [var.sns_topic_arn_apigw_route_throttling]
+
+  dimensions = {
+    ApiId  = var.api_gateway_id
+    Stage  = var.api_gateway_stage
+    Route  = var.post_img_route
+  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "apigw_count_exceeded_post_raw_data_route" {
@@ -26,4 +32,10 @@ resource "aws_cloudwatch_metric_alarm" "apigw_count_exceeded_post_raw_data_route
   threshold                 = var.apigw_count_exceeded_post_raw_data_route_threshold
   actions_enabled           = true
   alarm_actions             = [var.sns_topic_arn_apigw_route_throttling]
+
+  dimensions = {
+    ApiId  = var.api_gateway_id
+    Stage  = var.api_gateway_stage
+    Route  = var.post_raw_data_route
+  }
 }

@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
   <diagram name="Page-1" id="SFjtN74bUgn6KRebL6FT">
-    <mxGraphModel dx="575" dy="828" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="872" dy="1001" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -808,7 +808,7 @@
         <mxCell id="UnEULMIhb13hHUrPRZhk-2" value="AWS Infrastructure Killswitch" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=16;align=center;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;labelBorderColor=none;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
           <mxGeometry x="2180" y="480.5" width="290" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-3" value="&lt;u&gt;&lt;b&gt;Workflow&lt;/b&gt;:&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;1.)&lt;/b&gt;&amp;nbsp;AWS Budget updates every 8-12 hours&lt;br&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;2.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;asd&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=14;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-3" value="&lt;u&gt;&lt;b&gt;Workflow&lt;/b&gt;:&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;1.)&lt;/b&gt;&amp;nbsp;AWS Budget updates every 8-12 hours to continuously monitor Actual Costs accrued&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;2.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;AWS Budget&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;hits BudgetLimitExceeded SNS Topic if Actual Cost Threshold in USD is surpassed&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;3.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;BudgetLimitExceededAction SNS Topic invokes the&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;TerraformModuleDestroyer Lambda Function&lt;br&gt;&lt;/span&gt;&lt;b style=&quot;color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193)); background-color: transparent;&quot;&gt;4.)&lt;/b&gt;&lt;span style=&quot;color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;TerraformModuleDestroyer&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;Lambda Function destroys only Terraform modules without persistent state (keeps s3 buckets)&lt;br&gt;&lt;/span&gt;&lt;div&gt;&lt;b&gt;5.)&lt;/b&gt;&amp;nbsp;Throttling lambda then hits a SNS topic for notifying the admin with a throttling message&lt;/div&gt;&lt;div&gt;&lt;b&gt;6.)&lt;/b&gt;&amp;nbsp;ThrottlingNotification SNS topic invokes a generic notification Lambda with a message&lt;/div&gt;&lt;div&gt;&lt;b&gt;7.)&lt;/b&gt;&amp;nbsp;Notification Lambda takes a generic message and forwards it to the admin via a bot accesible via the telegram API&lt;br&gt;&lt;b&gt;8.)&lt;/b&gt;&amp;nbsp;User receives Bot Notification Message&lt;/div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=14;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
           <mxGeometry x="2180" y="520.5" width="290" height="379.5" as="geometry" />
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-6" value="eu-central-1&lt;br&gt;&lt;div&gt;region&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;snapToPoint=0;fixDash=0;strokeColor=#666666;" vertex="1" parent="1">
@@ -844,7 +844,7 @@
         <mxCell id="UnEULMIhb13hHUrPRZhk-56" value="Telegram Bot" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-54">
           <mxGeometry y="39.999999999999886" width="70" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-57" value="&lt;font color=&quot;#00cc00&quot;&gt;5&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#00CC00;fontSize=15;fontStyle=1;fontColor=#00FF00;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-57" value="&lt;font color=&quot;#00cc00&quot;&gt;4&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#00CC00;fontSize=15;fontStyle=1;fontColor=#00FF00;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
           <mxGeometry x="2743" y="787.38" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-58" value="&lt;span style=&quot;color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;notification&lt;/span&gt;&lt;br style=&quot;forced-color-adjust: none; color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;message&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-61" target="UnEULMIhb13hHUrPRZhk-60">
@@ -858,7 +858,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-59" value="&lt;font color=&quot;#0000ff&quot;&gt;6&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-59" value="&lt;font color=&quot;#0000ff&quot;&gt;5&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
           <mxGeometry x="2844" y="689.38" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-60" value="Amazon SNS" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.sns;" vertex="1" parent="1">
@@ -884,7 +884,7 @@
         <mxCell id="UnEULMIhb13hHUrPRZhk-64" value="Notification&lt;br&gt;Message&lt;br&gt;Sender" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="2964" y="744.38" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-65" value="&lt;font color=&quot;#0000ff&quot;&gt;7&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-65" value="&lt;font color=&quot;#0000ff&quot;&gt;6&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
           <mxGeometry x="2944" y="687.5699999999999" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-66" value="&lt;span style=&quot;font-family: Helvetica; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; float: none; display: inline !important;&quot;&gt;&lt;font style=&quot;color: rgb(65, 188, 0);&quot;&gt;Destroy select Infrastructure&lt;/font&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;fontSize=11;fontStyle=5;fontColor=light-dark(#41cb00, #446e2c);" vertex="1" parent="1">
@@ -908,7 +908,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-69" value="&lt;font color=&quot;#0000ff&quot;&gt;8&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-69" value="&lt;font color=&quot;#0000ff&quot;&gt;7&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
           <mxGeometry x="3014" y="609.38" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-70" value="" style="group;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" connectable="0" parent="1">
@@ -920,7 +920,7 @@
         <mxCell id="UnEULMIhb13hHUrPRZhk-72" value="" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#000000;shape=mxgraph.azure.laptop;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-71">
           <mxGeometry x="-10" y="64.28" width="76.19" height="45.72" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-73" value="&lt;font color=&quot;#0000ff&quot;&gt;9&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-71">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-73" value="&lt;font color=&quot;#0000ff&quot;&gt;8&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-71">
           <mxGeometry x="-10" y="38" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-74" value="" style="shape=actor;whiteSpace=wrap;html=1;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-70">
@@ -968,6 +968,19 @@
         </mxCell>
         <mxCell id="UnEULMIhb13hHUrPRZhk-90" value="&lt;u&gt;post_raw_data_route&lt;/u&gt;:&lt;br&gt;/fiscalismia/post/sheet_url&lt;br&gt;/invoke_lambda&lt;br&gt;/return_tsv_file_urls" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="1907" y="834" width="119" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#C36354;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-47">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2712" y="717.3800000000001" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="2712" y="650" />
+              <mxPoint x="2712" y="650" />
+            </Array>
+            <mxPoint x="2712" y="631.0000000000002" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-93" value="&lt;font style=&quot;color: rgb(195, 99, 84);&quot;&gt;3&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#C36354;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+          <mxGeometry x="2680" y="694" width="20" height="20" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

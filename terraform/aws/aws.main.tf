@@ -34,8 +34,8 @@ module "s3_raw_data_etl_storage" {
 # endpoint to connect fiscalismia containers (file upload) to lambdas for further processing
 module "api_gateway" {
 source                                  = "./modules/api_gateway"
-api_name                                = "fiscalismia-http-api-gw"
-api_description                         = "Fiscalismia HTTP API Gateway"
+api_name                                = "Fiscalismia-HTTP-Api-Gateway"
+api_description                         = "Fiscalismia HTTP v2 API Gateway"
 fqdn                                    = var.fqdn
 lambda_function_name_upload_img         = module.lambda_image_processing.function_name
 lambda_invoke_arn_upload_img            = module.lambda_image_processing.invoke_arn
@@ -86,16 +86,29 @@ module "cost_budget_alarms" {
   forecasted_budget_notification_email  = var.forecasted_budget_notification_email
 }
 
+module "infrastructure_lambdas" {
+  source                                       = "./modules/infrastructure_lambdas"
+}
+
 module "sns_topics" {
   source                                       = "./modules/sns_topic"
-  sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction.fifo"
+  sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction" # AWS Budgets only support standard sns topics
   sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling.fifo"
   sns_topic_notification_message_sending_name  = "NotificationMessageSending.fifo"
+  apigw_route_throttler_lambda_arn             = module.infrastructure_lambdas.apigw_route_throttler_arn
+  notification_message_sender_lambda_arn       = module.infrastructure_lambdas.notification_message_sender_arn
+  terraform_module_destroyer_lambda_arn        = module.infrastructure_lambdas.terraform_module_destroyer_arn
 }
 
 module "cloudwatch_metric_alarms" {
   source                                               = "./modules/cloudwatch_metrics"
   sns_topic_arn_apigw_route_throttling                 = module.sns_topics.apigw_route_throttling_arn
+
+  api_gateway_id                                       = module.api_gateway.id
+  api_gateway_stage                                    = module.api_gateway.stage
+  post_img_route                                       = "POST ${var.post_img_route}"
+  post_raw_data_route                                  = "POST ${var.post_raw_data_route}"
+
   apigw_count_exceeded_post_img_route_name             = "ApiGatewayCountExceeded-PostImgRoute"
   apigw_count_exceeded_post_img_route_description      = "Tracks Count for public API Gateway Route for Image Upload from Frontend"
   apigw_count_exceeded_post_img_route_threshold        = 30
