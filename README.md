@@ -125,6 +125,9 @@ terraform destroy \
   -target=module.lambda_image_processing \
   -target=module.lambda_raw_data_etl \
   -target=module.api_gateway \
+  -target=module.cost_budget_alarms \
+  -target=module.sns_topics \
+  -target=module.infrastructure_lambdas \
   -auto-approve
 ```
 
