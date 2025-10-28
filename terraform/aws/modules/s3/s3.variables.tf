@@ -1,7 +1,7 @@
 variable "bucket_name" {}
 variable "bucket_description" {}
 variable "fqdn" {}
-variable "responsible_lambda_functions" {}
+variable "lambda_execution_role_arns" {}
 variable "data_expiration" {
   default = false
   type    = bool

@@ -19,8 +19,6 @@ resource "aws_iam_policy" "lambda_logging_infra" {
     ]
   })
 }
-
-# Attach logging policy to Infrastructure Lambda role
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = var.lambda_execution_role_name
   policy_arn = aws_iam_policy.lambda_logging_infra.arn

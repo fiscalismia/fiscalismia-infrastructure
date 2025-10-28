@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "api_gw_func" {
   function_name            = "${var.service_name}_${var.function_purpose}"
   filename                 = "${path.module}/payload/${var.function_purpose}/payload.zip"
-  role                     = aws_iam_role.lambda_execution_role.arn
+  role                     = var.lambda_execution_role_arn
   handler                  = "index.handler"
   timeout                  = var.timeout_seconds
   runtime                  = var.runtime_env

@@ -1,8 +1,8 @@
 resource "aws_lambda_function" "terraform_destroy_trigger" {
-  function_name            = "TerraformDestroyTrigger"
+  function_name            = var.terraform_destroy_trigger_name
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/TerraformDestroyTrigger.zip"
-  role                     = var.lambda_execution_role_name
+  role                     = var.lambda_execution_role_arn
   handler                  = "index.handler"
   timeout                  = 30   # seconds
   memory_size              = 256  # MB
@@ -16,10 +16,10 @@ resource "aws_lambda_function" "terraform_destroy_trigger" {
   }
 }
 resource "aws_lambda_function" "notification_message_sender" {
-  function_name            = "NotificationMessageSender"
+  function_name            = var.notification_message_sender_name
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/NotificationMessageSender.zip"
-  role                     = var.lambda_execution_role_name
+  role                     = var.lambda_execution_role_arn
   handler                  = "index.handler"
   timeout                  = 30   # seconds
   memory_size              = 256  # MB
@@ -34,10 +34,10 @@ resource "aws_lambda_function" "notification_message_sender" {
 }
 
 resource "aws_lambda_function" "apigw_route_throttler" {
-  function_name            = "ApiGatewayRouteThrottler"
+  function_name            = var.apigw_route_throttler_name
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/ApiGatewayRouteThrottler.zip"
-  role                     = var.lambda_execution_role_name
+  role                     = var.lambda_execution_role_arn
   handler                  = "index.handler"
   timeout                  = 30   # seconds
   memory_size              = 256  # MB

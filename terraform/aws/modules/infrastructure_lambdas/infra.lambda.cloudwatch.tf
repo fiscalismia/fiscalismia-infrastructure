@@ -1,12 +1,12 @@
 resource "aws_cloudwatch_log_group" "apigw_route_throttler" {
-  name              = "/aws/lambda/${aws_lambda_function.apigw_route_throttler.name}"
+  name              = "/aws/lambda/${var.apigw_route_throttler_name}"
   retention_in_days = var.cloudwatch_log_retention_days
 }
 resource "aws_cloudwatch_log_group" "notification_message_sender" {
-  name              = "/aws/lambda/${aws_lambda_function.notification_message_sender.name}"
+  name              = "/aws/lambda/${var.notification_message_sender_name}"
   retention_in_days = var.cloudwatch_log_retention_days
 }
 resource "aws_cloudwatch_log_group" "terraform_destroy_trigger" {
-  name              = "/aws/lambda/${aws_lambda_function.terraform_destroy_trigger.name}"
+  name              = "/aws/lambda/${var.terraform_destroy_trigger_name}"
   retention_in_days = var.cloudwatch_log_retention_days
 }

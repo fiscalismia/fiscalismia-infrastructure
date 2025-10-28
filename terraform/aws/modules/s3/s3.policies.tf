@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "lambda_s3_resource_policy_access" {
 
     principals {
       type        = "AWS"
-      identifiers = var.responsible_lambda_functions
+      identifiers = var.lambda_execution_role_arns
     }
   }
 
@@ -21,12 +21,12 @@ data "aws_iam_policy_document" "lambda_s3_resource_policy_access" {
 
     principals {
       type        = "AWS"
-      identifiers = var.responsible_lambda_functions
+      identifiers = var.lambda_execution_role_arns
     }
   }
 }
 
 resource "aws_s3_bucket_policy" "resource_policy" {
-  bucket = var.bucket_name
+  bucket = aws_s3_bucket.storage_bucket.id
   policy = data.aws_iam_policy_document.lambda_s3_resource_policy_access.json
 }

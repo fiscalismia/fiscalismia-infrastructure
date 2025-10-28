@@ -17,7 +17,7 @@ module "s3_image_storage" {
   fqdn                                  = var.fqdn
   data_expiration                       = false
   data_archival                         = false
-  responsible_lambda_functions          = [module.lambda_image_processing.lambda_role_arn]
+  lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
 # S3 bucket for ETL on Google Sheets/TSV file transformations
@@ -28,7 +28,7 @@ module "s3_raw_data_etl_storage" {
   fqdn                                  = var.fqdn
   data_expiration                       = true
   data_archival                         = true
-  responsible_lambda_functions          = [module.lambda_raw_data_etl.lambda_role_arn]
+  lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
 # S3 bucket for ETL on Google Sheets/TSV file transformations
@@ -39,7 +39,7 @@ module "s3_infrastructure_storage" {
   fqdn                                  = null
   data_expiration                       = false
   data_archival                         = true
-  responsible_lambda_functions          = null
+  lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_infra.arn]
 }
 
 # endpoint to connect fiscalismia containers (file upload) to lambdas for further processing
@@ -64,6 +64,7 @@ module "lambda_image_processing" {
   layer_description                     = "NodeJS Dependencies for Image Processing Lambda Function"
   runtime_env                           = "nodejs22.x"
   layer_docker_img                      = "public.ecr.aws/lambda/nodejs:22.2024.11.22.14-x86_64"
+  lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   timeout_seconds                       = 5
   memory_size                           = 256
@@ -81,6 +82,7 @@ module "lambda_raw_data_etl" {
   layer_description                     = "Python Dependencies for RAW Data ETL Lambda Function"
   runtime_env                           = "python3.13"
   layer_docker_img                      = "public.ecr.aws/lambda/python:3.13.2024.11.22.15-x86_64"
+  lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   timeout_seconds                       = 15
   memory_size                           = 512
@@ -104,14 +106,14 @@ module "sns_topics" {
   sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction" # AWS Budgets only support standard sns topics
   sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling.fifo"
   sns_topic_notification_message_sending_name  = "NotificationMessageSending.fifo"
-  apigw_route_throttler_lambda_arn             = module.infrastructure_lambdas.apigw_route_throttler_arn
-  notification_message_sender_lambda_arn       = module.infrastructure_lambdas.notification_message_sender_arn
-  terraform_destroy_trigger_lambda_arn         = module.infrastructure_lambdas.terraform_destroy_trigger_arn
 }
 
 module "infrastructure_lambdas" {
   source                                       = "./modules/infrastructure_lambdas"
   region                                       = var.region
+  apigw_route_throttler_name                   = "ApiGatewayRouteThrottler"
+  notification_message_sender_name             = "NotificationMessageSender"
+  terraform_destroy_trigger_name               = "TerraformDestroyTrigger"
   lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
   lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
   infrastructure_runtime                       = "python3.13"

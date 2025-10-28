@@ -10,3 +10,4 @@ variable "secret_api_key" {}
 variable "layer_docker_img" {}
 variable "memory_size" {}
 variable "lambda_execution_role_name" {}
+variable "lambda_execution_role_arn" {}
