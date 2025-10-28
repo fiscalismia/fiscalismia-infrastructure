@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
   <diagram name="Page-1" id="SFjtN74bUgn6KRebL6FT">
-    <mxGraphModel dx="872" dy="1001" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="828" dy="989" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -802,75 +802,78 @@
         <mxCell id="xqXAjq9A-HITpdVLmNYo-244" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.425;entryY=0.039;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;strokeColor=#0000FF;" parent="1" source="xqXAjq9A-HITpdVLmNYo-209" target="xqXAjq9A-HITpdVLmNYo-242" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=light-dark(#41cb00, #446e2c);strokeColor=#666666;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
-          <mxGeometry x="2470" y="480.5" width="700" height="419.5" as="geometry" />
+        <mxCell id="UnEULMIhb13hHUrPRZhk-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=light-dark(#41cb00, #446e2c);strokeColor=#666666;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
+          <mxGeometry x="2470" y="480.5" width="700" height="439.5" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-2" value="AWS Infrastructure Killswitch" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=16;align=center;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;labelBorderColor=none;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-2" value="AWS Infrastructure Killswitch" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=16;align=center;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;labelBorderColor=none;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2180" y="480.5" width="290" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-3" value="&lt;u&gt;&lt;b&gt;Workflow&lt;/b&gt;:&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;1.)&lt;/b&gt;&amp;nbsp;AWS Budget updates every 8-12 hours to continuously monitor Actual Costs accrued&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;2.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;AWS Budget&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;hits BudgetLimitExceeded SNS Topic if Actual Cost Threshold in USD is surpassed&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;3.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;BudgetLimitExceededAction SNS Topic invokes the&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;TerraformModuleDestroyer Lambda Function&lt;br&gt;&lt;/span&gt;&lt;b style=&quot;color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193)); background-color: transparent;&quot;&gt;4.)&lt;/b&gt;&lt;span style=&quot;color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;TerraformModuleDestroyer&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;Lambda Function destroys only Terraform modules without persistent state (keeps s3 buckets)&lt;br&gt;&lt;/span&gt;&lt;div&gt;&lt;b&gt;5.)&lt;/b&gt;&amp;nbsp;Throttling lambda then hits a SNS topic for notifying the admin with a throttling message&lt;/div&gt;&lt;div&gt;&lt;b&gt;6.)&lt;/b&gt;&amp;nbsp;ThrottlingNotification SNS topic invokes a generic notification Lambda with a message&lt;/div&gt;&lt;div&gt;&lt;b&gt;7.)&lt;/b&gt;&amp;nbsp;Notification Lambda takes a generic message and forwards it to the admin via a bot accesible via the telegram API&lt;br&gt;&lt;b&gt;8.)&lt;/b&gt;&amp;nbsp;User receives Bot Notification Message&lt;/div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=14;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
-          <mxGeometry x="2180" y="520.5" width="290" height="379.5" as="geometry" />
+        <mxCell id="UnEULMIhb13hHUrPRZhk-3" value="&lt;u&gt;&lt;b&gt;Workflow&lt;/b&gt;:&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;1.)&lt;/b&gt;&amp;nbsp;AWS Budget updates every 8-12 hours to continuously monitor Actual Costs accrued&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;2.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;AWS Budget&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;hits BudgetLimitExceeded SNS Topic if Actual Cost Threshold in USD is surpassed&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;3.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;BudgetLimitExceededAction SNS Topic invokes the&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;TerraformModuleDestroyer Lambda Function&lt;br&gt;&lt;/span&gt;&lt;b style=&quot;color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193)); background-color: transparent;&quot;&gt;4.)&lt;/b&gt;&lt;span style=&quot;color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;TerraformDestroyTrigger&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;Lambda Function Invokes Github API WebRequest to start TerraformModuleDestroyer pipeline&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;5.)&lt;/b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;TerraformModuleDestroyer&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp; pipeline&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;destroys only Terraform modules without persistent state (keeps s3 buckets)&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;b&gt;6.)&lt;/b&gt;&amp;nbsp;Throttling lambda then hits a SNS topic for notifying the admin with a throttling message&lt;/div&gt;&lt;div&gt;&lt;b&gt;7.)&lt;/b&gt;&amp;nbsp;ThrottlingNotification SNS topic invokes a generic notification Lambda with a message&lt;/div&gt;&lt;div&gt;&lt;b&gt;8.)&lt;/b&gt;&amp;nbsp;Notification Lambda takes a generic message and forwards it to the admin via a bot accesible via the telegram API&lt;br&gt;&lt;b&gt;9.)&lt;/b&gt;&amp;nbsp;User receives Bot Notification Message&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0;fontSize=14;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
+          <mxGeometry x="2180" y="520.5" width="290" height="399.5" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-6" value="eu-central-1&lt;br&gt;&lt;div&gt;region&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;snapToPoint=0;fixDash=0;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="3080" y="859.5000000000001" width="90" height="40" as="geometry" />
+        <mxCell id="UnEULMIhb13hHUrPRZhk-6" value="eu-central-1&lt;br&gt;&lt;div&gt;region&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;snapToPoint=0;fixDash=0;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="3080" y="880.0000000000001" width="90" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-10" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#666666;shadow=0;dashed=0;shape=mxgraph.ios7.icons.reload;rotation=75;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-10" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#666666;shadow=0;dashed=0;shape=mxgraph.ios7.icons.reload;rotation=75;" parent="1" vertex="1">
           <mxGeometry x="2507.09" y="517.6" width="132.5" height="144.69" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-46" value="AWS Budgets" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.budgets;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-46" value="AWS Budgets" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.budgets;" parent="1" vertex="1">
           <mxGeometry x="2531.67" y="540.69" width="66.66" height="100.5" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-47" value="Amazon SNS" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.sns;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-47" value="Amazon SNS" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.sns;" parent="1" vertex="1">
           <mxGeometry x="2679" y="541" width="60" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-50" value="AWS Lambda" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.lambda;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-50" value="AWS Lambda" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.lambda;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2904" y="717.38" width="58" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-51" value="" style="group" vertex="1" connectable="0" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-51" value="" style="group" parent="1" vertex="1" connectable="0">
           <mxGeometry x="3054" y="561.38" width="60" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-52" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=data:image/png,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;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-51">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-52" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=data:image/png,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;" parent="UnEULMIhb13hHUrPRZhk-51" vertex="1">
           <mxGeometry y="-20" width="60" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-53" value="Telegram API" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-51">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-53" value="Telegram API" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=0;" parent="UnEULMIhb13hHUrPRZhk-51" vertex="1">
           <mxGeometry y="40" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-54" value="" style="group" vertex="1" connectable="0" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-54" value="" style="group" parent="1" vertex="1" connectable="0">
           <mxGeometry x="3049" y="689.3800000000001" width="70" height="94.99999999999989" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-55" value="" style="verticalLabelPosition=bottom;aspect=fixed;html=1;shape=mxgraph.salesforce.bots2;fillColorStyles=fillColor2,fillColor3;fillColor2=#032d60;fillColor3=#ffffff;fillColor=none;strokeColor=none;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-54">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-55" value="" style="verticalLabelPosition=bottom;aspect=fixed;html=1;shape=mxgraph.salesforce.bots2;fillColorStyles=fillColor2,fillColor3;fillColor2=#032d60;fillColor3=#ffffff;fillColor=none;strokeColor=none;" parent="UnEULMIhb13hHUrPRZhk-54" vertex="1">
           <mxGeometry x="5" y="-20" width="60" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-56" value="Telegram Bot" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-54">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-56" value="Telegram Bot" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=0;" parent="UnEULMIhb13hHUrPRZhk-54" vertex="1">
           <mxGeometry y="39.999999999999886" width="70" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-57" value="&lt;font color=&quot;#00cc00&quot;&gt;4&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#00CC00;fontSize=15;fontStyle=1;fontColor=#00FF00;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
-          <mxGeometry x="2743" y="787.38" width="20" height="20" as="geometry" />
+        <mxCell id="UnEULMIhb13hHUrPRZhk-57" value="&lt;font color=&quot;#00cc00&quot;&gt;5&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#00CC00;fontSize=15;fontStyle=1;fontColor=#00FF00;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
+          <mxGeometry x="2840" y="565.4999999999999" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-58" value="&lt;span style=&quot;color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;notification&lt;/span&gt;&lt;br style=&quot;forced-color-adjust: none; color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;message&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-61" target="UnEULMIhb13hHUrPRZhk-60">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-58" value="&lt;span style=&quot;color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;notification&lt;/span&gt;&lt;br style=&quot;forced-color-adjust: none; color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 255); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;message&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;fontFamily=Helvetica;snapToPoint=0;fixDash=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="UnEULMIhb13hHUrPRZhk-97" target="UnEULMIhb13hHUrPRZhk-60" edge="1">
           <mxGeometry x="-0.2162" relative="1" as="geometry">
             <mxPoint x="2709" y="807.38" as="sourcePoint" />
             <mxPoint x="2890" y="794.4085714285713" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="2884" y="729.38" />
-              <mxPoint x="2884" y="599.38" />
+              <mxPoint x="2884" y="620" />
+              <mxPoint x="2884" y="599" />
             </Array>
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-59" value="&lt;font color=&quot;#0000ff&quot;&gt;5&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
-          <mxGeometry x="2844" y="689.38" width="20" height="20" as="geometry" />
+        <mxCell id="UnEULMIhb13hHUrPRZhk-59" value="&lt;font color=&quot;#0000ff&quot;&gt;6&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
+          <mxGeometry x="2878" y="565.5" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-60" value="Amazon SNS" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.sns;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-60" value="Amazon SNS" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.sns;" parent="1" vertex="1">
           <mxGeometry x="2904" y="540.38" width="60" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-61" value="AWS Lambda" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.lambda;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-99" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#C36354;" parent="1" source="UnEULMIhb13hHUrPRZhk-61" target="UnEULMIhb13hHUrPRZhk-97" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-61" value="AWS Lambda" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.lambda;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2680" y="717.38" width="58" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-62" value="Terraform&lt;br&gt;Module&lt;br&gt;Destroyer" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="2744" y="736.88" width="60" height="45" as="geometry" />
+        <mxCell id="UnEULMIhb13hHUrPRZhk-62" value="Terraform&lt;br&gt;Destroy&lt;br&gt;Trigger" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="2680" y="807.38" width="60" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-63" value="&lt;font style=&quot;color: rgb(0, 0, 255);&quot;&gt;notification&lt;br&gt;message&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-60" target="UnEULMIhb13hHUrPRZhk-50">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-63" value="&lt;font style=&quot;color: rgb(0, 0, 255);&quot;&gt;notification&lt;br&gt;message&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="1" source="UnEULMIhb13hHUrPRZhk-60" target="UnEULMIhb13hHUrPRZhk-50" edge="1">
           <mxGeometry x="-0.3333" y="-1" relative="1" as="geometry">
             <mxPoint x="2884" y="759.38" as="sourcePoint" />
             <mxPoint x="3050" y="629.38" as="targetPoint" />
@@ -881,16 +884,13 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-64" value="Notification&lt;br&gt;Message&lt;br&gt;Sender" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-64" value="Notification&lt;br&gt;Message&lt;br&gt;Sender" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="2964" y="744.38" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-65" value="&lt;font color=&quot;#0000ff&quot;&gt;6&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-65" value="&lt;font color=&quot;#0000ff&quot;&gt;6&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2944" y="687.5699999999999" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-66" value="&lt;span style=&quot;font-family: Helvetica; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; float: none; display: inline !important;&quot;&gt;&lt;font style=&quot;color: rgb(65, 188, 0);&quot;&gt;Destroy select Infrastructure&lt;/font&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;fontSize=11;fontStyle=5;fontColor=light-dark(#41cb00, #446e2c);" vertex="1" parent="1">
-          <mxGeometry x="2680" y="807.38" width="80" height="32" as="geometry" />
-        </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-50">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;" parent="1" source="UnEULMIhb13hHUrPRZhk-50" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="3054" y="599.38" as="targetPoint" />
             <Array as="points">
@@ -900,7 +900,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-53" target="UnEULMIhb13hHUrPRZhk-55">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0000FF;" parent="1" source="UnEULMIhb13hHUrPRZhk-53" target="UnEULMIhb13hHUrPRZhk-55" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="3084" y="659.38" />
@@ -908,43 +908,43 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-69" value="&lt;font color=&quot;#0000ff&quot;&gt;7&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-69" value="&lt;font color=&quot;#0000ff&quot;&gt;7&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="3014" y="609.38" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-70" value="" style="group;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" connectable="0" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-70" value="" style="group;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="1" vertex="1" connectable="0">
           <mxGeometry x="3014" y="729.38" width="148" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-71" value="" style="group;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" connectable="0" parent="UnEULMIhb13hHUrPRZhk-70">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-71" value="" style="group;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="UnEULMIhb13hHUrPRZhk-70" vertex="1" connectable="0">
           <mxGeometry x="48" y="10" width="70.42999999999999" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-72" value="" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#000000;shape=mxgraph.azure.laptop;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-71">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-72" value="" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#000000;shape=mxgraph.azure.laptop;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="UnEULMIhb13hHUrPRZhk-71" vertex="1">
           <mxGeometry x="-10" y="64.28" width="76.19" height="45.72" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-73" value="&lt;font color=&quot;#0000ff&quot;&gt;8&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-71">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-73" value="&lt;font color=&quot;#0000ff&quot;&gt;8&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#0000FF;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="UnEULMIhb13hHUrPRZhk-71" vertex="1">
           <mxGeometry x="-10" y="38" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-74" value="" style="shape=actor;whiteSpace=wrap;html=1;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" vertex="1" parent="UnEULMIhb13hHUrPRZhk-70">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-74" value="" style="shape=actor;whiteSpace=wrap;html=1;fontFamily=Helvetica;snapToPoint=0;fixDash=0;" parent="UnEULMIhb13hHUrPRZhk-70" vertex="1">
           <mxGeometry x="-10" y="60" width="40" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.425;entryY=0.039;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;strokeColor=#0000FF;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-56" target="UnEULMIhb13hHUrPRZhk-72">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.425;entryY=0.039;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;strokeColor=#0000FF;" parent="1" source="UnEULMIhb13hHUrPRZhk-56" target="UnEULMIhb13hHUrPRZhk-72" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-76" value="ApiGateway&lt;br&gt;Route&lt;br&gt;Throttling" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-76" value="ApiGateway&lt;br&gt;Route&lt;br&gt;Throttling" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="2810" y="45" width="60" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-77" value="Notification&lt;br&gt;Message&lt;br&gt;Sending" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-77" value="Notification&lt;br&gt;Message&lt;br&gt;Sending" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="2909" y="48.75" width="60" height="37.5" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-78" value="Notification&lt;br&gt;Message&lt;br&gt;Sending" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-78" value="Notification&lt;br&gt;Message&lt;br&gt;Sending" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="2904" y="497" width="60" height="37.5" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-79" value="BudgetLimit&lt;br&gt;Exceeded&lt;br&gt;Action" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-79" value="BudgetLimit&lt;br&gt;Exceeded&lt;br&gt;Action" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="2678" y="497" width="60" height="37.5" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-80" value="&lt;font style=&quot;color: rgb(102, 102, 102);&quot;&gt;1&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#666666;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-80" value="&lt;font style=&quot;color: rgb(102, 102, 102);&quot;&gt;1&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#666666;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2590" y="652" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#C36354;" edge="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#C36354;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="2680" y="585.5" as="targetPoint" />
             <Array as="points">
@@ -954,22 +954,22 @@
             <mxPoint x="2600" y="628.5" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-82" value="&lt;font style=&quot;color: rgb(195, 99, 84);&quot;&gt;2&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#C36354;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-82" value="&lt;font style=&quot;color: rgb(195, 99, 84);&quot;&gt;2&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#C36354;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2655" y="608.6" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-83" value="ApiGateway&lt;br&gt;Count&lt;br&gt;Exceeded&lt;br&gt;&lt;b&gt;$route_key&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-83" value="ApiGateway&lt;br&gt;Count&lt;br&gt;Exceeded&lt;br&gt;&lt;b&gt;$route_key&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="2684" y="46" width="60" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-88" value="for_each route" style="text;html=1;whiteSpace=wrap;strokeColor=#82b366;fillColor=#d5e8d4;align=center;verticalAlign=middle;rounded=0;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-88" value="for_each route" style="text;html=1;whiteSpace=wrap;strokeColor=#82b366;fillColor=#d5e8d4;align=center;verticalAlign=middle;rounded=0;fontStyle=1" parent="1" vertex="1">
           <mxGeometry x="2535" y="390" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-89" value="&lt;u&gt;post_img_route&lt;/u&gt;:&lt;br&gt;/fiscalismia/post/img&lt;br&gt;/invoke_lambda&lt;br&gt;/return_s3_img_url" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-89" value="&lt;u&gt;post_img_route&lt;/u&gt;:&lt;br&gt;/fiscalismia/post/img&lt;br&gt;/invoke_lambda&lt;br&gt;/return_s3_img_url" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1921" y="350" width="119" height="65" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-90" value="&lt;u&gt;post_raw_data_route&lt;/u&gt;:&lt;br&gt;/fiscalismia/post/sheet_url&lt;br&gt;/invoke_lambda&lt;br&gt;/return_tsv_file_urls" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-90" value="&lt;u&gt;post_raw_data_route&lt;/u&gt;:&lt;br&gt;/fiscalismia/post/sheet_url&lt;br&gt;/invoke_lambda&lt;br&gt;/return_tsv_file_urls" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1907" y="834" width="119" height="65" as="geometry" />
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#C36354;" edge="1" parent="1" source="UnEULMIhb13hHUrPRZhk-47">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#C36354;" parent="1" source="UnEULMIhb13hHUrPRZhk-47" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="2712" y="717.3800000000001" as="targetPoint" />
             <Array as="points">
@@ -979,8 +979,23 @@
             <mxPoint x="2712" y="631.0000000000002" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UnEULMIhb13hHUrPRZhk-93" value="&lt;font style=&quot;color: rgb(195, 99, 84);&quot;&gt;3&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#C36354;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" vertex="1" parent="1">
+        <mxCell id="UnEULMIhb13hHUrPRZhk-93" value="&lt;font style=&quot;color: rgb(195, 99, 84);&quot;&gt;3&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#C36354;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
           <mxGeometry x="2680" y="694" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-98" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="2780" y="540" width="60" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-96" value="" style="dashed=0;outlineConnect=0;html=1;align=center;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;shape=mxgraph.weblogos.github" parent="UnEULMIhb13hHUrPRZhk-98" vertex="1">
+          <mxGeometry width="57" height="58.6" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-97" value="&lt;span style=&quot;color: rgb(35, 47, 62); font-size: 10px; font-weight: 700;&quot;&gt;Github Actions Pipeline&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=0;" parent="UnEULMIhb13hHUrPRZhk-98" vertex="1">
+          <mxGeometry y="59.38" width="60" height="40.62" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-100" value="&lt;font style=&quot;color: rgb(195, 99, 84);&quot;&gt;4&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=#C36354;fontSize=15;fontStyle=1;fillColor=default;snapToPoint=0;fixDash=0;" parent="1" vertex="1">
+          <mxGeometry x="2780" y="730" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UnEULMIhb13hHUrPRZhk-101" value="Terraform&lt;br&gt;Module&lt;br&gt;Destroyer" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="2780" y="493.25" width="60" height="45" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

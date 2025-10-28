@@ -9,3 +9,4 @@ variable "ip_whitelist_lambda_processing" {}
 variable "secret_api_key" {}
 variable "layer_docker_img" {}
 variable "memory_size" {}
+variable "lambda_execution_role_name" {}

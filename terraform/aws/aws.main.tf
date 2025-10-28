@@ -31,19 +31,30 @@ module "s3_raw_data_etl_storage" {
   responsible_lambda_functions          = [module.lambda_raw_data_etl.lambda_role_arn]
 }
 
+# S3 bucket for ETL on Google Sheets/TSV file transformations
+module "s3_infrastructure_storage" {
+  source                                = "./modules/s3"
+  bucket_name                           = var.infrastructure_bucket_name
+  bucket_description                    = "Fiscalismia Infrastructure binaries, code and dependencies."
+  fqdn                                  = null
+  data_expiration                       = false
+  data_archival                         = true
+  responsible_lambda_functions          = null
+}
+
 # endpoint to connect fiscalismia containers (file upload) to lambdas for further processing
 module "api_gateway" {
-source                                  = "./modules/api_gateway"
-api_name                                = "Fiscalismia-HTTP-Api-Gateway"
-api_description                         = "Fiscalismia HTTP v2 API Gateway"
-fqdn                                    = var.fqdn
-lambda_function_name_upload_img         = module.lambda_image_processing.function_name
-lambda_invoke_arn_upload_img            = module.lambda_image_processing.invoke_arn
-lambda_function_name_raw_data_etl       = module.lambda_raw_data_etl.function_name
-lambda_invoke_arn_raw_data_etl          = module.lambda_raw_data_etl.invoke_arn
-post_img_route                          = "POST ${var.post_img_route}"
-post_raw_data_route                     = "POST ${var.post_raw_data_route}"
-default_stage                           = var.default_stage
+  source                                 = "./modules/api_gateway"
+  api_name                               = "Fiscalismia-HTTP-Api-Gateway"
+  api_description                        = "Fiscalismia HTTP v2 API Gateway"
+  fqdn                                   = var.fqdn
+  lambda_function_name_upload_img        = module.lambda_image_processing.function_name
+  lambda_invoke_arn_upload_img           = module.lambda_image_processing.invoke_arn
+  lambda_function_name_raw_data_etl      = module.lambda_raw_data_etl.function_name
+  lambda_invoke_arn_raw_data_etl         = module.lambda_raw_data_etl.invoke_arn
+  post_img_route                         = "POST ${var.post_img_route}"
+  post_raw_data_route                    = "POST ${var.post_raw_data_route}"
+  default_stage                          = var.default_stage
 }
 
 # Lambda for receiving uploaded user images and reducing them in filesize
@@ -53,10 +64,11 @@ module "lambda_image_processing" {
   layer_description                     = "NodeJS Dependencies for Image Processing Lambda Function"
   runtime_env                           = "nodejs22.x"
   layer_docker_img                      = "public.ecr.aws/lambda/nodejs:22.2024.11.22.14-x86_64"
+  lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   timeout_seconds                       = 5
   memory_size                           = 256
   layer_name                            = "${var.service_name}-image-processing-nodejs-layer"
-  s3_bucket_name                        = var.image_processing_bucket_name
+  s3_bucket_name                        = module.s3_image_storage.bucket_name
   service_name                          = var.service_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
   secret_api_key                        = var.secret_api_key
@@ -69,10 +81,11 @@ module "lambda_raw_data_etl" {
   layer_description                     = "Python Dependencies for RAW Data ETL Lambda Function"
   runtime_env                           = "python3.13"
   layer_docker_img                      = "public.ecr.aws/lambda/python:3.13.2024.11.22.15-x86_64"
+  lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   timeout_seconds                       = 15
   memory_size                           = 512
   layer_name                            = "${var.service_name}-raw-data-etl-python-layer"
-  s3_bucket_name                        = var.etl_bucket_name
+  s3_bucket_name                        = module.s3_raw_data_etl_storage.bucket_name
   service_name                          = var.service_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
   secret_api_key                        = var.secret_api_key
@@ -86,10 +99,6 @@ module "cost_budget_alarms" {
   forecasted_budget_notification_email  = var.forecasted_budget_notification_email
 }
 
-module "infrastructure_lambdas" {
-  source                                       = "./modules/infrastructure_lambdas"
-}
-
 module "sns_topics" {
   source                                       = "./modules/sns_topic"
   sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction" # AWS Budgets only support standard sns topics
@@ -97,8 +106,20 @@ module "sns_topics" {
   sns_topic_notification_message_sending_name  = "NotificationMessageSending.fifo"
   apigw_route_throttler_lambda_arn             = module.infrastructure_lambdas.apigw_route_throttler_arn
   notification_message_sender_lambda_arn       = module.infrastructure_lambdas.notification_message_sender_arn
-  terraform_module_destroyer_lambda_arn        = module.infrastructure_lambdas.terraform_module_destroyer_arn
+  terraform_destroy_trigger_lambda_arn         = module.infrastructure_lambdas.terraform_destroy_trigger_arn
 }
+
+module "infrastructure_lambdas" {
+  source                                       = "./modules/infrastructure_lambdas"
+  region                                       = var.region
+  lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
+  lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
+  infrastructure_runtime                       = "python3.13"
+  cloudwatch_log_retention_days                = 365
+  infrastructure_s3_bucket                     = module.s3_infrastructure_storage.bucket_name
+  infrastructure_s3_prefix                     = "lambdas/infra/python"
+}
+
 
 module "cloudwatch_metric_alarms" {
   source                                               = "./modules/cloudwatch_metrics"

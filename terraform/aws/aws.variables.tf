@@ -50,6 +50,7 @@ variable "post_raw_data_route" {
   description = "http api route for google sheets url post to trigger lambda etl and s3 storage. Returns S3 URLS to exported TSV files"
 }
 
+################ S3 BUCKETS #############################
 variable "etl_bucket_name" {
   description = "Bucket Name for Raw Data Transformation"
   type = string
@@ -59,6 +60,11 @@ variable "image_processing_bucket_name" {
   description = "Bucket Name for Image Downsizing"
   type = string
   default = "hangrybear-fiscalismia-image-storage"
+}
+variable "infrastructure_bucket_name" {
+  description = "Bucket Name for Fiscalismia Infrastructure binaries, code and dependencies."
+  type = string
+  default = "hangrybear-fiscalismia-infrastructure"
 }
 
 variable "backend_instance_ipv4" {

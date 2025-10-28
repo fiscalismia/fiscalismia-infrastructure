@@ -6,7 +6,6 @@ resource "aws_lambda_function" "api_gw_func" {
   timeout                  = var.timeout_seconds
   runtime                  = var.runtime_env
   memory_size              = var.memory_size
-  depends_on               = [aws_iam_role_policy_attachment.execute_lambda_policy]
 
   environment {
     variables = {
