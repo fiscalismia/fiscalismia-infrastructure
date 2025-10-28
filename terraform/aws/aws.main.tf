@@ -122,7 +122,6 @@ module "infrastructure_lambdas" {
   infrastructure_s3_prefix                     = "lambdas/infra/python"
 }
 
-
 module "cloudwatch_metric_alarms" {
   source                                               = "./modules/cloudwatch_metrics"
   sns_topic_arn_apigw_route_throttling                 = module.sns_topics.apigw_route_throttling_arn

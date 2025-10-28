@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "storage_bucket" {
     Name        = var.bucket_description
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }

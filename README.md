@@ -117,6 +117,17 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
   -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
 ```
 
+### Terraform Module Destroyer Github Actions Pipeline
+
+```bash
+terraform destroy \
+  -target=module.cloudwatch_metric_alarms \
+  -target=module.lambda_image_processing \
+  -target=module.lambda_raw_data_etl \
+  -target=module.api_gateway \
+  -auto-approve
+```
+
 <details closed>
 <summary><b>AWS Serverless (Lambda, API Gateway) and S3 storage</b></summary>
 
