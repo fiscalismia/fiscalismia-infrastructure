@@ -13,8 +13,12 @@ module "s3_image_storage" {
   source                                = "./modules/s3"
   bucket_name                           = var.image_processing_bucket_name
   fqdn                                  = var.fqdn
-  data_expiration                       = false
-  data_archival                         = false
+  data_infrequent_access                = false # do NOT send to IA
+  data_infrequent_access_days           = null
+  data_archival                         = false # do NOT archive
+  data_archival_days                    = null
+  data_expiration                       = false # do NOT delete
+  data_expiration_days                  = null
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
@@ -23,8 +27,12 @@ module "s3_raw_data_etl_storage" {
   source                                = "./modules/s3"
   bucket_name                           = var.etl_bucket_name
   fqdn                                  = var.fqdn
-  data_expiration                       = true
-  data_archival                         = true
+  data_infrequent_access                = true  # data is sent to infrequent access
+  data_infrequent_access_days           = 30    # after this many days
+  data_archival                         = true  # data is sent to glacier
+  data_archival_days                    = 90    # after this many days
+  data_expiration                       = true  # data is deleted after
+  data_expiration_days                  = 365   # this many days
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
@@ -33,8 +41,12 @@ module "s3_infrastructure_storage" {
   source                                = "./modules/s3"
   bucket_name                           = var.infrastructure_bucket_name
   fqdn                                  = null
-  data_expiration                       = false
-  data_archival                         = true
+  data_infrequent_access                = true  # data is sent to infrequent access
+  data_infrequent_access_days           = 30    # after this many days
+  data_archival                         = false # do NOT archive
+  data_archival_days                    = null
+  data_expiration                       = false # do NOT delete
+  data_expiration_days                  = null
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_infra.arn]
 }
 
