@@ -35,6 +35,8 @@ terraform apply
 
 ### Terraform for AWS
 
+**Provision Hetzner Cloud first, since aws route53 depends on hcloud server ipv4 addresses for Type A Records using `terraform_remote_state`**
+
 ```bash
 cd ~/git/fiscalismia-infrastructure/terraform/aws/
 source ../.env
@@ -121,15 +123,27 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
 
 ```bash
 terraform destroy \
-  -target=module.cloudwatch_metric_alarms \
+  -target=module.api_gateway \
   -target=module.lambda_image_processing \
   -target=module.lambda_raw_data_etl \
-  -target=module.api_gateway \
+  -target=module.infrastructure_lambdas \
   -target=module.cost_budget_alarms \
   -target=module.sns_topics \
-  -target=module.infrastructure_lambdas \
+  -target=module.cloudwatch_metric_alarms \
   -auto-approve
 ```
+
+**Apply only persistent infrastructure**
+
+```bash
+terraform apply \
+  -target=module.route_53_dns \
+  -target=module.s3_image_storage \
+  -target=module.s3_raw_data_etl_storage \
+  -target=module.s3_infrastructure_storage \
+  -auto-approve
+```
+
 
 <details closed>
 <summary><b>AWS Serverless (Lambda, API Gateway) and S3 storage</b></summary>

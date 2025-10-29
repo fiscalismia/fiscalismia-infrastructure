@@ -1,5 +1,4 @@
 variable "bucket_name" {}
-variable "bucket_description" {}
 variable "fqdn" {}
 variable "lambda_execution_role_arns" {}
 variable "data_expiration" {
@@ -12,8 +11,8 @@ variable "data_archival" {
   type    = bool
   description = "whether objects are moved to cheaper storage tiers after a certain period"
 }
-variable "prevent_destroy" {
-  default = true
+variable "versioning" {
+  default = false
   type    = bool
-  description = "whether s3 bucket is being protected from deletion"
+  description = "whether buckets are versioned to retain history."
 }

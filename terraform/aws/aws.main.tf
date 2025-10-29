@@ -8,33 +8,30 @@ module "route_53_dns" {
   backend_instance_ipv4                 = local.hcloud_fiscalismia_backend_ipv4
 }
 
-# S3 bucket for persisting uploaded user images
+# Fiscalismia S3 bucket for persisting downsized uploaded user images
 module "s3_image_storage" {
   source                                = "./modules/s3"
   bucket_name                           = var.image_processing_bucket_name
-  bucket_description                    = "Fiscalismia Image Upload Storage"
   fqdn                                  = var.fqdn
   data_expiration                       = false
   data_archival                         = false
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
-# S3 bucket for ETL on Google Sheets/TSV file transformations
+# Fiscalismia ETL Repository for Raw Data Transformation using Sheets and TSV files
 module "s3_raw_data_etl_storage" {
   source                                = "./modules/s3"
   bucket_name                           = var.etl_bucket_name
-  bucket_description                    = "Fiscalismia ETL Repository for Raw Data Transformation for PSQL"
   fqdn                                  = var.fqdn
   data_expiration                       = true
   data_archival                         = true
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
-# S3 bucket for ETL on Google Sheets/TSV file transformations
+# Fiscalismia Infrastructure binaries, code and dependencies
 module "s3_infrastructure_storage" {
   source                                = "./modules/s3"
   bucket_name                           = var.infrastructure_bucket_name
-  bucket_description                    = "Fiscalismia Infrastructure binaries, code and dependencies."
   fqdn                                  = null
   data_expiration                       = false
   data_archival                         = true
@@ -74,7 +71,6 @@ module "lambda_image_processing" {
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
   secret_api_key                        = var.secret_api_key
 }
-
 
 module "lambda_raw_data_etl" {
   source                                = "./modules/application_lambda"
