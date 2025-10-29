@@ -4,19 +4,19 @@ data "aws_iam_policy_document" "lambda_s3_iam_role_access" {
     sid       = "LambdaBucketReadAccess"
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
+    resources = ["arn:aws:s3:::${var.s3_lambda_application_bucket}"]
   }
 
   statement {
     sid       = "LambdaObjectReadWriteAccess"
     effect    = "Allow"
     actions   = ["s3:GetObject", "s3:PutObject"]
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/*"]
+    resources = ["arn:aws:s3:::${var.s3_lambda_application_bucket}/*"]
   }
 }
 
 resource "aws_iam_policy" "lambda_s3_iam_role_access" {
-  name        = "LambdaS3_IAM_Role_Access_${var.function_purpose}"
+  name        = "LambdaS3_IAM_Role_Access_${var.function_name}"
   description = "Allow Lambda functions to access S3"
   policy      = data.aws_iam_policy_document.lambda_s3_iam_role_access.json
 }

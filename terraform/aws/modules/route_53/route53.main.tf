@@ -11,9 +11,6 @@ resource "aws_acm_certificate" "my_tls_cert" {
     # the new replacement object is created first, and the prior object is destroyed after the replacement is created.
     create_before_destroy = true
   }
-  tags = {
-    Name = "${var.resource_prefix}-acm-cert"
-  }
 }
 
 resource "aws_acm_certificate_validation" "cert_validation" {
@@ -78,12 +75,9 @@ resource "aws_route53_health_check" "root_domain_http_reachable" {
   resource_path     = "/"
   failure_threshold = "5"
   request_interval  = "30"
-
-  tags = {
-    Name = "${var.resource_prefix}-http-health-check"
-  }
 }
 
+# TODO HTTPS Health check
 # resource "aws_route53_health_check" "root_domain_https_reachable" {
 #   fqdn              = var.domain_name
 #   port              = 443
@@ -91,8 +85,4 @@ resource "aws_route53_health_check" "root_domain_http_reachable" {
 #   resource_path     = "/"
 #   failure_threshold = "5"
 #   request_interval  = "30"
-
-#   tags = {
-#     Name = "${var.resource_prefix}-https-health-check"
-#   }
 # }

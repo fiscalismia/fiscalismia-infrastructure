@@ -1,16 +1,25 @@
+variable "region" {
+  default = "eu-central-1"
+  description = "region for aws resources"
+  type = string
+}
+variable "application_prefix" {
+  default = "Fiscalismia"
+  description = "prefix for naming conventions of e.g. Lambdas"
+  type = string
+}
+variable "infrastructure_prefix" {
+  default = "Infrastructure"
+  description = "prefix for naming conventions of e.g. Lambdas"
+  type = string
+}
 variable "ip_whitelist_lambda_processing" {
   default = "0.0.0.0" # Override ONLY IN terraform.tfvars to hide whitelist from git repository
   description = "Comma separated list to allow only specific ips access to Lambda functions. Passed in lambda env vars. Default is allowing all (0.0.0.0)."
   type = string
 }
-variable "secret_api_key" {
-  default = ""  # Override ONLY IN terraform.tfvars to hide whitelist from git repository
-  description = "API KEY to allow lambda processing. Passed in lambda env vars."
-  type = string
-  sensitive   = true
-}
 variable "forecasted_budget_notification_email" {
-  description = "Email address receiving aws cost budget notifications"
+  description = "Email address receiving aws cost budget notifications saved in tfvars"
   type = string
   sensitive   = true
 }
@@ -19,21 +28,7 @@ variable "test_sheet_url" {
   description = "sheet url for testing rest api raw etl endpoint"
   type = string
 }
-variable "region" {
-  default = "eu-central-1"
-  description = "region for aws resources"
-  type = string
-}
-variable "fqdn" {
-  default = "https://fiscalismia.com"
-  description = "fully qualified domain name of source webservice for CORS access"
-  type = string
-}
-variable "service_name" {
-  default = "fiscalismia"
-  description = "webservice name for resource naming"
-  type = string
-}
+################### API GATEWAY #########################
 variable "default_stage" {
   default = "api"
   type = string
@@ -49,36 +44,48 @@ variable "post_raw_data_route" {
   type = string
   description = "http api route for google sheets url post to trigger lambda etl and s3 storage. Returns S3 URLS to exported TSV files"
 }
+variable "secret_api_key" {
+  default = ""  # Override ONLY IN terraform.tfvars to hide whitelist from git repository
+  description = "API KEY to allow lambda processing. Passed in lambda env vars."
+  type = string
+  sensitive   = true
+}
 
 ################ S3 BUCKETS #############################
 variable "etl_bucket_name" {
   description = "Bucket Name for Raw Data Transformation"
   type = string
-  default = "hangrybear-fiscalismia-raw-data-etl-storage"
+  default = "fiscalismia-raw-data-etl-storage"
 }
 variable "image_processing_bucket_name" {
   description = "Bucket Name for Image Downsizing"
   type = string
-  default = "hangrybear-fiscalismia-image-storage"
+  default = "fiscalismia-image-storage"
 }
 variable "infrastructure_bucket_name" {
   description = "Bucket Name for Fiscalismia Infrastructure binaries, code and dependencies."
   type = string
-  default = "hangrybear-fiscalismia-infrastructure"
+  default = "fiscalismia-infrastructure"
 }
 
-variable "backend_instance_ipv4" {
-  description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
+################### DNS NAMES ###########################
+variable "fqdn" {
+  default = "https://fiscalismia.com"
+  description = "fully qualified domain name of source webservice for CORS access"
   type = string
-  default = "127.0.0.1"
 }
-variable "demo_instance_ipv4" {
-  description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
-  type = string
-  default = "127.0.0.1"
+variable "domain_name" {
+  default     = "fiscalismia.com"
+  description = "Primary domain name for Route 53 DNS"
+  type        = string
 }
-variable "frontend_instance_ipv4" {
-  description = "IP Address of Hetzner Cloud Instance. Overwritten with TFVars"
-  type = string
-  default = "127.0.0.1"
+variable "demo_subdomain" {
+  default     = "demo"
+  description = "Subdomain for demo environment"
+  type        = string
+}
+variable "backend_subdomain" {
+  default     = "backend"
+  description = "Subdomain for backend services"
+  type        = string
 }

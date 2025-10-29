@@ -1,6 +1,8 @@
 resource "aws_lambda_function" "api_gw_func" {
-  function_name            = "${var.service_name}_${var.function_purpose}"
-  filename                 = "${path.module}/payload/${var.function_purpose}/payload.zip"
+  function_name            = var.function_name
+  description              = var.function_description
+  s3_bucket                = var.infrastructure_s3_bucket
+  s3_key                   = "${var.infrastructure_s3_prefix}/${var.function_name}.zip"
   role                     = var.lambda_execution_role_arn
   handler                  = "index.handler"
   timeout                  = var.timeout_seconds
@@ -16,6 +18,4 @@ resource "aws_lambda_function" "api_gw_func" {
   layers = [
     aws_lambda_layer_version.dependency_layer.arn
   ]
-  # to always recreate the lambda in case payload has been updated
-  source_code_hash         = filebase64sha256("${path.module}/payload/${var.function_purpose}/payload.zip")
 }

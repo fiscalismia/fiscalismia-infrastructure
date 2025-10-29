@@ -1,0 +1,17 @@
+variable "function_name" {}
+variable "function_description" {}
+variable "layer_name" {}
+variable "layer_description" {}
+variable "runtime_env" {}
+variable "s3_lambda_application_bucket" {}
+variable "infrastructure_s3_bucket" {}
+variable "infrastructure_s3_prefix" {}
+variable "timeout_seconds" {}
+variable "ip_whitelist_lambda_processing" {}
+variable "secret_api_key" {}
+variable "memory_size" {}
+variable "lambda_execution_role_name" {}
+variable "lambda_execution_role_arn" {}
+variable "cloudwatch_log_retention_days" {
+  type = number
+}

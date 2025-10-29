@@ -18,7 +18,8 @@ module "fiscalismia_demo" {
 
   server_name       = "Fiscalismia-Demo"
   unix_distro       = "fedora-42"
-  server_type       = "cx33" # 5.93€/Month
+  server_type       = "cx23" # 3.56€ / Month
+  # server_type       = "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.ssh_access.id,
     hcloud_firewall.all_egress.id,

@@ -1,12 +1,11 @@
 module "route_53_dns" {
   source                                = "./modules/route_53"
-  domain_name                           = "fiscalismia.com"
-  demo_subdomain                        = "demo"
-  backend_subdomain                     = "backend"
-  resource_prefix                       = "fiscalismia"
-  backend_instance_ipv4                 = var.backend_instance_ipv4
-  demo_instance_ipv4                    = var.demo_instance_ipv4
-  frontend_instance_ipv4                = var.frontend_instance_ipv4
+  domain_name                           = var.domain_name
+  demo_subdomain                        = var.demo_subdomain
+  backend_subdomain                     = var.backend_subdomain
+  demo_instance_ipv4                    = local.hcloud_fiscalismia_demo_ipv4
+  frontend_instance_ipv4                = local.hcloud_fiscalismia_frontend_ipv4
+  backend_instance_ipv4                 = local.hcloud_fiscalismia_backend_ipv4
 }
 
 # S3 bucket for persisting uploaded user images
@@ -57,40 +56,58 @@ module "api_gateway" {
   default_stage                          = var.default_stage
 }
 
-# Lambda for receiving uploaded user images and reducing them in filesize
 module "lambda_image_processing" {
-  source                                = "./modules/lambda"
-  function_purpose                      = "image_processing"
+  source                                = "./modules/application_lambda"
+  function_name                         = "${var.application_prefix}_ImageProcessing"
+  function_description                  = "Lambda for receiving uploaded user images and reducing them in filesize"
+  layer_name                            = "${var.application_prefix}_ImageProcessing_NodeJSDependencies"
   layer_description                     = "NodeJS Dependencies for Image Processing Lambda Function"
-  runtime_env                           = "nodejs22.x"
-  layer_docker_img                      = "public.ecr.aws/lambda/nodejs:22.2024.11.22.14-x86_64"
   lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
-  timeout_seconds                       = 5
+  infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
+  infrastructure_s3_prefix              = "lambdas/infra/nodejs"
+  runtime_env                           = "nodejs22.x"
+  timeout_seconds                       = 10
   memory_size                           = 256
-  layer_name                            = "${var.service_name}-image-processing-nodejs-layer"
-  s3_bucket_name                        = module.s3_image_storage.bucket_name
-  service_name                          = var.service_name
+  cloudwatch_log_retention_days         = 365
+  s3_lambda_application_bucket          = module.s3_image_storage.bucket_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
   secret_api_key                        = var.secret_api_key
 }
 
-# Lambda for receiving google sheets/tsv files and transforming them into queries to fiscalismia rest api
+
 module "lambda_raw_data_etl" {
-  source                                = "./modules/lambda"
-  function_purpose                      = "raw_data_etl"
+  source                                = "./modules/application_lambda"
+  function_name                         = "${var.application_prefix}_RawDataETL"
+  function_description                  = "Lambda for receiving google sheets/tsv files and transforming them into queries to fiscalismia rest api"
+  layer_name                            = "${var.application_prefix}_RawDataETL_PythonDependencies"
   layer_description                     = "Python Dependencies for RAW Data ETL Lambda Function"
-  runtime_env                           = "python3.13"
-  layer_docker_img                      = "public.ecr.aws/lambda/python:3.13.2024.11.22.15-x86_64"
   lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
-  timeout_seconds                       = 15
+  infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
+  infrastructure_s3_prefix              = "lambdas/infra/python"
+  runtime_env                           = "python3.13"
+  timeout_seconds                       = 20
   memory_size                           = 512
-  layer_name                            = "${var.service_name}-raw-data-etl-python-layer"
-  s3_bucket_name                        = module.s3_raw_data_etl_storage.bucket_name
-  service_name                          = var.service_name
+  cloudwatch_log_retention_days         = 365
+  s3_lambda_application_bucket          = module.s3_raw_data_etl_storage.bucket_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
   secret_api_key                        = var.secret_api_key
+}
+
+# Collection of multiple lambdas for infrastructure monitoring, alarms and automated teardown
+module "infrastructure_lambdas" {
+  source                                       = "./modules/infrastructure_lambdas"
+  region                                       = var.region
+  apigw_route_throttler_name                   = "${var.infrastructure_prefix}_ApiGatewayRouteThrottler"
+  notification_message_sender_name             = "${var.infrastructure_prefix}_NotificationMessageSender"
+  terraform_destroy_trigger_name               = "${var.infrastructure_prefix}_TerraformDestroyTrigger"
+  lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
+  lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
+  infrastructure_runtime                       = "python3.13"
+  cloudwatch_log_retention_days                = 365
+  infrastructure_s3_bucket                     = module.s3_infrastructure_storage.bucket_name
+  infrastructure_s3_prefix                     = "lambdas/infra/python"
 }
 
 module "cost_budget_alarms" {
@@ -106,20 +123,6 @@ module "sns_topics" {
   sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction" # AWS Budgets only support standard sns topics
   sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling.fifo"
   sns_topic_notification_message_sending_name  = "NotificationMessageSending.fifo"
-}
-
-module "infrastructure_lambdas" {
-  source                                       = "./modules/infrastructure_lambdas"
-  region                                       = var.region
-  apigw_route_throttler_name                   = "ApiGatewayRouteThrottler"
-  notification_message_sender_name             = "NotificationMessageSender"
-  terraform_destroy_trigger_name               = "TerraformDestroyTrigger"
-  lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
-  lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
-  infrastructure_runtime                       = "python3.13"
-  cloudwatch_log_retention_days                = 365
-  infrastructure_s3_bucket                     = module.s3_infrastructure_storage.bucket_name
-  infrastructure_s3_prefix                     = "lambdas/infra/python"
 }
 
 module "cloudwatch_metric_alarms" {
