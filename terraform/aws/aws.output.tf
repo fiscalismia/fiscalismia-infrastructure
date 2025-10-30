@@ -51,3 +51,11 @@ bash modules/lambda/scripts/curl-api-img-upload.sh ${module.api_gateway.aws_api.
 bash modules/lambda/scripts/curl-api-sheet-url.sh [tfvars.secret_api_key] ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} [tfvars.test_sheet_url]
 EOT
 }
+
+output "hcloud_serverlist" {
+  value = join("\n", [
+    format("%-30s %s", "${var.demo_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_demo_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_demo_ipv4 : local.no_ip),
+    format("%-30s %s", "${var.domain_name}:", local.hcloud_fiscalismia_frontend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_frontend_ipv4 : local.no_ip),
+    format("%-30s %s", "${var.backend_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_backend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_backend_ipv4 : local.no_ip),
+  ])
+}

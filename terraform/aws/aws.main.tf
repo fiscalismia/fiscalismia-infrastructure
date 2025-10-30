@@ -74,6 +74,7 @@ module "lambda_image_processing" {
   lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
+  handler_name                          = var.lambda_handler_name
   infrastructure_s3_prefix              = "lambdas/infra/nodejs"
   runtime_env                           = "nodejs22.x"
   timeout_seconds                       = 10
@@ -93,6 +94,7 @@ module "lambda_raw_data_etl" {
   lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
+  handler_name                          = var.lambda_handler_name
   infrastructure_s3_prefix              = "lambdas/infra/python"
   runtime_env                           = "python3.13"
   timeout_seconds                       = 20
@@ -110,8 +112,10 @@ module "infrastructure_lambdas" {
   apigw_route_throttler_name                   = "${var.infrastructure_prefix}_ApiGatewayRouteThrottler"
   notification_message_sender_name             = "${var.infrastructure_prefix}_NotificationMessageSender"
   terraform_destroy_trigger_name               = "${var.infrastructure_prefix}_TerraformDestroyTrigger"
+  sandbox_function_testing_name                = "Test_PythonSandbox"
   lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
   lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
+  handler_name                                 = var.lambda_handler_name
   infrastructure_runtime                       = "python3.13"
   cloudwatch_log_retention_days                = 365
   infrastructure_s3_bucket                     = module.s3_infrastructure_storage.bucket_name
@@ -131,6 +135,7 @@ module "sns_topics" {
   sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction" # AWS Budgets only support standard sns topics
   sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling.fifo"
   sns_topic_notification_message_sending_name  = "NotificationMessageSending.fifo"
+  sns_topic_sandbox_sns_testing_name           = "SandboxSnsTesting"
 }
 
 module "cloudwatch_metric_alarms" {

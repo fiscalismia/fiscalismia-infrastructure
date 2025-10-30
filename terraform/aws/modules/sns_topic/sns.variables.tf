@@ -10,3 +10,8 @@ variable "sns_topic_notification_message_sending_name" {
   description = "Name of the SNS Topic"
   type        = string
 }
+variable "sns_topic_sandbox_sns_testing_name" {
+  description = "Name of the SNS Topic"
+  type        = string
+}
+

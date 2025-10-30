@@ -11,3 +11,7 @@ resource "aws_sns_topic" "notification_message_sending" {
   fifo_topic                  = true
   content_based_deduplication = true
 }
+# TESTING
+resource "aws_sns_topic" "sns_topic_sandbox_sns_testing" {
+  name                        = var.sns_topic_sandbox_sns_testing_name
+}

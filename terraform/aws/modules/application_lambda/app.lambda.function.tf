@@ -4,7 +4,7 @@ resource "aws_lambda_function" "api_gw_func" {
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/${var.function_name}.zip"
   role                     = var.lambda_execution_role_arn
-  handler                  = "index.handler"
+  handler                  = var.handler_name
   timeout                  = var.timeout_seconds
   runtime                  = var.runtime_env
   memory_size              = var.memory_size

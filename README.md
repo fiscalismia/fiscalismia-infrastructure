@@ -44,6 +44,31 @@ terraform init
 terraform apply
 ```
 
+### Terraform Module Destroyer Github Actions Pipeline
+
+```bash
+terraform destroy \
+  -target=module.api_gateway \
+  -target=module.lambda_image_processing \
+  -target=module.lambda_raw_data_etl \
+  -target=module.infrastructure_lambdas \
+  -target=module.cost_budget_alarms \
+  -target=module.sns_topics \
+  -target=module.cloudwatch_metric_alarms \
+  -auto-approve
+```
+
+**Apply only persistent infrastructure**
+
+```bash
+terraform apply \
+  -target=module.route_53_dns \
+  -target=module.s3_image_storage \
+  -target=module.s3_raw_data_etl_storage \
+  -target=module.s3_infrastructure_storage \
+  -auto-approve
+```
+
 ### Setup Ansible Control Node
 
 ```bash
@@ -118,32 +143,6 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
   -e "ssh_key_override=${PRIVATE_KEY_FILE}"
   -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
 ```
-
-### Terraform Module Destroyer Github Actions Pipeline
-
-```bash
-terraform destroy \
-  -target=module.api_gateway \
-  -target=module.lambda_image_processing \
-  -target=module.lambda_raw_data_etl \
-  -target=module.infrastructure_lambdas \
-  -target=module.cost_budget_alarms \
-  -target=module.sns_topics \
-  -target=module.cloudwatch_metric_alarms \
-  -auto-approve
-```
-
-**Apply only persistent infrastructure**
-
-```bash
-terraform apply \
-  -target=module.route_53_dns \
-  -target=module.s3_image_storage \
-  -target=module.s3_raw_data_etl_storage \
-  -target=module.s3_infrastructure_storage \
-  -auto-approve
-```
-
 
 <details closed>
 <summary><b>AWS Serverless (Lambda, API Gateway) and S3 storage</b></summary>

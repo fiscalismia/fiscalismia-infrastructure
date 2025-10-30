@@ -10,6 +10,7 @@ variable "timeout_seconds" {}
 variable "ip_whitelist_lambda_processing" {}
 variable "secret_api_key" {}
 variable "memory_size" {}
+variable "handler_name" {}
 variable "lambda_execution_role_name" {}
 variable "lambda_execution_role_arn" {}
 variable "cloudwatch_log_retention_days" {

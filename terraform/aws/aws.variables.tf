@@ -18,6 +18,11 @@ variable "ip_whitelist_lambda_processing" {
   description = "Comma separated list to allow only specific ips access to Lambda functions. Passed in lambda env vars. Default is allowing all (0.0.0.0)."
   type = string
 }
+variable "lambda_handler_name" {
+  default = "index.lambda_handler"
+  description = "The default lambda handler used by AWS"
+  type = string
+}
 variable "forecasted_budget_notification_email" {
   description = "Email address receiving aws cost budget notifications saved in tfvars"
   type = string
