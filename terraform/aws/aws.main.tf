@@ -76,7 +76,7 @@ module "lambda_image_processing" {
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
   handler_name                          = var.lambda_handler_name
   infrastructure_s3_prefix              = "lambdas/infra/nodejs"
-  runtime_env                           = "nodejs22.x"
+  runtime_env                           = "nodejs24.x"
   timeout_seconds                       = 10
   memory_size                           = 256
   cloudwatch_log_retention_days         = 365
