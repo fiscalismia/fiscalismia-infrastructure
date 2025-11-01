@@ -14,6 +14,9 @@ resource "aws_lambda_function" "terraform_destroy_trigger" {
     application_log_level = "INFO"
     system_log_level      = "WARN"
   }
+  layers = [
+    aws_lambda_layer_version.infrastructure_layer.arn
+  ]
 }
 resource "aws_lambda_function" "notification_message_sender" {
   function_name            = var.notification_message_sender_name
@@ -31,6 +34,9 @@ resource "aws_lambda_function" "notification_message_sender" {
     application_log_level = "INFO"
     system_log_level      = "WARN"
   }
+  layers = [
+    aws_lambda_layer_version.infrastructure_layer.arn
+  ]
 }
 resource "aws_lambda_function" "apigw_route_throttler" {
   function_name            = var.apigw_route_throttler_name
@@ -48,6 +54,9 @@ resource "aws_lambda_function" "apigw_route_throttler" {
     application_log_level = "INFO"
     system_log_level      = "WARN"
   }
+  layers = [
+    aws_lambda_layer_version.infrastructure_layer.arn
+  ]
 }
 resource "aws_lambda_function" "sandbox_function_testing" {
   function_name            = var.sandbox_function_testing_name
@@ -65,4 +74,7 @@ resource "aws_lambda_function" "sandbox_function_testing" {
     application_log_level = "DEBUG"
     system_log_level      = "DEBUG"
   }
+  layers = [
+    aws_lambda_layer_version.infrastructure_layer.arn
+  ]
 }

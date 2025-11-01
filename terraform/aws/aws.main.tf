@@ -75,7 +75,7 @@ module "lambda_image_processing" {
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
   handler_name                          = var.lambda_handler_name
-  infrastructure_s3_prefix              = "lambdas/infra/nodejs"
+  infrastructure_s3_prefix              = "lambdas/fiscalismia/nodejs"
   runtime_env                           = "nodejs24.x"
   timeout_seconds                       = 10
   memory_size                           = 256
@@ -95,7 +95,7 @@ module "lambda_raw_data_etl" {
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
   handler_name                          = var.lambda_handler_name
-  infrastructure_s3_prefix              = "lambdas/infra/python"
+  infrastructure_s3_prefix              = "lambdas/fiscalismia/python"
   runtime_env                           = "python3.13"
   timeout_seconds                       = 20
   memory_size                           = 512
@@ -112,6 +112,8 @@ module "infrastructure_lambdas" {
   apigw_route_throttler_name                   = "${var.infrastructure_prefix}_ApiGatewayRouteThrottler"
   notification_message_sender_name             = "${var.infrastructure_prefix}_NotificationMessageSender"
   terraform_destroy_trigger_name               = "${var.infrastructure_prefix}_TerraformDestroyTrigger"
+  layer_name                                   = "${var.infrastructure_prefix}_PythonDependencies"
+  layer_description                            = "Shared Python Dependencies for Infrastructure Lambdas."
   sandbox_function_testing_name                = "Test_PythonSandbox"
   lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
   lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
@@ -119,7 +121,7 @@ module "infrastructure_lambdas" {
   infrastructure_runtime                       = "python3.13"
   cloudwatch_log_retention_days                = 365
   infrastructure_s3_bucket                     = module.s3_infrastructure_storage.bucket_name
-  infrastructure_s3_prefix                     = "lambdas/infra/python"
+  infrastructure_s3_prefix                     = "lambdas/infrastructure/python"
 }
 
 module "cost_budget_alarms" {
