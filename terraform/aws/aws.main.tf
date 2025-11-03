@@ -11,6 +11,11 @@ module "route_53_dns" {
 module "oidc_sts_pipeline_access" {
   source                                = "./modules/openid_connect"
   github_actions_provider_url           = "https://token.actions.githubusercontent.com"
+  infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
+  github_org                            = "fiscalismia"
+  github_lambda_repo                    = "fiscalismia-lambdas"
+  lambda_s3_app_prefix                  = "lambdas/fiscalismia"
+  lambda_s3_infra_prefix                = "lambdas/infrastructure"
 }
 
 # Fiscalismia S3 bucket for persisting downsized uploaded user images

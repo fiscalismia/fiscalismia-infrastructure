@@ -1,1 +1,6 @@
 variable "github_actions_provider_url" {}
+variable "infrastructure_s3_bucket" {}
+variable "lambda_s3_app_prefix" {}
+variable "lambda_s3_infra_prefix" {}
+variable "github_org" {}
+variable "github_lambda_repo" {}
