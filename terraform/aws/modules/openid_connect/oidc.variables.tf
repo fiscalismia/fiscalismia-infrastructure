@@ -1,0 +1,1 @@
+variable "github_actions_provider_url" {}

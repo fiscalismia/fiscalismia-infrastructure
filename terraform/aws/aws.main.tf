@@ -8,6 +8,11 @@ module "route_53_dns" {
   backend_instance_ipv4                 = local.hcloud_fiscalismia_backend_ipv4
 }
 
+module "oidc_sts_pipeline_access" {
+  source                                = "./modules/openid_connect"
+  github_actions_provider_url           = "https://token.actions.githubusercontent.com"
+}
+
 # Fiscalismia S3 bucket for persisting downsized uploaded user images
 module "s3_image_storage" {
   source                                = "./modules/s3"
