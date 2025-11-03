@@ -1,0 +1,58 @@
+name: Fiscalismia-Infrastructure Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - pipeline_testing
+  pull_request:
+    branches:
+      - main
+      - pipeline_testing+
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # for aws OIDC STS tokens to work
+      contents: read
+      actions: read
+
+    steps:
+    - name: Checkout SCM
+      uses: actions/checkout@v5
+
+    - name: Set up Terraform
+    - uses: hashicorp/setup-terraform@v3.1.7
+      with:
+        terraform_version: "1.13.4" # comment out for latest version
+
+    - name: Configure AWS Credentials with OIDC JWT Token for STS Access
+      # See https://docs.github.com/en/actions/concepts/security/openid-connect
+      uses: aws-actions/configure-aws-credentials@v5.1.0
+      with:
+        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
+        role-session-name: TerraformPlanSTSSession
+        aws-region: ${{ vars.AWS_REGION }}
+
+    - name: Write terraform planfile
+      run: |
+        which terraform
+        terraform -v
+        cd ${GITHUB_WORKSPACE}/terraform/aws
+        terraform init
+        mkdir -p ${GITHUB_WORKSPACE}/planfiles
+        terraform plan \
+          -var='secret_api_key=${{ secrets.API_GATEWAY_SECRET_KEY }}' \
+          -var='test_sheet_url=${{ secrets.GOOGLE_DOCS_TEST_URL }}' \
+          -var='forecasted_budget_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
+          -out ${GITHUB_WORKSPACE}/planfiles/aws.plan
+
+    - name: Upload AWS Planfile Artifact
+      uses: actions/upload-artifact@v5.0.0
+      with:
+        name: aws-planfile
+        retention-days: 1
+        path: |
+          planfiles/aws*
