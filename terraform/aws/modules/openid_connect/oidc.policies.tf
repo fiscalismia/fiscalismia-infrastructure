@@ -18,6 +18,7 @@ resource "aws_iam_policy" "github_actions_lambda_pipeline" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid = "AccessInfrastructureLambdaPrefix"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
@@ -26,12 +27,22 @@ resource "aws_iam_policy" "github_actions_lambda_pipeline" {
           "s3:ListBucket"
         ]
         Resource = [
-          "arn:aws:s3:::${var.infrastructure_s3_bucket}/",
+          "arn:aws:s3:::${var.infrastructure_s3_bucket}",
           "arn:aws:s3:::${var.infrastructure_s3_bucket}/${var.lambda_s3_app_prefix}/*",
           "arn:aws:s3:::${var.infrastructure_s3_bucket}/${var.lambda_s3_infra_prefix}/*"
         ]
       },
-    ]
+      {
+        Sid = "ListAllBucketNamesInAccount"
+        Effect = "Allow"
+        Action = [
+          "s3:ListAllMyBuckets",
+        ]
+        Resource = [
+          "arn:aws:s3:::*",
+        ]
+      },
+    ],
   })
 }
 
