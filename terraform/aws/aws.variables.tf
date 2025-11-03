@@ -77,7 +77,11 @@ variable "infrastructure_bucket_name" {
   type = string
   default = "infrastructure"
 }
-
+variable "terraform_state_bucket" {
+  description = "Created in AWS Console outside of terraform IaC"
+  type = string
+  default = "hangrybear-tf-backend-state-bucket"
+}
 ################### DNS NAMES ###########################
 variable "fqdn" {
   default = "https://fiscalismia.com"

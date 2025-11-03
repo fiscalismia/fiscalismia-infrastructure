@@ -264,7 +264,14 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_s3" {
           "s3:DeleteObject",
           "s3:ListBucketVersions",
           "s3:GetBucketTagging",
-          "s3:PutBucketTagging"
+          "s3:PutBucketTagging",
+          "s3:GetBucketWebsite",
+          "s3:GetAccelerateConfiguration",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketLogging",
+          "s3:GetReplicationConfiguration",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:PutBucketObjectLockConfiguration"
         ]
         Resource = [
           "arn:aws:s3:::${var.s3_bucket_name_prefix}*",
@@ -280,6 +287,20 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_s3" {
         ]
         Resource = "*"
       },
+      {
+        Sid    = "S3ReadWriteTerraformBackendState"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.terraform_state_bucket}",
+          "arn:aws:s3:::${var.terraform_state_bucket}/*"
+        ]
+      },
     ]
     })
 }
@@ -293,19 +314,26 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_general" {
     Statement = [
       # Route 53 - DNS and health check management
       {
+        Sid    = "Route53ListOperations"
+        Effect = "Allow"
+        Action = [
+          "route53:ListHostedZones",
+          "route53:ListHostedZonesByName",
+        ]
+        Resource = "*"
+      },
+      {
         Sid    = "Route53ZoneManagement"
         Effect = "Allow"
         Action = [
           "route53:GetHostedZone",
-          "route53:ListHostedZones",
-          "route53:ListHostedZonesByName",
           "route53:ListResourceRecordSets",
           "route53:GetChange",
           "route53:ChangeResourceRecordSets",
           "route53:CreateHostedZone",
           "route53:DeleteHostedZone",
           "route53:ChangeTagsForResource",
-          "route53:ListTagsForResource"
+          "route53:ListTagsForResource",
         ]
         Resource = [
           "arn:aws:route53:::hostedzone/*",
