@@ -8,12 +8,16 @@ module "route_53_dns" {
   backend_instance_ipv4                 = local.hcloud_fiscalismia_backend_ipv4
 }
 
+# Defines downscoped roles for github actions pipelines running with short-lived STS credentials
 module "oidc_sts_pipeline_access" {
   source                                = "./modules/openid_connect"
   github_actions_provider_url           = "https://token.actions.githubusercontent.com"
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
+  region                                = var.region
+  s3_bucket_name_prefix                 = var.s3_bucket_name_prefix
   github_org                            = "fiscalismia"
   github_lambda_repo                    = "fiscalismia-lambdas"
+  github_infrastructure_repo            = "fiscalismia-infrastructure"
   lambda_s3_app_prefix                  = "lambdas/fiscalismia"
   lambda_s3_infra_prefix                = "lambdas/infrastructure"
 }
@@ -21,7 +25,7 @@ module "oidc_sts_pipeline_access" {
 # Fiscalismia S3 bucket for persisting downsized uploaded user images
 module "s3_image_storage" {
   source                                = "./modules/s3"
-  bucket_name                           = var.image_processing_bucket_name
+  bucket_name                           = "${var.s3_bucket_name_prefix}${var.image_processing_bucket_name}"
   fqdn                                  = var.fqdn
   data_infrequent_access                = false # do NOT send to IA
   data_infrequent_access_days           = null
@@ -35,7 +39,7 @@ module "s3_image_storage" {
 # Fiscalismia ETL Repository for Raw Data Transformation using Sheets and TSV files
 module "s3_raw_data_etl_storage" {
   source                                = "./modules/s3"
-  bucket_name                           = var.etl_bucket_name
+  bucket_name                           = "${var.s3_bucket_name_prefix}${var.etl_bucket_name}"
   fqdn                                  = var.fqdn
   data_infrequent_access                = true  # data is sent to infrequent access
   data_infrequent_access_days           = 30    # after this many days
@@ -49,7 +53,7 @@ module "s3_raw_data_etl_storage" {
 # Fiscalismia Infrastructure binaries, code and dependencies
 module "s3_infrastructure_storage" {
   source                                = "./modules/s3"
-  bucket_name                           = var.infrastructure_bucket_name
+  bucket_name                           = "${var.s3_bucket_name_prefix}${var.infrastructure_bucket_name}"
   fqdn                                  = null
   data_infrequent_access                = true  # data is sent to infrequent access
   data_infrequent_access_days           = 30    # after this many days

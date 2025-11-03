@@ -4,3 +4,6 @@ variable "lambda_s3_app_prefix" {}
 variable "lambda_s3_infra_prefix" {}
 variable "github_org" {}
 variable "github_lambda_repo" {}
+variable "github_infrastructure_repo" {}
+variable "s3_bucket_name_prefix" {}
+variable "region" {}

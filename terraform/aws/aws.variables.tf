@@ -57,20 +57,25 @@ variable "secret_api_key" {
 }
 
 ################ S3 BUCKETS #############################
+variable "s3_bucket_name_prefix" {
+  description = "Bucket Name Prefix to use for all buckets"
+  type = string
+  default = "fiscalismia-"
+}
 variable "etl_bucket_name" {
   description = "Bucket Name for Raw Data Transformation"
   type = string
-  default = "fiscalismia-raw-data-etl-storage"
+  default = "raw-data-etl-storage"
 }
 variable "image_processing_bucket_name" {
   description = "Bucket Name for Image Downsizing"
   type = string
-  default = "fiscalismia-image-storage"
+  default = "image-storage"
 }
 variable "infrastructure_bucket_name" {
   description = "Bucket Name for Fiscalismia Infrastructure binaries, code and dependencies."
   type = string
-  default = "fiscalismia-infrastructure"
+  default = "infrastructure"
 }
 
 ################### DNS NAMES ###########################

@@ -88,7 +88,7 @@ resource "aws_iam_role_policy" "terraform_destroy_trigger_policy" {
         Action = [
           "secretsmanager:GetSecretValue"
         ]
-        Resource = "arn:aws:secretsmanager:${var.region}:*:secret:github-actions-trigger-token-*"
+        Resource = "arn:aws:secretsmanager:${var.region}:*:secret:terraform-destroyer-trigger-token*"
       },
       {
         Effect = "Allow"

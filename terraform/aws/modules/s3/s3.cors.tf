@@ -51,6 +51,7 @@ locals {
       "Content-Length",               # Required for progress indicators and download management
       "Content-Range"                 # Needed for range requests (partial downloads)
     ]
+    max_age_seconds = 3000            # Cache preflight response for 3000 seconds
   }
 }
 
@@ -62,5 +63,6 @@ resource "aws_s3_bucket_cors_configuration" "cross_origin_rules" {
     allowed_methods = local.cross_origin_resource_sharing_access_from_website.allowed_methods
     allowed_origins = local.cross_origin_resource_sharing_access_from_website.allowed_origins
     expose_headers  = local.cross_origin_resource_sharing_access_from_website.expose_headers
+    max_age_seconds = local.cross_origin_resource_sharing_access_from_website.max_age_seconds
   }
 }
