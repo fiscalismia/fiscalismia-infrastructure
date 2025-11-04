@@ -1,3 +1,4 @@
+# Shared Layer for all Infrastructure Python functions
 resource "aws_lambda_layer_version" "infrastructure_layer" {
   layer_name                = var.layer_name
   description               = var.layer_description

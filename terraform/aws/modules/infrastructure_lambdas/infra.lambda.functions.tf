@@ -31,8 +31,8 @@ resource "aws_lambda_function" "notification_message_sender" {
   # Advanced logging configuration
   logging_config {
     log_format            = "JSON"
-    application_log_level = "INFO"
-    system_log_level      = "WARN"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn
@@ -51,8 +51,8 @@ resource "aws_lambda_function" "apigw_route_throttler" {
   # Advanced logging configuration
   logging_config {
     log_format            = "JSON"
-    application_log_level = "INFO"
-    system_log_level      = "WARN"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn
@@ -71,8 +71,8 @@ resource "aws_lambda_function" "sandbox_function_testing" {
   # Advanced logging configuration
   logging_config {
     log_format            = "JSON"
-    application_log_level = "DEBUG"
-    system_log_level      = "DEBUG"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
   }
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn

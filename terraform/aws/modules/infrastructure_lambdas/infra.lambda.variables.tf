@@ -11,6 +11,8 @@ variable "infrastructure_s3_bucket" {}
 variable "infrastructure_s3_prefix" {}
 variable "region" {}
 variable "handler_name" {}
+variable "application_log_level" {}
+variable "system_log_level" {}
 variable "cloudwatch_log_retention_days" {
   type = number
 }

@@ -90,6 +90,8 @@ module "lambda_image_processing" {
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
   handler_name                          = var.lambda_handler_name
+  application_log_level                 = var.lambda_function_application_log_level
+  system_log_level                      = var.lambda_function_system_log_level
   infrastructure_s3_prefix              = "lambdas/fiscalismia/nodejs"
   runtime_env                           = "nodejs22.x"
   timeout_seconds                       = 10
@@ -110,6 +112,8 @@ module "lambda_raw_data_etl" {
   lambda_execution_role_name            = aws_iam_role.lambda_execution_role_app.name
   infrastructure_s3_bucket              = module.s3_infrastructure_storage.bucket_name
   handler_name                          = var.lambda_handler_name
+  application_log_level                 = var.lambda_function_application_log_level
+  system_log_level                      = var.lambda_function_system_log_level
   infrastructure_s3_prefix              = "lambdas/fiscalismia/python"
   runtime_env                           = "python3.13"
   timeout_seconds                       = 20
@@ -133,6 +137,8 @@ module "infrastructure_lambdas" {
   lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
   lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
   handler_name                                 = var.lambda_handler_name
+  application_log_level                        = var.lambda_function_application_log_level
+  system_log_level                             = var.lambda_function_system_log_level
   infrastructure_runtime                       = "python3.13"
   cloudwatch_log_retention_days                = 365
   infrastructure_s3_bucket                     = module.s3_infrastructure_storage.bucket_name

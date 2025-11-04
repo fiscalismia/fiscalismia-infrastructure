@@ -18,11 +18,6 @@ variable "ip_whitelist_lambda_processing" {
   description = "Comma separated list to allow only specific ips access to Lambda functions. Passed in lambda env vars. Default is allowing all (0.0.0.0)."
   type = string
 }
-variable "lambda_handler_name" {
-  default = "index.lambda_handler"
-  description = "The default lambda handler used by AWS"
-  type = string
-}
 variable "forecasted_budget_notification_email" {
   description = "Email address receiving aws cost budget notifications saved in tfvars"
   type = string
@@ -33,6 +28,23 @@ variable "test_sheet_url" {
   description = "sheet url for testing rest api raw etl endpoint"
   type = string
 }
+################### LAMBDA FUNCTIONS AND LAYERS #########################
+variable "lambda_handler_name" {
+  default = "index.lambda_handler"
+  description = "The default lambda handler used by AWS"
+  type = string
+}
+variable "lambda_function_application_log_level" {
+  default = "DEBUG"
+  description = "Valid values: TRACE, DEBUG, INFO, WARN, ERROR, FATAL."
+  type = string
+}
+variable "lambda_function_system_log_level" {
+  default = "DEBUG"
+  description = "Valid values: DEBUG, INFO, WARN."
+  type = string
+}
+
 ################### API GATEWAY #########################
 variable "default_stage" {
   default = "api"

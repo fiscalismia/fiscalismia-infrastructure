@@ -9,6 +9,12 @@ resource "aws_lambda_function" "api_gw_func" {
   runtime                  = var.runtime_env
   memory_size              = var.memory_size
 
+  # Advanced logging configuration
+  logging_config {
+    log_format            = "JSON"
+    application_log_level = var.application_log_level
+    system_log_level      = var.system_log_level
+  }
   environment {
     variables = {
       IP_WHITELIST = "${var.ip_whitelist_lambda_processing}"

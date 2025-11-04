@@ -13,6 +13,8 @@ variable "memory_size" {}
 variable "handler_name" {}
 variable "lambda_execution_role_name" {}
 variable "lambda_execution_role_arn" {}
+variable "application_log_level" {}
+variable "system_log_level" {}
 variable "cloudwatch_log_retention_days" {
   type = number
 }
