@@ -1,5 +1,6 @@
 resource "aws_lambda_function" "terraform_destroy_trigger" {
   function_name            = var.terraform_destroy_trigger_name
+  description              = var.terraform_destroy_trigger_description
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/${var.terraform_destroy_trigger_name}.zip"
   role                     = var.lambda_execution_role_arn
@@ -20,6 +21,7 @@ resource "aws_lambda_function" "terraform_destroy_trigger" {
 }
 resource "aws_lambda_function" "notification_message_sender" {
   function_name            = var.notification_message_sender_name
+  description              = var.notification_message_sender_description
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/${var.notification_message_sender_name}.zip"
   role                     = var.lambda_execution_role_arn
@@ -40,6 +42,7 @@ resource "aws_lambda_function" "notification_message_sender" {
 }
 resource "aws_lambda_function" "apigw_route_throttler" {
   function_name            = var.apigw_route_throttler_name
+  description              = var.apigw_route_throttler_description
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/${var.apigw_route_throttler_name}.zip"
   role                     = var.lambda_execution_role_arn
@@ -60,6 +63,7 @@ resource "aws_lambda_function" "apigw_route_throttler" {
 }
 resource "aws_lambda_function" "sandbox_function_testing" {
   function_name            = var.sandbox_function_testing_name
+  description              = var.sandbox_function_testing_description
   s3_bucket                = var.infrastructure_s3_bucket
   s3_key                   = "${var.infrastructure_s3_prefix}/${var.sandbox_function_testing_name}.zip"
   role                     = var.lambda_execution_role_arn

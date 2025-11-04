@@ -131,9 +131,14 @@ module "infrastructure_lambdas" {
   apigw_route_throttler_name                   = "${var.infrastructure_prefix}_ApiGatewayRouteThrottler"
   notification_message_sender_name             = "${var.infrastructure_prefix}_NotificationMessageSender"
   terraform_destroy_trigger_name               = "${var.infrastructure_prefix}_TerraformDestroyTrigger"
+  sandbox_function_testing_name                = "Test_PythonSandbox"
+  apigw_route_throttler_description            = "After Cloudwatch Metric Alarm surpasses threshold, Lambda shuts down the API Gateway Routes"
+  notification_message_sender_description      = "Generic Notification Messages via Telegram API to Fiscalismia-Messaging Bot"
+  terraform_destroy_trigger_description        = "After Actual Cost Budget has been exceeded, triggers a Github Actions pipeline to destroy non-persistent AWS resources"
+  sandbox_function_testing_description         = "Testing sandbox for evaluating new functionality and debugging Python Lambdas"
+
   layer_name                                   = "${var.infrastructure_prefix}_PythonDependencies"
   layer_description                            = "Shared Python Dependencies for Infrastructure Lambdas."
-  sandbox_function_testing_name                = "Test_PythonSandbox"
   lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
   lambda_execution_role_arn                    = aws_iam_role.lambda_execution_role_infra.arn
   handler_name                                 = var.lambda_handler_name
