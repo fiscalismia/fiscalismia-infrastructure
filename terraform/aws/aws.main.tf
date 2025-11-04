@@ -155,9 +155,9 @@ module "cost_budget_alarms" {
 
 module "sns_topics" {
   source                                       = "./modules/sns_topic"
-  sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction" # AWS Budgets only support standard sns topics
-  sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling.fifo"
-  sns_topic_notification_message_sending_name  = "NotificationMessageSending.fifo"
+  sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction"
+  sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling"
+  sns_topic_notification_message_sending_name  = "NotificationMessageSending"
   sns_topic_sandbox_sns_testing_name           = "SandboxSnsTesting"
 }
 

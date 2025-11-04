@@ -36,13 +36,15 @@ locals {
       "x-amz-security-token"          # Required when using temporary credentials
     ]
     allowed_methods = ["GET", "HEAD", "POST"]
-    allowed_origins = [
+    allowed_origins = concat([
       # DO NOT include trailing forward slashes in URLs
       "http://localhost:3001",         # TODO local development frontend
       "http://localhost:3002",         # TODO local development backend
       "http://localhost:4173",         # TODO local development vite
-      "${var.fqdn != null ? var.fqdn : ""}", # either FQDN or empty string
-    ]
+    ],
+    var.fqdn != null ? [var.fqdn] : [] # adds fqdn if supplied as input
+    )
+      # "${var.fqdn != null ? var.fqdn : ""}", # either FQDN or empty string)
     expose_headers  = [
       "x-amz-server-side-encryption", # Indicates the encryption method used
       "x-amz-request-id",             # Helpful for troubleshooting requests
