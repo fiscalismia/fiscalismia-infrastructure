@@ -11,3 +11,7 @@ resource "aws_cloudwatch_log_group" "terraform_destroy_trigger" {
   name              = "/aws/lambda/${var.terraform_destroy_trigger_name}"
   retention_in_days = var.cloudwatch_log_retention_days
 }
+resource "aws_cloudwatch_log_group" "sandbox_function_testing" {
+  name              = "/aws/lambda/${var.sandbox_function_testing_name}"
+  retention_in_days = var.cloudwatch_log_retention_days
+}
