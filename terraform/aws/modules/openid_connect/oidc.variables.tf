@@ -3,6 +3,8 @@ variable "infrastructure_s3_bucket" {}
 variable "lambda_s3_app_prefix" {}
 variable "lambda_s3_infra_prefix" {}
 variable "terraform_state_bucket" {}
+variable "application_prefix" {}
+variable "infrastructure_prefix" {}
 variable "github_org" {}
 variable "github_lambda_repo" {}
 variable "github_infrastructure_repo" {}

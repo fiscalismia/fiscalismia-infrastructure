@@ -16,6 +16,8 @@ module "oidc_sts_pipeline_access" {
   region                                = var.region
   s3_bucket_name_prefix                 = var.s3_bucket_name_prefix
   terraform_state_bucket                = var.terraform_state_bucket
+  application_prefix                    = var.application_prefix
+  infrastructure_prefix                 = var.infrastructure_prefix
   github_org                            = "fiscalismia"
   github_lambda_repo                    = "fiscalismia-lambdas"
   github_infrastructure_repo            = "fiscalismia-infrastructure"
