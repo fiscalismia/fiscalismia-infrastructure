@@ -21,18 +21,13 @@ output "route_post_sheet_url" {
   value = "${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route}"
 }
 
-output "lambda_invoke_cmd_upload_img" {
+output "invoke_application_lambdas" {
   description = "aws cli invoke command to test the lambda function for uploading images"
   value = <<EOT
 ##### INVOKE UPLOAD IMG LAMBDA
 aws lambda invoke --function-name ${module.lambda_image_processing.function_name} /dev/stdout && echo "" && \
   aws lambda invoke --function-name ${module.lambda_image_processing.function_name} --log-type Tail /dev/null | jq -r '.LogResult' | base64 --decode
-EOT
-}
 
-output "lambda_invoke_cmd_raw_etl_processing" {
-  description = "aws cli invoke command to test the lambda function for processing raw data such as google sheets and tsv files"
-  value = <<EOT
 ##### INVOKE RAW DATA ETL LAMBDA
 aws lambda invoke --function-name ${module.lambda_raw_data_etl.function_name} \
   --payload '${jsonencode({key1 = "cli-test-value", sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSVcmgixKaP9LC-rrqS4D2rojIz48KwKA8QBmJloX1h7f8BkUloVuiw19eR2U5WvVT4InYgnPunUo49/pub?output=xlsx"})}' \
@@ -40,22 +35,22 @@ aws lambda invoke --function-name ${module.lambda_raw_data_etl.function_name} \
 EOT
 }
 
-output "lambda_invoke_cmd_upload_img_with_payload" {
-  description = "Curl API Gateway Endpoints with Secret Key. Do not persist"
+output "query_api_gateway_routes" {
+  description = "Curl API Gateway Endpoints with Secret Key."
   value = <<EOT
-
 ##### CURL ENDPOINT WITH BASE ENCODED IMAGE
-bash modules/lambda/scripts/curl-api-img-upload.sh ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_img_route}
+bash modules/application_lambda/scripts/curl-api-img-upload.sh ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_img_route}
 
 # WARNING: Replace with actual secret api key
-bash modules/lambda/scripts/curl-api-sheet-url.sh [tfvars.secret_api_key] ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} [tfvars.test_sheet_url]
+bash modules/application_lambda/scripts/curl-api-sheet-url.sh [tfvars.secret_api_key] ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} [tfvars.test_sheet_url]
 EOT
 }
 
 output "hcloud_serverlist" {
   value = join("\n", [
+    format("%-30s %s", "${var.backend_subdomain}.${var.domain_name}:", local.hcloud_ansible_oerchestrator_ipv4 != "127.0.0.1" ? local.hcloud_ansible_oerchestrator_ipv4 : local.no_ip),
     format("%-30s %s", "${var.demo_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_demo_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_demo_ipv4 : local.no_ip),
     format("%-30s %s", "${var.domain_name}:", local.hcloud_fiscalismia_frontend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_frontend_ipv4 : local.no_ip),
-    format("%-30s %s", "${var.backend_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_backend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_backend_ipv4 : local.no_ip),
+    format("%-30s %s", "Ansible Control Node:", local.hcloud_fiscalismia_backend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_backend_ipv4 : local.no_ip),
   ])
 }
