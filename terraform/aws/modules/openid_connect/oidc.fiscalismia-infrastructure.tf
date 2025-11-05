@@ -431,12 +431,15 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_logging" {
           "logs:DeleteRetentionPolicy",
           "logs:ListTagsLogGroup",
           "logs:TagLogGroup",
-          "logs:UntagLogGroup"
+          "logs:UntagLogGroup",
+          "logs:ListTagsForResource"
         ]
         Resource = [
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Fiscalismia_*",
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Infrastructure_*",
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Test_*",
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sns/delivery/lambda/success*",
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sns/delivery/lambda/failure*",
         ]
       },
       {
