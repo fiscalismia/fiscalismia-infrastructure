@@ -3,7 +3,7 @@ resource "aws_sns_topic" "budget_limit_exceeded_action" {
   lambda_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
   lambda_success_feedback_sample_rate = var.lambda_success_sample_rate
   lambda_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
-  tracing_config                      = var.enable_xray_tracing ? "Active" : "PassThrough"
+  tracing_config                      = "PassThrough" # disables x-ray tracing - overkill
 
   # AWS Budgets only support standard sns topics
   # fifo_topic                  = true
@@ -14,7 +14,7 @@ resource "aws_sns_topic" "apigw_route_throttling" {
   lambda_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
   lambda_success_feedback_sample_rate = var.lambda_success_sample_rate
   lambda_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
-  tracing_config                      = var.enable_xray_tracing ? "Active" : "PassThrough"
+  tracing_config                      = "PassThrough" # disables x-ray tracing - overkill
 
   # lambda subscribers do not support fifo topics
   # fifo_topic                  = true
@@ -25,7 +25,7 @@ resource "aws_sns_topic" "notification_message_sending" {
   lambda_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
   lambda_success_feedback_sample_rate = var.lambda_success_sample_rate
   lambda_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
-  tracing_config                      = var.enable_xray_tracing ? "Active" : "PassThrough"
+  tracing_config                      = "PassThrough" # disables x-ray tracing - overkill
 
   # lambda subscribers do not support fifo topics
   # fifo_topic                  = true
@@ -37,5 +37,5 @@ resource "aws_sns_topic" "sns_topic_sandbox_sns_testing" {
   lambda_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
   lambda_success_feedback_sample_rate = 100 # log all testing successes
   lambda_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_feedback_role.arn
-  tracing_config                      = "Active" # always enable tracing for testing
+  tracing_config                      = "PassThrough" # disables x-ray tracing - overkill
 }

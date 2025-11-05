@@ -18,10 +18,6 @@ variable "cloudwatch_log_retention_days" {
   description = "Number of days to retain CloudWatch logs for SNS delivery status"
   type        = number
 }
-variable "enable_xray_tracing" {
-  description = "Enable AWS X-Ray tracing for SNS topics. Set to false to reduce costs."
-  type        = bool
-}
 variable "lambda_success_sample_rate" {
   description = "Percentage of successful Lambda deliveries to log (0-100). Lower = less cost."
   type        = number
