@@ -145,7 +145,8 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_serverless" {
           "lambda:InvokeFunction",
           "lambda:GetPolicy",
           "lambda:AddPermission",
-          "lambda:RemovePermission"
+          "lambda:RemovePermission",
+          "lambda:GetFunctionCodeSigningConfig"
         ]
         Resource = [
           "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:Fiscalismia_*",
@@ -380,7 +381,8 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_general" {
           "budgets:DeleteBudget",
           "budgets:ViewBudget",
           "budgets:ModifyBudget",
-          "budgets:DescribeBudgets"
+          "budgets:DescribeBudgets",
+          "budgets:ListTagsForResource"
         ]
         Resource = [
           "arn:aws:budgets::${data.aws_caller_identity.current.account_id}:budget/*"
@@ -425,7 +427,6 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_logging" {
         Action = [
           "logs:CreateLogGroup",
           "logs:DeleteLogGroup",
-          "logs:DescribeLogGroups",
           "logs:PutRetentionPolicy",
           "logs:DeleteRetentionPolicy",
           "logs:ListTagsLogGroup",
@@ -435,8 +436,16 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_logging" {
         Resource = [
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Fiscalismia_*",
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Infrastructure_*",
-          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Test_*"
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Test_*",
         ]
+      },
+      {
+        Sid    = "CloudWatchLogsListOperations"
+        Effect = "Allow"
+        Action = [
+          "logs:DescribeLogGroups"
+        ]
+        Resource = "*"
       },
       # CloudWatch Alarms - Metric alarm management
       {
