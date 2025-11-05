@@ -58,7 +58,8 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_iam" {
         ]
         Resource = [
           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LambdaExecutionRole_*",
-          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OpenID_Connect_GithubActions_*"
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OpenID_Connect_GithubActions_*",
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/CloudwatchLogging-SNSDelivery-FeedbackRole"
         ]
       },
       {
@@ -94,7 +95,8 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_iam" {
         ]
         Resource = [
           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LambdaExecutionRole_*",
-          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OpenID_Connect_GithubActions_*"
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OpenID_Connect_GithubActions_*",
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/CloudwatchLogging-SNSDelivery-FeedbackRole"
         ]
       },
       {

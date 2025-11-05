@@ -14,7 +14,6 @@ data "aws_iam_policy_document" "lambda_s3_iam_role_access" {
     resources = ["arn:aws:s3:::${var.s3_lambda_application_bucket}/*"]
   }
 }
-
 resource "aws_iam_policy" "lambda_s3_iam_role_access" {
   name        = "LambdaS3_IAM_Role_Access_${var.function_name}"
   description = "Allow Lambda functions to access S3"

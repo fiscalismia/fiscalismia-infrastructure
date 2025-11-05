@@ -166,6 +166,8 @@ module "sns_topics" {
   sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling"
   sns_topic_notification_message_sending_name  = "NotificationMessageSending"
   sns_topic_sandbox_sns_testing_name           = "SandboxSnsTesting"
+  cloudwatch_log_retention_days                = 30
+  enable_xray_tracing                          = true
 }
 
 module "cloudwatch_metric_alarms" {

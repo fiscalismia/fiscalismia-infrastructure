@@ -1,6 +1,6 @@
 # CloudWatch Logs policy
-resource "aws_iam_policy" "lambda_logging_infra" {
-  name        = "lambda_logging"
+resource "aws_iam_policy" "lambda_cloudwatch_logging_infra" {
+  name        = "CloudwatchLogging-InfrastructurePolicy"
   path        = "/"
   description = "IAM policy for logging from Lambda"
 
@@ -21,5 +21,5 @@ resource "aws_iam_policy" "lambda_logging_infra" {
 }
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = var.lambda_execution_role_name
-  policy_arn = aws_iam_policy.lambda_logging_infra.arn
+  policy_arn = aws_iam_policy.lambda_cloudwatch_logging_infra.arn
 }

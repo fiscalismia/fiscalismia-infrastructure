@@ -1,3 +1,4 @@
+##################### LAMBDA EXECUTION ROLES APPLICATION ####################
 resource "aws_iam_role" "lambda_execution_role_app" {
   name = "LambdaExecutionRole_FiscalismiaWebservice"
   assume_role_policy = jsonencode({
@@ -19,6 +20,34 @@ resource "aws_iam_role_policy_attachment" "lambda_role_app" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# CloudWatch Logs policy
+resource "aws_iam_policy" "lambda_cloudwatch_logging_app" {
+  name        = "CloudwatchLogging-ApplicationPolicy"
+  path        = "/"
+  description = "IAM policy for logging from Lambda"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = ["arn:aws:logs:*:*:*"]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_cloudwatch_logging_app" {
+  role       = aws_iam_role.lambda_execution_role_app.name
+  policy_arn = aws_iam_policy.lambda_cloudwatch_logging_app.arn
+}
+
+##################### LAMBDA EXECUTION ROLES INFRASTRUCTURE ####################
 resource "aws_iam_role" "lambda_execution_role_infra" {
   name = "LambdaExecutionRole_Infrastructure"
   assume_role_policy = jsonencode({
