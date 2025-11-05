@@ -1,4 +1,4 @@
-name: Fiscalismia-Infrastructure Deployment Pipeline
+name: Fiscalismia-Infrastructure Terraform Pipeline
 
 on:
   push:
