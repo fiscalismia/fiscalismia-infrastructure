@@ -25,7 +25,7 @@ module "oidc_sts_pipeline_access" {
   lambda_s3_infra_prefix                = "lambdas/infrastructure"
 }
 
-# Fiscalismia S3 bucket for persisting downsized uploaded user images
+# Fiscalismia Application bucket for persisting uploaded user images downsized via AWS Lambda
 module "s3_image_storage" {
   source                                = "./modules/s3"
   bucket_name                           = "${var.s3_bucket_name_prefix}${var.image_processing_bucket_name}"
@@ -39,7 +39,7 @@ module "s3_image_storage" {
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
-# Fiscalismia ETL Repository for Raw Data Transformation using Sheets and TSV files
+# Fiscalismia Application bucket acting ETL Repository for Raw Data Transformation using Sheets and TSV files
 module "s3_raw_data_etl_storage" {
   source                                = "./modules/s3"
   bucket_name                           = "${var.s3_bucket_name_prefix}${var.etl_bucket_name}"
