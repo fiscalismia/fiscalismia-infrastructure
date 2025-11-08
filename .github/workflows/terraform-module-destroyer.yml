@@ -19,7 +19,7 @@ on:
         type: boolean
 
 jobs:
-  terraform-destroy-aws-and-hcloud:
+  destroy-aws-and-hcloud:
     if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
     runs-on: ubuntu-latest
 
