@@ -64,8 +64,11 @@ jobs:
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${DEMO_PUBLIC_KEY}
+
+        mkdir -p ${GITHUB_WORKSPACE}/ssh_public_keys
         cd ~/.ssh/
         ls -l
+        cp -r ./*hcloud.pub ${GITHUB_WORKSPACE}/ssh_public_keys/
 
     - name: Generate terraform planfile for Hetzner Cloud
       env:
@@ -86,6 +89,14 @@ jobs:
         retention-days: 1
         path: |
           planfiles/hcloud*
+
+    - name: Upload Hcloud Public Keys for Apply Step
+      uses: actions/upload-artifact@v5.0.0
+      with:
+        name: public-hcloud-keys
+        retention-days: 1
+        path: |
+          ssh_public_keys/*hcloud.pub
 
   terraform-review-hcloud:
     needs:
@@ -161,12 +172,19 @@ jobs:
         name: hcloud-planfile
         path: planfiles/
 
+    - name: Download Hcloud Public SSH Key Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: public-hcloud-keys
+        path: .ssh/
+
     - name: Automatically apply hetzner cloud planfile
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
         aws sts get-caller-identity
 
+        ls -l ${GITHUB_WORKSPACE}/.ssh/
         cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
         terraform init
         terraform apply --auto-approve ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
