@@ -30,7 +30,6 @@ jobs:
       uses: hashicorp/setup-terraform@v3.1.2
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      # See https://docs.github.com/en/actions/concepts/security/openid-connect
       uses: aws-actions/configure-aws-credentials@v5.1.0
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
@@ -105,6 +104,13 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
 
+    - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
+      uses: aws-actions/configure-aws-credentials@v5.1.0
+      with:
+        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
+        role-session-name: TerraformReviewHcloud_STSSession
+        aws-region: ${{ vars.AWS_REGION }}
+
     - name: Download Planfile Artifacts
       uses: actions/download-artifact@v4
       with:
@@ -115,6 +121,7 @@ jobs:
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
+        aws sts get-caller-identity
         cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
         terraform init
         terraform show ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
@@ -141,6 +148,8 @@ jobs:
         path: planfiles/
 
     - name: Automatically apply hetzner cloud planfile
+      env:
+        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
         cd ${GITHUB_WORKSPACE}/planfiles/
         terraform apply hcloud.plan --auto-approve
@@ -164,7 +173,6 @@ jobs:
       uses: hashicorp/setup-terraform@v3.1.2
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Terraform Pipeline Role
-      # See https://docs.github.com/en/actions/concepts/security/openid-connect
       uses: aws-actions/configure-aws-credentials@v5.1.0
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
@@ -219,6 +227,13 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
 
+    - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Terraform Pipeline Role
+      uses: aws-actions/configure-aws-credentials@v5.1.0
+      with:
+        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
+        role-session-name: TerraformReviewAWS_STSSession
+        aws-region: ${{ vars.AWS_REGION }}
+
     - name: Download Planfile Artifacts
       uses: actions/download-artifact@v4
       with:
@@ -227,6 +242,8 @@ jobs:
 
     - name: Review AWS planfile
       run: |
+        aws sts get-caller-identity
+
         cd ${GITHUB_WORKSPACE}/terraform/aws
         terraform init
         terraform show ${GITHUB_WORKSPACE}/planfiles/aws.plan
