@@ -94,6 +94,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      id-token: write # for aws OIDC STS tokens to work
       contents: read
       actions: read
 
@@ -135,11 +136,22 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      id-token: write # for aws OIDC STS tokens to work
       actions: read
 
     steps:
     - name: Checkout SCM
       uses: actions/checkout@v5
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3.1.2
+
+    - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
+      uses: aws-actions/configure-aws-credentials@v5.1.0
+      with:
+        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
+        role-session-name: TerraformApplyHcloud_STSSession
+        aws-region: ${{ vars.AWS_REGION }}
 
     - name: Download Hcloud Planfile Artifact
       uses: actions/download-artifact@v4
@@ -151,6 +163,8 @@ jobs:
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
+        aws sts get-caller-identity
+
         cd ${GITHUB_WORKSPACE}/planfiles/
         terraform apply hcloud.plan --auto-approve
 
@@ -217,6 +231,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      id-token: write # for aws OIDC STS tokens to work
       contents: read
       actions: read
 
