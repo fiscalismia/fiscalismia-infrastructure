@@ -160,7 +160,7 @@ jobs:
       uses: hashicorp/setup-terraform@v3.1.2
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-a${GITHUB_WORKSPACE}ws-credentials@v5.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.0
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
         role-session-name: TerraformApplyHcloud_STSSession
