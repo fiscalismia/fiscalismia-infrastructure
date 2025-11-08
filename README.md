@@ -24,7 +24,7 @@ ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-key-hcloud -C "Fiscalismia 
 ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
 ```
 
-### Terraform for Hetzner Cloud
+1. Terraform for Hetzner Cloud
 
 ```bash
 cd ~/git/fiscalismia-infrastructure/terraform/hetzner-cloud/
@@ -33,21 +33,34 @@ terraform init
 terraform apply
 ```
 
-### Terraform for AWS
+2. Terraform for persistent AWS resources
 
 **Provision Hetzner Cloud first, since aws route53 depends on hcloud server ipv4 addresses for Type A Records using `terraform_remote_state`**
+
+**INFO:** This has to be provisioned once initially with AWS admin credentials locally.
+This is because of the chicken and egg problem, since the automated github actions pipeline running terraform apply requires an IAM role for authenticating to AWS via OIDC tokens and these permissions have to be setup first.
+
+**Dependency Chain:** Also the S3 buckets containing the AWS lambdas and application data should exist before running the AWS Lambda pipeline and then never be destroyed again.
+
+```bash
+terraform apply \
+  -target=module.s3_image_storage \
+  -target=module.s3_raw_data_etl_storage \
+  -target=module.s3_infrastructure_storage \
+  --target=module.oidc_sts_pipeline_access \
+  -auto-approve
+```
+
+3. Terraform for dynamic AWS resources provisioned and destroyed via pipeline
+
+**INFO:** This can be run in github actions pipeline via `arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline`
 
 ```bash
 cd ~/git/fiscalismia-infrastructure/terraform/aws/
 source ../.env
 terraform init
-terraform apply
-```
-
-### Terraform Module Destroyer Github Actions Pipeline
-
-```bash
-terraform destroy \
+terraform apply \
+  -target=module.route_53_dns \
   -target=module.api_gateway \
   -target=module.lambda_image_processing \
   -target=module.lambda_raw_data_etl \
@@ -58,16 +71,29 @@ terraform destroy \
   -auto-approve
 ```
 
-**Apply only persistent infrastructure**
+### Terraform Module Destroyer Github Actions Pipeline
+
+**INFO:** This can be run in github actions pipeline via `arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline`
 
 ```bash
-terraform apply \
+cd ~/git/fiscalismia-infrastructure/terraform/aws/
+source ../.env
+terraform init
+terraform destroy \
   -target=module.route_53_dns \
-  -target=module.s3_image_storage \
-  -target=module.s3_raw_data_etl_storage \
-  -target=module.s3_infrastructure_storage \
-  --target=module.oidc_sts_pipeline_access \
+  -target=module.api_gateway \
+  -target=module.lambda_image_processing \
+  -target=module.lambda_raw_data_etl \
+  -target=module.infrastructure_lambdas \
+  -target=module.cost_budget_alarms \
+  -target=module.sns_topics \
+  -target=module.cloudwatch_metric_alarms \
   -auto-approve
+
+cd ~/git/fiscalismia-infrastructure/terraform/hetzner-cloud/
+source ../.env
+terraform init
+terraform destroy --auto-approve
 ```
 
 ### Setup Ansible Control Node
