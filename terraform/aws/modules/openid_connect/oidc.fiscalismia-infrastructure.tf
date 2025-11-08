@@ -190,7 +190,8 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_serverless" {
           "apigateway:PUT",
           "apigateway:PATCH",
           "apigateway:DELETE",
-          "apigateway:UpdateRestApiPolicy"
+          "apigateway:UpdateRestApiPolicy",
+          "apigateway:TagResource"
         ]
         Resource = [
           "arn:aws:apigateway:${var.region}::/apis",
@@ -384,7 +385,8 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_general" {
           "budgets:ViewBudget",
           "budgets:ModifyBudget",
           "budgets:DescribeBudgets",
-          "budgets:ListTagsForResource"
+          "budgets:ListTagsForResource",
+          "budgets:TagResource"
         ]
         Resource = [
           "arn:aws:budgets::${data.aws_caller_identity.current.account_id}:budget/*"
