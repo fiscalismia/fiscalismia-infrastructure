@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      id-token: write # for aws OIDC STS tokens to work
       contents: read
       actions: read
 
@@ -43,6 +44,8 @@ jobs:
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
+        aws sts get-caller-identity
+
         cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
         if ! [ -z "${HCLOUD_TOKEN}" ]; then echo hcloud token defined; else echo "hcloud token not defined"; fi
         terraform init
