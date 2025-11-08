@@ -68,7 +68,37 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_s3" {
     })
 }
 
+resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_secretsmgr" {
+  name        = "OpenID_Connect_GithubActions_TerraformHcloudBackend_SecretsManagerPolicy"
+  description = "Scoped Secrets Manager Access for hcloud deployment secrets"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Secrets Manager - For SSH Public Keys to Provision Hcloud Servers
+      {
+        Sid    = "SecretsManagerReadAccess"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-infrastructure-master-key-hcloud.pub*",
+          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-production-instances-key-hcloud.pub*",
+          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-demo-instance-key-hcloud.pub*",
+        ]
+      },
+    ]
+    })
+}
+
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_s3_backend_s3" {
   role       = aws_iam_role.github_actions_terraform_hcloud_s3_backend.name
   policy_arn = aws_iam_policy.github_actions_terraform_hcloud_s3_backend_s3.arn
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_s3_backend_secretsmgr" {
+  role       = aws_iam_role.github_actions_terraform_hcloud_s3_backend.name
+  policy_arn = aws_iam_policy.github_actions_terraform_hcloud_s3_backend_secretsmgr.arn
 }

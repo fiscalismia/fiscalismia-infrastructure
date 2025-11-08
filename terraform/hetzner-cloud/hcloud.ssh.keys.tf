@@ -1,17 +1,17 @@
 resource "hcloud_ssh_key" "infrastructure_orchestration" {
-  name       = "fiscalismia-infrastructure-master-key"
+  name       = "fiscalismia-infrastructure-master-key-hcloud"
   public_key = file("~/.ssh/fiscalismia-infrastructure-master-key-hcloud.pub")
   labels     = local.default_labels
 }
 
-resource "hcloud_ssh_key" "demo_instance" {
-  name       = "fiscalismia-demo-key"
-  public_key = file("~/.ssh/fiscalismia-demo-key-hcloud.pub")
+resource "hcloud_ssh_key" "production_instances" {
+  name       = "fiscalismia-production-instances-key-hcloud"
+  public_key = file("~/.ssh/fiscalismia-production-instances-key-hcloud.pub")
   labels     = local.default_labels
 }
 
-resource "hcloud_ssh_key" "production_instances" {
-  name       = "fiscalismia-production-key"
-  public_key = file("~/.ssh/fiscalismia-production-key-hcloud.pub")
+resource "hcloud_ssh_key" "demo_instance" {
+  name       = "fiscalismia-demo-instance-key-hcloud"
+  public_key = file("~/.ssh/fiscalismia-demo-instance-key-hcloud.pub")
   labels     = local.default_labels
 }
