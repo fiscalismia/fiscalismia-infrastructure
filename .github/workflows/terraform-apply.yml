@@ -47,21 +47,26 @@ jobs:
         DEMO_PUBLIC_KEY: fiscalismia-demo-instance-key-hcloud.pub
       run: |
         mkdir -p ~/.ssh/
+        echo "Querying ${MASTER_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${MASTER_PUBLIC_KEY} \
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${MASTER_PUBLIC_KEY}
+        echo "Querying ${PRODUCTION_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${PRODUCTION_PUBLIC_KEY} \
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${PRODUCTION_PUBLIC_KEY}
+        echo "Querying ${DEMO_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${DEMO_PUBLIC_KEY} \
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${DEMO_PUBLIC_KEY}
+        cd ~/.ssh/
+        ls -l
 
     - name: Generate terraform planfile for Hetzner Cloud
       env:
@@ -90,9 +95,13 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
       actions: read
 
     steps:
+    - name: Checkout SCM
+      uses: actions/checkout@v5
+
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
 
@@ -103,9 +112,13 @@ jobs:
         path: planfiles/
 
     - name: Review Hcloud planfile
+      env:
+        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
-        cd ${GITHUB_WORKSPACE}/planfiles/
-        terraform show hcloud.plan
+        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
+        terraform init
+        terraform show ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
+
 
   terraform-apply-hcloud:
     environment: prod # requires manual approval before running
@@ -196,9 +209,13 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
       actions: read
 
     steps:
+    - name: Checkout SCM
+      uses: actions/checkout@v5
+
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
 
@@ -210,5 +227,6 @@ jobs:
 
     - name: Review AWS planfile
       run: |
-        cd ${GITHUB_WORKSPACE}/planfiles/
-        terraform show aws.plan
+        cd ${GITHUB_WORKSPACE}/terraform/aws
+        terraform init
+        terraform show ${GITHUB_WORKSPACE}/planfiles/aws.plan
