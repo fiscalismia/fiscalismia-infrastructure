@@ -1,11 +1,11 @@
 # OIDC Role for Terraform Deployment
-resource "aws_iam_role" "github_actions_terraform_deployment" {
+resource "aws_iam_role" "github_actions_terraform_aws_deployment" {
   name                 = "OpenID_Connect_GithubActions_TerraformPipeline"
-  assume_role_policy   = data.aws_iam_policy_document.github_actions_terraform_deployment.json
+  assume_role_policy   = data.aws_iam_policy_document.github_actions_terraform_aws_deployment.json
   max_session_duration = 3600 # 1 hour - limit session duration for security
 }
 
-data "aws_iam_policy_document" "github_actions_terraform_deployment" {
+data "aws_iam_policy_document" "github_actions_terraform_aws_deployment" {
   statement {
     sid     = "OpenIDConnectGithubActionsTerraformDeploymentAssumeRolePolicy"
     effect  = "Allow"
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "github_actions_terraform_deployment" {
   }
 }
 
-resource "aws_iam_policy" "github_actions_terraform_deployment_iam" {
+resource "aws_iam_policy" "github_actions_terraform_aws_deployment_iam" {
   name        = "OpenID_Connect_GithubActions_TerraformPipeline_IAMPolicy"
   description = "Scoped IAM policy for GitHub Actions to deploy and destroy full Terraform infrastructure stack"
 
@@ -118,7 +118,7 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_iam" {
     })
 }
 
-resource "aws_iam_policy" "github_actions_terraform_deployment_serverless" {
+resource "aws_iam_policy" "github_actions_terraform_aws_deployment_serverless" {
   name        = "OpenID_Connect_GithubActions_TerraformPipeline_ServerlessPolicy"
   description = "Scoped Serverless policy for GitHub Actions to deploy and destroy full Terraform infrastructure stack"
 
@@ -225,7 +225,7 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_serverless" {
   })
 }
 
-resource "aws_iam_policy" "github_actions_terraform_deployment_s3" {
+resource "aws_iam_policy" "github_actions_terraform_aws_deployment_s3" {
   name        = "OpenID_Connect_GithubActions_TerraformPipeline_S3Policy"
   description = "Scoped S3 policy for GitHub Actions to deploy and destroy full Terraform infrastructure stack"
 
@@ -308,7 +308,7 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_s3" {
     })
 }
 
-resource "aws_iam_policy" "github_actions_terraform_deployment_general" {
+resource "aws_iam_policy" "github_actions_terraform_aws_deployment_general" {
   name        = "OpenID_Connect_GithubActions_TerraformPipeline_GeneralPolicy"
   description = "Scoped policy for GitHub Actions to deploy and destroy full Terraform infrastructure stack"
 
@@ -413,7 +413,7 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_general" {
   })
 }
 
-resource "aws_iam_policy" "github_actions_terraform_deployment_logging" {
+resource "aws_iam_policy" "github_actions_terraform_aws_deployment_logging" {
   name        = "OpenID_Connect_GithubActions_TerraformPipeline_LoggingPolicy"
   description = "Scoped Logging policy for GitHub Actions to deploy and destroy full Terraform infrastructure stack"
 
@@ -470,23 +470,23 @@ resource "aws_iam_policy" "github_actions_terraform_deployment_logging" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_deployment_general" {
-  role       = aws_iam_role.github_actions_terraform_deployment.name
-  policy_arn = aws_iam_policy.github_actions_terraform_deployment_general.arn
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_aws_deployment_general" {
+  role       = aws_iam_role.github_actions_terraform_aws_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_aws_deployment_general.arn
 }
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_deployment_iam" {
-  role       = aws_iam_role.github_actions_terraform_deployment.name
-  policy_arn = aws_iam_policy.github_actions_terraform_deployment_iam.arn
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_aws_deployment_iam" {
+  role       = aws_iam_role.github_actions_terraform_aws_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_aws_deployment_iam.arn
 }
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_deployment_s3" {
-  role       = aws_iam_role.github_actions_terraform_deployment.name
-  policy_arn = aws_iam_policy.github_actions_terraform_deployment_s3.arn
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_aws_deployment_s3" {
+  role       = aws_iam_role.github_actions_terraform_aws_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_aws_deployment_s3.arn
 }
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_deployment_serverless" {
-  role       = aws_iam_role.github_actions_terraform_deployment.name
-  policy_arn = aws_iam_policy.github_actions_terraform_deployment_serverless.arn
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_aws_deployment_serverless" {
+  role       = aws_iam_role.github_actions_terraform_aws_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_aws_deployment_serverless.arn
 }
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_deployment_logging" {
-  role       = aws_iam_role.github_actions_terraform_deployment.name
-  policy_arn = aws_iam_policy.github_actions_terraform_deployment_logging.arn
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_aws_deployment_logging" {
+  role       = aws_iam_role.github_actions_terraform_aws_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_aws_deployment_logging.arn
 }
