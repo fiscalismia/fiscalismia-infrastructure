@@ -160,7 +160,7 @@ jobs:
       uses: hashicorp/setup-terraform@v3.1.2
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.0
+      uses: aws-actions/configure-a${GITHUB_WORKSPACE}ws-credentials@v5.1.0
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
         role-session-name: TerraformApplyHcloud_STSSession
@@ -176,7 +176,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: public-hcloud-keys
-        path: .ssh/
+        path: ~/.ssh/
 
     - name: Automatically apply hetzner cloud planfile
       env:
@@ -184,7 +184,7 @@ jobs:
       run: |
         aws sts get-caller-identity
 
-        ls -l ${GITHUB_WORKSPACE}/.ssh/
+        ls -l ~/.ssh/
         cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
         terraform init
         terraform apply --auto-approve ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
