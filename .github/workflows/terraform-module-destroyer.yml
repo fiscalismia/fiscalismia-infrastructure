@@ -19,7 +19,7 @@ on:
         type: boolean
 
 jobs:
-  terraform-plan-aws:
+  terraform-destroy-aws-and-hcloud:
     if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
     runs-on: ubuntu-latest
 
@@ -39,16 +39,19 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v5.1.0
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
-        role-session-name: TerraformPlanAWS_STSSession
+        role-session-name: TerraformModuleDestroyer_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Destroy all dynamic AWS and Hetzner Cloud resources
+    - name: Destroy AWS and Hetzner Cloud resources
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
         cd ${GITHUB_WORKSPACE}/terraform/aws/
         terraform init
         terraform destroy \
+          -var='secret_api_key=${{ secrets.API_GATEWAY_SECRET_KEY }}' \
+          -var='test_sheet_url=${{ secrets.GOOGLE_DOCS_TEST_URL }}' \
+          -var='forecasted_budget_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
           -target=module.route_53_dns \
           -target=module.api_gateway \
           -target=module.lambda_image_processing \
