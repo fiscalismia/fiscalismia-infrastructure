@@ -138,6 +138,7 @@ jobs:
 
     permissions:
       id-token: write # for aws OIDC STS tokens to work
+      contents: read
       actions: read
 
     steps:
