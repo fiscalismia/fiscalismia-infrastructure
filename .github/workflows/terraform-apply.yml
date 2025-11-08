@@ -140,8 +140,8 @@ jobs:
       actions: read
 
     steps:
-    - name: Checkout SCM
-      uses: actions/checkout@v5
+    # - name: Checkout SCM
+    #   uses: actions/checkout@v5
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2

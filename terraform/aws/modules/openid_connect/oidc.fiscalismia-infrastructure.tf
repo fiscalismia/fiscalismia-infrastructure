@@ -23,6 +23,9 @@ data "aws_iam_policy_document" "github_actions_terraform_aws_deployment" {
       values = [
         "repo:${var.github_org}/${var.github_infrastructure_repo}:ref:refs/heads/main",
         "repo:${var.github_org}/${var.github_infrastructure_repo}:ref:refs/heads/pipeline_testing",
+        # Adds environment support for OIDC to allow for manual approval of terraform apply jobs
+        "repo:${var.github_org}/${var.github_infrastructure_repo}:environment:prod:ref:refs/heads/main",
+        "repo:${var.github_org}/${var.github_infrastructure_repo}:environment:prod:ref:refs/heads/pipeline_testing",
       ]
     }
 
