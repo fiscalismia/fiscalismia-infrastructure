@@ -49,6 +49,7 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_s3" {
         ]
         Resource = [
           "arn:aws:s3:::${var.terraform_state_bucket}",
+          "arn:aws:s3:::${var.terraform_state_bucket}/hcloud/*",
         ]
       },
       {
