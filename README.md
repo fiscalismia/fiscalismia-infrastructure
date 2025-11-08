@@ -26,6 +26,10 @@ ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-key-hcloud -C "Fiscal
 
 1. Terraform for Hetzner Cloud
 
+Provision Hetzner Cloud first, since aws route53 depends on hcloud server ipv4 addresses for Type A Records using `terraform_remote_state`
+
+**INFO:** This can be run in github actions pipeline via `secrets.HCLOUD_TOKEN`
+
 ```bash
 cd ~/git/fiscalismia-infrastructure/terraform/hetzner-cloud/
 source ../.env
@@ -35,8 +39,6 @@ terraform apply
 
 2. Terraform for persistent AWS resources
 
-**Provision Hetzner Cloud first, since aws route53 depends on hcloud server ipv4 addresses for Type A Records using `terraform_remote_state`**
-
 **INFO:** This has to be provisioned once initially with AWS admin credentials locally.
 This is because of the chicken and egg problem, since the automated github actions pipeline running terraform apply requires an IAM role for authenticating to AWS via OIDC tokens and these permissions have to be setup first.
 
@@ -44,10 +46,10 @@ This is because of the chicken and egg problem, since the automated github actio
 
 ```bash
 terraform apply \
+  --target=module.oidc_sts_pipeline_access \
   -target=module.s3_image_storage \
   -target=module.s3_raw_data_etl_storage \
   -target=module.s3_infrastructure_storage \
-  --target=module.oidc_sts_pipeline_access \
   -auto-approve
 ```
 

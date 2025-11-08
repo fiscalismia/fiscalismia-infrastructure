@@ -8,10 +8,99 @@ on:
   pull_request:
     branches:
       - main
-      - pipeline_testing+
+      - pipeline_testing
 
 jobs:
-  terraform-plan:
+  #          __        __        __      __   ___  __        __             ___      ___
+  #    |__| /  ` |    /  \ |  | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
+  #    |  | \__, |___ \__/ \__/ |__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
+  terraform-plan-hcloud:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+    - name: Checkout SCM
+      uses: actions/checkout@v5
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3.1.2
+
+    - name: Create Planfiles directory for artifacts
+      run: mkdir -p ${GITHUB_WORKSPACE}/planfiles
+
+    - name: Generate terraform planfile for Hetzner Cloud
+      env:
+        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      run: |
+        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
+        terraform init
+        terraform plan \
+          -out ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
+
+    - name: Upload Planfile Artifacts
+      uses: actions/upload-artifact@v5.0.0
+      with:
+        name: hcloud-planfile
+        retention-days: 1
+        path: |
+          planfiles/hcloud*
+
+  terraform-review-hcloud:
+    needs:
+      - terraform-plan-hcloud
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+
+    steps:
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3.1.2
+
+    - name: Download Planfile Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hcloud-planfile
+        path: planfiles/
+
+    - name: Review Hcloud planfile
+      run: |
+        cd ${GITHUB_WORKSPACE}/planfiles/
+        terraform show hcloud.plan
+
+  terraform-apply-hcloud:
+    environment: prod # requires manual approval before running
+    needs:
+      - terraform-review-hcloud
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+
+    steps:
+    - name: Checkout SCM
+      uses: actions/checkout@v5
+
+    - name: Download Hcloud Planfile Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: terraform-planfiles
+        path: planfiles/
+
+    - name: Automatically apply hetzner cloud planfile
+      run: |
+        cd ${GITHUB_WORKSPACE}/planfiles/
+        terraform apply hcloud.plan --auto-approve
+
+  #               __      __   ___  __        __             ___      ___
+  #     /\  |  | /__`    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
+  #    /~~\ |/\| .__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
+  terraform-plan-aws:
     runs-on: ubuntu-latest
 
     permissions:
@@ -25,8 +114,6 @@ jobs:
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
-      with:
-        terraform_version: "1.13.4" # comment out for latest version
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access
       # See https://docs.github.com/en/actions/concepts/security/openid-connect
@@ -36,15 +123,15 @@ jobs:
         role-session-name: TerraformPlanSTSSession
         aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Write terraform planfile
+    - name: Create Planfiles directory for artifacts
+      run: mkdir -p ${GITHUB_WORKSPACE}/planfiles
+
+    - name: Generate terraform planfile for AWS
       run: |
         aws sts get-caller-identity
 
-        which terraform
-        terraform -v
         cd ${GITHUB_WORKSPACE}/terraform/aws
         terraform init
-        mkdir -p ${GITHUB_WORKSPACE}/planfiles
         terraform plan \
           -var='secret_api_key=${{ secrets.API_GATEWAY_SECRET_KEY }}' \
           -var='test_sheet_url=${{ secrets.GOOGLE_DOCS_TEST_URL }}' \
