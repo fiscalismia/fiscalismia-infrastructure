@@ -40,6 +40,29 @@ jobs:
     - name: Create Planfiles directory for artifacts
       run: mkdir -p ${GITHUB_WORKSPACE}/planfiles
 
+    - name: Query SSH public keys for Hcloud servers from AWS Secrets Manager
+      env:
+        MASTER_PUBLIC_KEY: fiscalismia-infrastructure-master-key-hcloud.pub
+        PRODUCTION_PUBLIC_KEY: fiscalismia-production-instances-key-hcloud.pub
+        DEMO_PUBLIC_KEY: fiscalismia-demo-instance-key-hcloud.pub
+      run: |
+        mkdir -p ~/.ssh/
+        aws secretsmanager get-secret-value \
+          --secret-id ${MASTER_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${MASTER_PUBLIC_KEY}
+        aws secretsmanager get-secret-value \
+          --secret-id ${PRODUCTION_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${PRODUCTION_PUBLIC_KEY}
+        aws secretsmanager get-secret-value \
+          --secret-id ${DEMO_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${DEMO_PUBLIC_KEY}
+
     - name: Generate terraform planfile for Hetzner Cloud
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
