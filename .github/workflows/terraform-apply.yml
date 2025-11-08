@@ -141,8 +141,8 @@ jobs:
       actions: read
 
     steps:
-    # - name: Checkout SCM
-    #   uses: actions/checkout@v5
+    - name: Checkout SCM
+      uses: actions/checkout@v5
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
@@ -166,8 +166,9 @@ jobs:
       run: |
         aws sts get-caller-identity
 
-        cd ${GITHUB_WORKSPACE}/planfiles/
-        terraform apply --auto-approve hcloud.plan
+        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
+        terraform init
+        terraform apply --auto-approve ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
 
   #               __      __   ___  __        __             ___      ___
   #     /\  |  | /__`    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
