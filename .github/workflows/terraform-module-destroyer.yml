@@ -13,7 +13,7 @@ on:
         default: false
         type: boolean
       destroy_hcloud:
-        description: 'Should hetzner modules be destroyed?'
+        description: 'Should Hetzner modules be destroyed?'
         required: true
         default: false
         type: boolean
