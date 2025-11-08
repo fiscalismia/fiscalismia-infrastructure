@@ -1,4 +1,4 @@
-name: Fiscalismia-Infrastructure HCLOUD Terraform Pipeline
+name: Fiscalismia HCLOUD Terraform Pipeline
 
 on:
   push:

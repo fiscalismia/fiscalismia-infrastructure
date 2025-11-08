@@ -1,4 +1,4 @@
-name: Fiscalismia-Infrastructure AWS Terraform Pipeline
+name: Fiscalismia AWS Terraform Pipeline
 
 on:
   push:
