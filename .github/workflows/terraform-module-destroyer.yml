@@ -7,14 +7,20 @@ name: Fiscalismia Terraform ModuleDestroyer Pipeline
 on:
   workflow_dispatch:
     inputs:
-      update_functions:
-        description: 'Should modules be destroyed?'
+      destroy_aws:
+        description: 'Should AWS modules be destroyed?'
+        required: true
+        default: false
+        type: boolean
+      destroy_hcloud:
+        description: 'Should hetzner modules be destroyed?'
         required: true
         default: false
         type: boolean
 
 jobs:
   terraform-plan-aws:
+    if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
     runs-on: ubuntu-latest
 
     permissions:
@@ -35,3 +41,24 @@ jobs:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
         role-session-name: TerraformPlanAWS_STSSession
         aws-region: ${{ vars.AWS_REGION }}
+
+    - name: Destroy all dynamic AWS and Hetzner Cloud resources
+      env:
+        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      run: |
+        cd ${GITHUB_WORKSPACE}/terraform/aws/
+        terraform init
+        terraform destroy \
+          -target=module.route_53_dns \
+          -target=module.api_gateway \
+          -target=module.lambda_image_processing \
+          -target=module.lambda_raw_data_etl \
+          -target=module.infrastructure_lambdas \
+          -target=module.cost_budget_alarms \
+          -target=module.sns_topics \
+          -target=module.cloudwatch_metric_alarms \
+          -auto-approve
+
+        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud/
+        terraform init
+        terraform destroy --auto-approve
