@@ -1,9 +1,9 @@
-resource "hcloud_firewall" "ssh_access" {
+resource "hcloud_firewall" "public_ssh_ingress" {
     labels = local.default_labels
-    name   = "ssh-access"
+    name   = "public-ssh-ingress"
 
     rule {
-        destination_ips = []
+        description     = "Allow SSH port 22 Access from everywhere"
         direction       = "in"
         port            = "22"
         protocol        = "tcp"
@@ -14,11 +14,26 @@ resource "hcloud_firewall" "ssh_access" {
     }
 }
 
-resource "hcloud_firewall" "all_egress" {
-    labels = local.default_labels
-    name   = "all-egress"
+resource "hcloud_firewall" "public_icmp_ping_ingress" {
+    name = "public-icmp-ping-ingress"
 
     rule {
+        description = "Allow Ping (ICMP) in from anywhere"
+        direction   = "in"
+        protocol    = "icmp"
+        source_ips  = [
+        "0.0.0.0/0",
+        "::/0"
+        ]
+    }
+}
+
+resource "hcloud_firewall" "egress_all_public" {
+    labels = local.default_labels
+    name   = "egress-all-public"
+
+    rule {
+        description     = "Allow all outbound TCP"
         direction       = "out"
         protocol        = "tcp"
         port            = "any"
@@ -26,10 +41,10 @@ resource "hcloud_firewall" "all_egress" {
         "0.0.0.0/0",
         "::/0"
         ]
-        description = "Allow all outbound TCP"
     }
 
     rule {
+        description     = "Allow all outbound UDP"
         direction       = "out"
         protocol        = "udp"
         port            = "any"
@@ -37,24 +52,24 @@ resource "hcloud_firewall" "all_egress" {
         "0.0.0.0/0",
         "::/0"
         ]
-        description = "Allow all outbound UDP"
     }
 
     rule {
+        description     = "Allow all outbound ICMP"
         direction       = "out"
         protocol        = "icmp"
         destination_ips = [
         "0.0.0.0/0",
         "::/0"
         ]
-        description = "Allow all outbound ICMP"
     }
 }
 
-resource "hcloud_firewall" "http_ingress" {
-    name = "http-ingress"
+resource "hcloud_firewall" "public_http_ingress" {
+    name = "public-http-ingress"
 
     rule {
+        description = "Allow HTTP in from anywhere"
         direction   = "in"
         protocol    = "tcp"
         port        = "80"
@@ -62,15 +77,14 @@ resource "hcloud_firewall" "http_ingress" {
         "0.0.0.0/0",
         "::/0"
         ]
-        description = "Allow HTTP from anywhere"
     }
 }
 
-
-resource "hcloud_firewall" "https_ingress" {
-    name = "https-ingress"
+resource "hcloud_firewall" "public_https_ingress" {
+    name = "public-https-ingress"
 
     rule {
+        description = "Allow HTTPS in from anywhere"
         direction   = "in"
         protocol    = "tcp"
         port        = "443"
@@ -78,22 +92,5 @@ resource "hcloud_firewall" "https_ingress" {
         "0.0.0.0/0",
         "::/0"
         ]
-        description = "Allow HTTPS from anywhere"
-    }
-}
-
-
-
-resource "hcloud_firewall" "icmp_ping_ingress" {
-    name = "icmp-ingress"
-
-    rule {
-        direction   = "in"
-        protocol    = "icmp"
-        source_ips  = [
-        "0.0.0.0/0",
-        "::/0"
-        ]
-        description = "Allow Ping (ICMP) from anywhere"
     }
 }

@@ -3,11 +3,6 @@
 #     __   ___  ___                ___  __
 #    |  \ |__  |__   /\  |  | |     |  /__`
 #    |__/ |___ |    /~~\ \__/ |___  |  .__/
-variable "default_location" {
-  description   = "The location for our hcloud servers"
-  type          = string
-  default       = "fsn1"
-}
 
 variable "instance_count" {
   description   = "The number of instances to launch"
@@ -31,6 +26,12 @@ variable "image_architecture" {
   description   = "x86 or arm"
   type          = string
   default       = "x86"
+}
+
+variable "is_private" {
+  description    = "Whether or not the server exposes a public IPV4"
+  type           = bool
+  default        = false
 }
 
 #     __   ___  __          __   ___  __
@@ -61,4 +62,8 @@ variable "firewall_ids" {
 variable "ssh_key_name" {
   description    = "the SSH Key to assign to these specific instances."
   type           = string
+}
+variable "location" {
+  description   = "The location for our hcloud servers"
+  type          = string
 }

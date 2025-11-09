@@ -45,6 +45,8 @@ jobs:
     - name: Query SSH public keys for Hcloud servers from AWS Secrets Manager
       env:
         MASTER_PUBLIC_KEY: fiscalismia-infrastructure-master-key-hcloud.pub
+        LOADBALANCER_PUBLIC_KEY: fiscalismia-loadbalancer-instance-key-hcloud.pub
+        MONITORING_PUBLIC_KEY: fiscalismia-monitoring-instance-key-hcloud.pub
         PRODUCTION_PUBLIC_KEY: fiscalismia-production-instances-key-hcloud.pub
         DEMO_PUBLIC_KEY: fiscalismia-demo-instance-key-hcloud.pub
       run: |
@@ -55,6 +57,18 @@ jobs:
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${MASTER_PUBLIC_KEY}
+        echo "Querying ${LOADBALANCER_PUBLIC_KEY} from AWS"
+        aws secretsmanager get-secret-value \
+          --secret-id ${LOADBALANCER_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${LOADBALANCER_PUBLIC_KEY}
+        echo "Querying ${MONITORING_PUBLIC_KEY} from AWS"
+        aws secretsmanager get-secret-value \
+          --secret-id ${MONITORING_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${MONITORING_PUBLIC_KEY}
         echo "Querying ${PRODUCTION_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${PRODUCTION_PUBLIC_KEY} \

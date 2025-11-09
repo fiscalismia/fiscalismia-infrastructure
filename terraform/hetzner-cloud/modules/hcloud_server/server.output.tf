@@ -10,9 +10,17 @@ output "server_ipv4_ascii_list" {
 }
 
 output "server_ipv4_list" {
-  description = "A nicely formatted list of server names and IPs."
+  description = "List of IPV4 addresses."
   value = [
     for i, server in hcloud_server.unix_vps :
     server.ipv4_address
+  ]
+}
+
+output "server_id_list" {
+  description = "List of ids exported by tf"
+  value = [
+    for i, server in hcloud_server.unix_vps :
+    server.id
   ]
 }

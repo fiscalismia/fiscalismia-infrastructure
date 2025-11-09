@@ -4,7 +4,7 @@ resource "hcloud_server" "unix_vps" {
   name                       = "${var.server_name}-${count.index +1}"
   image                      = data.hcloud_image.unix_img.id
   server_type                = var.server_type
-  location                   = var.default_location
+  location                   = var.location
   ssh_keys                   = [var.ssh_key_name]
   allow_deprecated_images    = false
   shutdown_before_deletion   = false
@@ -15,7 +15,7 @@ resource "hcloud_server" "unix_vps" {
   keep_disk                  = true
   user_data                  = file("${path.module}/user_data/cloud-config.yml")
   public_net {
-    ipv4_enabled = true
+    ipv4_enabled = var.is_private ? false : true
     ipv6_enabled = false
   }
 
