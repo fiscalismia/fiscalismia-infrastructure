@@ -23,7 +23,7 @@ locals {
   default_labels = merge(
     local.file_labels,
     {
-      environment = "development"
+      environment = "prod"
     }
   )
 }

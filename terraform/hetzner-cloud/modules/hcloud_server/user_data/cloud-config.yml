@@ -1,50 +1,18 @@
 #cloud-config
 users:
-  - name: root
-    groups: users, admin
-    lock_passwd: false
-    hashed_passwd: ""
-    ssh_authorized_keys:
-      -
-      -
   - name: devops
-    groups: users, admin
+    groups: [users, admin]
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
-    ssh_authorized_keys:
-      -
-      -
-    hashed_passwd: ""
+    lock_passwd: true
 
 package_update: true
 package_upgrade: true
 packages:
-  - nginx
-  - fail2ban
-  - ufw
-  - curl
-  - tar
-  - fuse
+  - fail2ban     # SSH brute-force protection
+
 runcmd:
-  - systemctl enable nginx
-  - ufw allow 'Nginx HTTP'
-  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
-  - systemctl enable fail2ban
-  - systemctl start fail2ban
-  - ufw allow 'OpenSSH'
-  - ufw enable
-  #TODO research against sshd_config best practices
-  #TODO  assure non-existend settings are added instead of replace
-  - sed -ie '/^PermitRootLogin/s/^.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
-  - sed -ie '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
-  - sed -ie '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
-  - sed -ie '/^#MaxAuthTries/s/^.*$/MaxAuthTries 3/' /etc/ssh/sshd_config
-  - sed -ie '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
-  - sed -ie '/^#AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
-  - sed -i '$a AllowUsers devops root' /etc/ssh/sshd_config
-  - systemctl restart ssh
-  - rm /var/www/html/*
-  - echo "Hello! I am Nginx @ $(curl -s ipinfo.io/ip)! This record added at $(date -u)." >>/var/www/html/index.html
+  # Configure Fail2Ban to protect sshd
+  - printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
+  - systemctl enable --now fail2ban
   - echo "Hello from cloud-config.yml!" > ~/hello_world.txt
-  - echo "" >> ~/hello_world.txt
-  - cat /etc/ssh/sshd_config >> ~/hello_world.txt
