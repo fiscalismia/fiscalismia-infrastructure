@@ -15,7 +15,6 @@ module "fiscalismia_monitoring" {
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
     hcloud_firewall.private_icmp_ping_ingress_from_loadbalancer.id,
     hcloud_firewall.private_https_ingress_from_loadbalancer.id,
-    hcloud_firewall.private_http_ingress_from_loadbalancer.id, # TODO remove after mTLS establishment
   ]
   ssh_key_name      = hcloud_ssh_key.monitoring_instance.name
 
@@ -38,7 +37,6 @@ module "fiscalismia_demo" {
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
     hcloud_firewall.private_icmp_ping_ingress_from_loadbalancer.id,
     hcloud_firewall.private_https_ingress_from_loadbalancer.id,
-    hcloud_firewall.private_http_ingress_from_loadbalancer.id, # TODO remove after mTLS establishment
   ]
   ssh_key_name      = hcloud_ssh_key.demo_instance.name
 

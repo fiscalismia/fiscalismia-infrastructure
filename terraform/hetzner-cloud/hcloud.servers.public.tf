@@ -33,10 +33,8 @@ module "fiscalismia_loadbalancer" {
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
-    hcloud_firewall.public_http_ingress.id,  # TODO remove after mTLS establishment
     hcloud_firewall.public_https_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
-    hcloud_firewall.egress_http_to_private_subnet_cidr_ranges.id,  # TODO remove after mTLS establishment
     hcloud_firewall.egress_https_to_private_subnet_cidr_ranges.id,
     hcloud_firewall.egress_icmp_to_private_subnet_cidr_ranges.id,
   ]

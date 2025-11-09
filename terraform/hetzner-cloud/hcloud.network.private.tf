@@ -14,12 +14,12 @@ resource "hcloud_network_subnet" "fiscalismia_private_class_b_1" {
   type         = "cloud"
   network_id   = hcloud_network.fiscalismia_private_class_b.id
   network_zone = var.default_region
-  ip_range     = "172.16.0.0/16"
+  ip_range     = var.subnet_private_class_b_1_cidr
 }
 # Subnet 2 to assign my instances reachable from the public internet their private IPV4s
 resource "hcloud_network_subnet" "fiscalismia_private_class_b_2" {
   type         = "cloud"
   network_id   = hcloud_network.fiscalismia_private_class_b.id
   network_zone = var.default_region
-  ip_range     = "172.24.0.0/16"
+  ip_range     = var.subnet_private_class_b_2_cidr
 }
