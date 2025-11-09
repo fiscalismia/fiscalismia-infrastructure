@@ -6,7 +6,7 @@
 resource "hcloud_network" "fiscalismia_private_class_b" {
   labels                    = local.default_labels
   name                      = "fiscalismia-private-network"
-  ip_range                  = "172.16.0.0/12"
+  ip_range                  = var.network_private_class_b
   expose_routes_to_vswitch  = false
 }
 # Subnet 1 for strictly private instances not reachable from the public internet
