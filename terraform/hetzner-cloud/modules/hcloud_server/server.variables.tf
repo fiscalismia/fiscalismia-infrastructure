@@ -48,9 +48,8 @@ variable "unix_distro" {
   type          = string
 }
 
-
 variable "labels" {
-  description    = "A map of key-value pairs for default labels to apply to all resources in this module."
+  description    = "A map of key-value pairs for default labels to apply to all resources in this module"
   type           = map(string)
 }
 
@@ -60,10 +59,20 @@ variable "firewall_ids" {
 }
 
 variable "ssh_key_name" {
-  description    = "the SSH Key to assign to these specific instances."
+  description    = "the SSH Key to assign to these specific instances"
   type           = string
 }
 variable "location" {
   description   = "The location for our hcloud servers"
+  type          = string
+}
+
+variable "network_id" {
+  description   = "ID of our private network where all mutual instance communication happens"
+  type          = string
+}
+
+variable "private_ipv4" {
+  description   = "The manually assigned private IPV4 from the private subnet CIDR range"
   type          = string
 }

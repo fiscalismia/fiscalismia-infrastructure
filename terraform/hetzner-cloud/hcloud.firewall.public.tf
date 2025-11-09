@@ -65,21 +65,6 @@ resource "hcloud_firewall" "egress_all_public" {
     }
 }
 
-resource "hcloud_firewall" "public_http_ingress" {
-    name = "public-http-ingress"
-
-    rule {
-        description = "Allow HTTP in from anywhere"
-        direction   = "in"
-        protocol    = "tcp"
-        port        = "80"
-        source_ips  = [
-        "0.0.0.0/0",
-        "::/0"
-        ]
-    }
-}
-
 resource "hcloud_firewall" "public_https_ingress" {
     name = "public-https-ingress"
 
@@ -88,6 +73,18 @@ resource "hcloud_firewall" "public_https_ingress" {
         direction   = "in"
         protocol    = "tcp"
         port        = "443"
+        source_ips  = [
+        "0.0.0.0/0",
+        "::/0"
+        ]
+    }
+
+    # TODO: only use for testing - in production we want mTLS
+    rule {
+        description = "Allow HTTP in from anywhere"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = "80"
         source_ips  = [
         "0.0.0.0/0",
         "::/0"

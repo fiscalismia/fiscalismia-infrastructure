@@ -9,6 +9,8 @@ module "ansible_control_node" {
   server_name       = "Ansible-Control-Node"
   unix_distro       = var.unix_distro
   location          = var.default_location
+  private_ipv4      = var.ansible_control_node_private_ipv4
+  network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.public_ssh_ingress.id,
@@ -31,6 +33,8 @@ module "fiscalismia_loadbalancer" {
   server_name       = "Fiscalismia-LoadBalancer"
   unix_distro       = var.unix_distro
   location          = var.default_location
+  private_ipv4      = var.fiscalismia_loadbalancer_private_ipv4
+  network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.public_https_ingress.id,

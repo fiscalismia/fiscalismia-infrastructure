@@ -10,6 +10,8 @@ module "fiscalismia_monitoring" {
   is_private        = true
   unix_distro       = var.unix_distro
   location          = var.default_location
+  private_ipv4      = var.fiscalismia_monitoring_private_ipv4
+  network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
@@ -32,6 +34,8 @@ module "fiscalismia_demo" {
   is_private        = true
   unix_distro       = var.unix_distro
   location          = var.default_location
+  private_ipv4      = var.fiscalismia_demo_private_ipv4
+  network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
