@@ -2,21 +2,20 @@
 #    /__` /__` |__|    |__)  /\  /__`  |  | /  \ |\ |    |__| /  \ /__`  |
 #    .__/ .__/ |  |    |__) /~~\ .__/  |  | \__/ | \|    |  | \__/ .__/  |
 #
-# Acts as bastion host and ansible deployment/provisioning server
-module "ansible_control_node" {
+# Acts as bastion host for access to all instances in private subnet via private IPV4
+module "fiscalismia_bastion_host" {
   source            = "./modules/hcloud_server/"
 
-  server_name       = "Ansible-Control-Node"
+  server_name       = "Fiscalimia-Bastion-Host"
   unix_distro       = var.unix_distro
   location          = var.default_location
-  private_ipv4      = var.ansible_control_node_private_ipv4
+  private_ipv4      = var.bastion_host_private_ipv4
   network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.public_ssh_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
     hcloud_firewall.egress_ssh_to_private_subnet_cidr_ranges.id,
-    hcloud_firewall.egress_all_public.id
   ]
   ssh_key_name      = hcloud_ssh_key.infrastructure_orchestration.name
 

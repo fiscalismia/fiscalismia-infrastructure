@@ -1,6 +1,5 @@
 variable "domain_name" {}
 variable "demo_subdomain" {}
 variable "backend_subdomain" {}
-variable "frontend_instance_ipv4" {}
-variable "backend_instance_ipv4" {}
-variable "demo_instance_ipv4" {}
+variable "monitoring_subdomain" {}
+variable "loadbalancer_instance_ipv4" {}

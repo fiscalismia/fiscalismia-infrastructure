@@ -3,9 +3,8 @@ module "route_53_dns" {
   domain_name                           = var.domain_name
   demo_subdomain                        = var.demo_subdomain
   backend_subdomain                     = var.backend_subdomain
-  demo_instance_ipv4                    = local.hcloud_fiscalismia_demo_ipv4
-  frontend_instance_ipv4                = local.hcloud_fiscalismia_frontend_ipv4
-  backend_instance_ipv4                 = local.hcloud_fiscalismia_backend_ipv4
+  monitoring_subdomain                  = var.monitoring_subdomain
+  loadbalancer_instance_ipv4            = local.hcloud_fiscalismia_loadbalancer_ipv4
 }
 
 # Defines downscoped roles for github actions pipelines running with short-lived STS credentials

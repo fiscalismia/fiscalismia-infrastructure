@@ -114,32 +114,3 @@ resource "hcloud_firewall" "egress_icmp_to_private_subnet_cidr_ranges" {
         ]
     }
 }
-
-
-# WARNING: Very permissive.
-# resource "hcloud_firewall" "egress_all_to_private_subnet_cidr_ranges" {
-#     labels = local.default_labels
-#     name   = "egress-to-private-instances-only"
-
-#     rule {
-#         description     = "Allow TCP to instances in private class B subnet address range"
-#         direction       = "out"
-#         protocol        = "tcp"
-#         port            = "any"
-#         destination_ips = [
-#             var.subnet_private_class_b_1_cidr,
-#             var.subnet_private_class_b_2_cidr
-#         ]
-#     }
-
-#     rule {
-#         description     = "Allow UDP to instances in private class B subnet address range"
-#         direction       = "out"
-#         protocol        = "udp"
-#         port            = "any"
-#         destination_ips = [
-#             var.subnet_private_class_b_1_cidr,
-#             var.subnet_private_class_b_2_cidr
-#         ]
-#     }
-# }

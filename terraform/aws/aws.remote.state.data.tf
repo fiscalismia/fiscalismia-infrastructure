@@ -12,8 +12,8 @@ data "terraform_remote_state" "hcloud_remote" {
 # }
 
 locals {
-  hcloud_ansible_oerchestrator_ipv4       = try(data.terraform_remote_state.hcloud_remote.outputs.ansible_control_node_1_ipv4, "127.0.0.1")
-  hcloud_fiscalismia_loadbalancer_1_ipv4  = try(data.terraform_remote_state.hcloud_remote.outputs.fiscalismia_load_balancer_server_1_ipv4, "127.0.0.1")
+  hcloud_fiscalismia_bastion_host_ipv4    = try(data.terraform_remote_state.hcloud_remote.outputs.fiscalismia_bastion_host_server_1_ipv4, "127.0.0.1")
+  hcloud_fiscalismia_loadbalancer_ipv4    = try(data.terraform_remote_state.hcloud_remote.outputs.fiscalismia_load_balancer_server_1_ipv4, "127.0.0.1")
   hcloud_fiscalismia_monitoring_ipv4      = try(data.terraform_remote_state.hcloud_remote.outputs.fiscalismia_monitoring_server_1_ipv4, "127.0.0.1")
   hcloud_fiscalismia_backend_ipv4         = try(data.terraform_remote_state.hcloud_remote.outputs.fiscalismia_backend_server_1_ipv4, "127.0.0.1")
   hcloud_fiscalismia_frontend_ipv4        = try(data.terraform_remote_state.hcloud_remote.outputs.fiscalismia_frontend_server_1_ipv4, "127.0.0.1")

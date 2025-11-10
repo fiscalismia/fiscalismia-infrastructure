@@ -48,9 +48,11 @@ EOT
 
 output "hcloud_serverlist" {
   value = join("\n", [
-    format("%-30s %s", "${var.backend_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_backend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_backend_ipv4 : local.no_ip),
-    format("%-30s %s", "${var.demo_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_demo_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_demo_ipv4 : local.no_ip),
-    format("%-30s %s", "${var.domain_name}:", local.hcloud_fiscalismia_frontend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_frontend_ipv4 : local.no_ip),
-    format("%-30s %s", "Ansible Control Node:", local.hcloud_ansible_oerchestrator_ipv4 != "127.0.0.1" ? local.hcloud_ansible_oerchestrator_ipv4 : local.no_ip),
+    format("%-35s %s", "Fiscalismia-Bastion-Host:", local.hcloud_fiscalismia_bastion_host_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_bastion_host_ipv4 : local.no_ip),
+    format("%-35s %s", "Fiscalismia-Loadbalancer:", local.hcloud_fiscalismia_loadbalancer_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_loadbalancer_ipv4 : local.no_ip),
+    format("%-35s %s", "https://${var.monitoring_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_monitoring_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_monitoring_ipv4 : local.no_ip),
+    format("%-35s %s", "https://${var.backend_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_backend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_backend_ipv4 : local.no_ip),
+    format("%-35s %s", "https://${var.demo_subdomain}.${var.domain_name}:", local.hcloud_fiscalismia_demo_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_demo_ipv4 : local.no_ip),
+    format("%-35s %s", "https://${var.domain_name}:", local.hcloud_fiscalismia_frontend_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_frontend_ipv4 : local.no_ip),
   ])
 }

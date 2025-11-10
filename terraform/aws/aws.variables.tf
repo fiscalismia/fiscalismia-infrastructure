@@ -115,3 +115,8 @@ variable "backend_subdomain" {
   description = "Subdomain for backend services"
   type        = string
 }
+variable "monitoring_subdomain" {
+  default     = "monitoring"
+  description = "Subdomain for backend services"
+  type        = string
+}

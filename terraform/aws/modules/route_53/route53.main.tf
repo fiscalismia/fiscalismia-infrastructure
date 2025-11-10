@@ -41,11 +41,12 @@ resource "aws_route53_record" "cert_validation_record" {
   zone_id         = data.aws_route53_zone.selected_zone.zone_id
 }
 
+# Acts as the frontend - without needing a subdomain
 resource "aws_route53_record" "type_A_root_domain" {
   zone_id = data.aws_route53_zone.selected_zone.zone_id
   name    = var.domain_name
   type    = "A"
-  records = [var.frontend_instance_ipv4]
+  records = [var.loadbalancer_instance_ipv4]
   ttl     = 300
 }
 
@@ -53,7 +54,7 @@ resource "aws_route53_record" "type_A_demo_domain" {
   zone_id = data.aws_route53_zone.selected_zone.zone_id
   name    = "${var.demo_subdomain}.${var.domain_name}"
   type    = "A"
-  records = [var.demo_instance_ipv4]
+  records = [var.loadbalancer_instance_ipv4]
   ttl     = 300
 }
 
@@ -61,7 +62,15 @@ resource "aws_route53_record" "type_A_backend_domain" {
   zone_id = data.aws_route53_zone.selected_zone.zone_id
   name    = "${var.backend_subdomain}.${var.domain_name}"
   type    = "A"
-  records = [var.backend_instance_ipv4]
+  records = [var.loadbalancer_instance_ipv4]
+  ttl     = 300
+}
+
+resource "aws_route53_record" "type_A_monitoring_domain" {
+  zone_id = data.aws_route53_zone.selected_zone.zone_id
+  name    = "${var.monitoring_subdomain}.${var.domain_name}"
+  type    = "A"
+  records = [var.loadbalancer_instance_ipv4]
   ttl     = 300
 }
 
@@ -77,12 +86,11 @@ resource "aws_route53_health_check" "root_domain_http_reachable" {
   request_interval  = "30"
 }
 
-# TODO HTTPS Health check
-# resource "aws_route53_health_check" "root_domain_https_reachable" {
-#   fqdn              = var.domain_name
-#   port              = 443
-#   type              = "HTTPS"
-#   resource_path     = "/"
-#   failure_threshold = "5"
-#   request_interval  = "30"
-# }
+resource "aws_route53_health_check" "root_domain_https_reachable" {
+  fqdn              = var.domain_name
+  port              = 443
+  type              = "HTTPS"
+  resource_path     = "/"
+  failure_threshold = "5"
+  request_interval  = "30"
+}

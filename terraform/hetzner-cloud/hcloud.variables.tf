@@ -53,7 +53,7 @@ variable "fiscalismia_demo_private_ipv4" {
 variable "fiscalismia_monitoring_private_ipv4" {
   default = "172.20.0.4" # subnet 1
 }
-variable "ansible_control_node_private_ipv4" {
+variable "bastion_host_private_ipv4" {
   default = "172.24.0.1" # subnet 2
 }
 variable "fiscalismia_loadbalancer_private_ipv4" {
