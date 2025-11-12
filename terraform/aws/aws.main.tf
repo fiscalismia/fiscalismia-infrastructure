@@ -1,8 +1,9 @@
 module "route_53_dns" {
   source                                = "./modules/route_53"
-  domain_name                           = var.domain_name
-  demo_subdomain                        = var.demo_subdomain
-  backend_subdomain                     = var.backend_subdomain
+  domain_name                           = var.domain_name               # frontend
+  demo_subdomain                        = var.demo_subdomain            # demo frontend
+  backend_subdomain                     = var.backend_subdomain         # backend
+  demo_backend_subdomains               = var.demo_backend_subdomains   # demo backend
   monitoring_subdomain                  = var.monitoring_subdomain
   loadbalancer_instance_ipv4            = local.hcloud_fiscalismia_loadbalancer_ipv4
 }

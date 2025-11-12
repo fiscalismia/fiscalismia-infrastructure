@@ -112,11 +112,16 @@ variable "demo_subdomain" {
 }
 variable "backend_subdomain" {
   default     = "backend"
-  description = "Subdomain for backend services"
+  description = "Subdomain for backend service"
+  type        = string
+}
+variable "demo_backend_subdomains" {
+  default     = "backend.demo"
+  description = "Subdomain for backend service on demo server"
   type        = string
 }
 variable "monitoring_subdomain" {
   default     = "monitoring"
-  description = "Subdomain for backend services"
+  description = "Subdomain for monitoring frontend"
   type        = string
 }
