@@ -1,10 +1,3 @@
-# set HCLOUD_TOKEN environment variable instead
-# variable "hcloud_token" {
-#   sensitive       = true
-#   type            = string
-#   description     = "API Access Token for Hetzner Cloud"
-# }
-
 variable "default_location" {
   description   = "The location for our hcloud servers"
   type          = string
@@ -37,10 +30,11 @@ variable "unix_distro" {
 
 ######################### RESERVED IPs #####################################
 # 172.31.1.1 is being used as a gateway for the public network interface of servers
-# The network and broadcast IP addresses of any subnet is reserved:
+# The network and broadcast IP addresses of any subnet is reserved.
+# The network IP is the first IP and the broadcast IP the last IP in the CIDR range.
 # For example, in 172.31.0.0/24, you cannot use 172.31.0.0 as well as 172.31.0.255
 # All private traffic in subnets is routed through the subnet gateway.
-# The gateway's IP address is always the second IP address of the subnet's IP range:
+# The gateway's IP address is always the first assignable IP address of the subnet's IP range:
 # For example, in 172.31.0.0/24, you cannot use 172.31.0.1
 
 ######################### SUBNET SIZE #######################################
@@ -63,17 +57,17 @@ variable "subnet_private_class_b_demo_exposed" {
   default       = "172.20.1.0/29"
 }
 
-variable "network_private_class_b_fiscalismia" {
+variable "network_private_class_b_production" {
   description   = "RFC 1918 Class B CIDR Range reserved for private networks"
   type          = string
   default       = "172.24.0.0/23"
 }
-variable "subnet_private_class_b_fiscalismia_isolated" {
+variable "subnet_private_class_b_production_isolated" {
   description   = "Subnet for all private instances not reachable from the public internet"
   type          = string
   default       = "172.24.0.0/28"
 }
-variable "subnet_private_class_b_fiscalismia_exposed" {
+variable "subnet_private_class_b_production_exposed" {
   description   = "Subnet to attach the public instances to which are required to communicate with the private instance"
   type          = string
   default       = "172.24.1.0/29"
@@ -82,7 +76,8 @@ variable "subnet_private_class_b_fiscalismia_exposed" {
 #     __   __              ___  ___       __   __
 #    |__) |__) | \  /  /\   |  |__     | |__) /__`
 #    |    |  \ |  \/  /~~\  |  |___    | |    .__/
-# strictly private instances
+
+# strictly private instances without native internet access
 variable "fiscalismia_demo_private_ipv4" {
   default = "172.20.0.2"
 }
@@ -95,26 +90,23 @@ variable "fiscalismia_frontend_private_ipv4" {
 variable "fiscalismia_backend_private_ipv4" {
   default = "172.24.0.4"
 }
-# these also have a public ip assigned and must route to both private networks
-variable "fiscalismia_bastion_host_private_ip_list" {
-  description = ""
-  default = [
-    "172.20.1.2"
-    "172.24.1.2"
-    ]
-  type = list(string)
+
+# these instances also have a public ip assigned and must route to both private networks
+variable "fiscalismia_bastion_host_private_ipv4_demo_net" {
+  default = "172.20.1.2"
 }
-variable "fiscalismia_loadbalancer_private_ip_list" {
-  default = [
-    "172.20.1.3"
-    "172.24.1.3"
-    ]
-  type = list(string)
+variable "fiscalismia_bastion_host_private_ipv4_production_net" {
+  default = "172.24.1.2"
 }
-variable "fiscalismia_nat_gateway_private_ip_list" {
-  default = [
-    "172.20.1.4"
-    "172.24.1.4"
-    ]
-  type = list(string)
+variable "fiscalismia_loadbalancer_private_ipv4_demo_net" {
+  default = "172.20.1.3"
+}
+variable "fiscalismia_loadbalancer_private_ipv4_production_net" {
+  default = "172.24.1.3"
+}
+variable "fiscalismia_nat_gateway_private_ipv4_demo_net" {
+  default = "172.20.1.4"
+}
+variable "fiscalismia_nat_gateway_private_ipv4_production_net" {
+  default = "172.24.1.4"
 }

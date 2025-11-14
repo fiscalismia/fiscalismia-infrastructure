@@ -20,10 +20,11 @@ cd ~/git/fiscalismia-infrastructure/scripts/ && ./setup-env-vars.sh
 ```bash
 cd ~/.ssh/
 ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-infrastructure-master-key-hcloud -C "Fiscalismia Infrastructure OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-instances-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-monitoring-instance-key-hcloud -C "Fiscalismia Monitoring OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
 ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-loadbalancer-instance-key-hcloud -C "Fiscalismia Load Balancer OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-nat-gateway-instance-key-hcloud -C "Fiscalismia NAT Gateway OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
 ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-instance-key-hcloud -C "Fiscalismia Demo Instance OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-monitoring-instance-key-hcloud -C "Fiscalismia Monitoring OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-instances-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
 ```
 
 1. Terraform for Hetzner Cloud
@@ -47,6 +48,9 @@ This is because of the chicken and egg problem, since the automated github actio
 **Dependency Chain:** Also the S3 buckets containing the AWS lambdas and application data should exist before running the AWS Lambda pipeline and then never be destroyed again.
 
 ```bash
+cd ~/git/fiscalismia-infrastructure/terraform/aws/
+source ../.env
+terraform init
 terraform apply \
   --target=module.oidc_sts_pipeline_access \
   -target=module.s3_image_storage \
@@ -215,3 +219,57 @@ forecasted_budget_notification_email  = "example@domain.com"
 
 -----
 
+### NFTABLES CONFIG TODO
+
+```hcl
+resource "hcloud_firewall" "private_ssh_ingress_from_bastion_host" {
+    labels = local.default_labels
+    name   = "private-ssh-ingress-from-bastion"
+
+    rule {
+        description     = "Allow SSH port 22 Access from Bastion Host only"
+        direction       = "in"
+        port            = "22"
+        protocol        = "tcp"
+        source_ips  = [
+            var.fiscalismia_bastion_host_private_ipv4
+        ]
+    }
+}
+resource "hcloud_firewall" "private_icmp_ping_ingress_from_loadbalancer" {
+    name = "private-icmp-ingress-lb"
+
+    rule {
+        description = "Allow Ping (ICMP) from the Load Balancer only"
+        direction   = "in"
+        protocol    = "icmp"
+        source_ips  = [
+            var.fiscalismia_loadbalancer_private_ipv4
+        ]
+    }
+}
+
+resource "hcloud_firewall" "private_https_ingress_from_loadbalancer" {
+    name = "private-https-ingress-lb"
+
+    rule {
+        description = "Allow HTTPS from the Load Balancer only"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = "443"
+        source_ips  = [
+            var.fiscalismia_loadbalancer_private_ipv4
+        ]
+    }
+    # TODO: only use for testing - in production we want mTLS
+    rule {
+        description = "Allow HTTP from the Load Balancer only"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = "80"
+        source_ips  = [
+            var.fiscalismia_loadbalancer_private_ipv4
+        ]
+    }
+}
+```

@@ -46,9 +46,10 @@ jobs:
       env:
         MASTER_PUBLIC_KEY: fiscalismia-infrastructure-master-key-hcloud.pub
         LOADBALANCER_PUBLIC_KEY: fiscalismia-loadbalancer-instance-key-hcloud.pub
+        NAT_GATEWAY_PUBLIC_KEY: fiscalismia-nat-gateway-instance-key-hcloud.pub
+        DEMO_PUBLIC_KEY: fiscalismia-demo-instance-key-hcloud.pub
         MONITORING_PUBLIC_KEY: fiscalismia-monitoring-instance-key-hcloud.pub
         PRODUCTION_PUBLIC_KEY: fiscalismia-production-instances-key-hcloud.pub
-        DEMO_PUBLIC_KEY: fiscalismia-demo-instance-key-hcloud.pub
       run: |
         set -eou pipefail
         mkdir -p ~/.ssh/
@@ -64,6 +65,18 @@ jobs:
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${LOADBALANCER_PUBLIC_KEY}
+        echo "Querying ${NAT_GATEWAY_PUBLIC_KEY} from AWS"
+        aws secretsmanager get-secret-value \
+          --secret-id ${NAT_GATEWAY_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${NAT_GATEWAY_PUBLIC_KEY}
+        echo "Querying ${DEMO_PUBLIC_KEY} from AWS"
+        aws secretsmanager get-secret-value \
+          --secret-id ${DEMO_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${DEMO_PUBLIC_KEY}
         echo "Querying ${MONITORING_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${MONITORING_PUBLIC_KEY} \
@@ -76,12 +89,6 @@ jobs:
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${PRODUCTION_PUBLIC_KEY}
-        echo "Querying ${DEMO_PUBLIC_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${DEMO_PUBLIC_KEY} \
-          --output text \
-          --query SecretString | jq --raw-output '.public_key' \
-          >> ~/.ssh/${DEMO_PUBLIC_KEY}
 
     - name: Destroy AWS and Hetzner Cloud resources
       env:
