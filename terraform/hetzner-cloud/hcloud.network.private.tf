@@ -1,8 +1,9 @@
 # RFC 1918 defines three private IP CIDR Ranges which will never
 # be assigned as public IPs and cannot be routed to from the public internet
-# Class A Block	10.0.0.0 – 10.255.255.255	10.0.0.0/8	16,777,216
-# Class B Block	172.16.0.0 – 172.31.255.255	172.16.0.0/12	1,048,576
-# Class C Block	192.168.0.0 – 192.168.255.255	192.168.0.0/16	65,536
+# Class A Block	10.0.0.0 – 10.255.255.255	10.0.0.0/8
+# Class B Block	172.16.0.0 – 172.31.255.255	172.16.0.0/12
+# Class C Block	192.168.0.0 – 192.168.255.255	192.168.0.0/16
+# INFO: cannot use 172.31.1.1 as this IP is being used as a gateway for the public network interface of servers
 resource "hcloud_network" "fiscalismia_private_class_b" {
   labels                    = local.default_labels
   name                      = "fiscalismia-private-network"

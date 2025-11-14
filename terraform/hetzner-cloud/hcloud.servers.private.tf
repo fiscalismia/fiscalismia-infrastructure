@@ -14,6 +14,7 @@ module "fiscalismia_monitoring" {
   network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
+    hcloud_firewall.egress_all_public.id,
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
     hcloud_firewall.private_icmp_ping_ingress_from_loadbalancer.id,
     hcloud_firewall.private_https_ingress_from_loadbalancer.id,
@@ -38,6 +39,7 @@ module "fiscalismia_demo" {
   network_id        = hcloud_network.fiscalismia_private_class_b.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
+    hcloud_firewall.egress_all_public.id,
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
     hcloud_firewall.private_icmp_ping_ingress_from_loadbalancer.id,
     hcloud_firewall.private_https_ingress_from_loadbalancer.id,

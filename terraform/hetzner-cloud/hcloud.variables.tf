@@ -22,40 +22,99 @@ variable "unix_distro" {
   default       = "fedora-42"
 }
 
-variable "network_private_class_b" {
+#     __   __              ___  ___          ___ ___       __   __        __
+#    |__) |__) | \  /  /\   |  |__     |\ | |__   |  |  | /  \ |__) |__/ /__`
+#    |    |  \ |  \/  /~~\  |  |___    | \| |___  |  |/\| \__/ |  \ |  \ .__/
+
+######################### NETWORKING #######################################
+# RFC 1918 defines three private IP CIDR Ranges which will never
+# be assigned as public IPs and cannot be routed to from the public internet#
+
+######################### RFC 1918 Standard ################################
+# Class A Block	10.0.0.0 – 10.255.255.255	10.0.0.0/8
+# Class B Block	172.16.0.0 – 172.31.255.255	172.16.0.0/12
+# Class C Block	192.168.0.0 – 192.168.255.255	192.168.0.0/16
+
+######################### RESERVED IPs #####################################
+# 172.31.1.1 is being used as a gateway for the public network interface of servers
+# The network and broadcast IP addresses of any subnet is reserved:
+# For example, in 172.31.0.0/24, you cannot use 172.31.0.0 as well as 172.31.0.255
+# All private traffic in subnets is routed through the subnet gateway.
+# The gateway's IP address is always the second IP address of the subnet's IP range:
+# For example, in 172.31.0.0/24, you cannot use 172.31.0.1
+
+######################### SUBNET SIZE #######################################
+# each network gets assigned a default subnet
+# when creating subnets manually, the minimum size is /30
+
+variable "network_private_class_b_demo" {
   description   = "RFC 1918 Class B CIDR Range reserved for private networks"
   type          = string
-  default       = "172.16.0.0/12"
+  default       = "172.20.0.0/23"
 }
-variable "subnet_private_class_b_1_cidr" {
-  description   = "Subnet 1 for strictly private instances not reachable from the public internet"
+variable "subnet_private_class_b_demo_isolated" {
+  description   = "Subnet for demo instance not reachable from the public internet"
   type          = string
-  default       = "172.20.0.0/16"
+  default       = "172.20.0.0/30"
 }
-variable "subnet_private_class_b_2_cidr" {
-  description   = "Subnet 2 to assign my instances reachable from the public internet their private IPV4s"
+variable "subnet_private_class_b_demo_exposed" {
+  description   = "Subnet to attach the public instances to which are required to communicate with the demo instance"
   type          = string
-  default       = "172.24.0.0/16"
+  default       = "172.20.1.0/29"
+}
+
+variable "network_private_class_b_fiscalismia" {
+  description   = "RFC 1918 Class B CIDR Range reserved for private networks"
+  type          = string
+  default       = "172.24.0.0/23"
+}
+variable "subnet_private_class_b_fiscalismia_isolated" {
+  description   = "Subnet for all private instances not reachable from the public internet"
+  type          = string
+  default       = "172.24.0.0/28"
+}
+variable "subnet_private_class_b_fiscalismia_exposed" {
+  description   = "Subnet to attach the public instances to which are required to communicate with the private instance"
+  type          = string
+  default       = "172.24.1.0/29"
 }
 
 #     __   __              ___  ___       __   __
 #    |__) |__) | \  /  /\   |  |__     | |__) /__`
 #    |    |  \ |  \/  /~~\  |  |___    | |    .__/
-variable "fiscalismia_backend_private_ipv4" {
-  default = "172.20.0.1" # subnet 1
-}
-variable "fiscalismia_frontend_private_ipv4" {
-  default = "172.20.0.2" # subnet 1
-}
+# strictly private instances
 variable "fiscalismia_demo_private_ipv4" {
-  default = "172.20.0.3" # subnet 1
+  default = "172.20.0.2"
 }
 variable "fiscalismia_monitoring_private_ipv4" {
-  default = "172.20.0.4" # subnet 1
+  default = "172.24.0.2"
 }
-variable "bastion_host_private_ipv4" {
-  default = "172.24.0.1" # subnet 2
+variable "fiscalismia_frontend_private_ipv4" {
+  default = "172.24.0.3"
 }
-variable "fiscalismia_loadbalancer_private_ipv4" {
-  default = "172.24.0.2" # subnet 2
+variable "fiscalismia_backend_private_ipv4" {
+  default = "172.24.0.4"
+}
+# these also have a public ip assigned and must route to both private networks
+variable "fiscalismia_bastion_host_private_ip_list" {
+  description = ""
+  default = [
+    "172.20.1.2"
+    "172.24.1.2"
+    ]
+  type = list(string)
+}
+variable "fiscalismia_loadbalancer_private_ip_list" {
+  default = [
+    "172.20.1.3"
+    "172.24.1.3"
+    ]
+  type = list(string)
+}
+variable "fiscalismia_nat_gateway_private_ip_list" {
+  default = [
+    "172.20.1.4"
+    "172.24.1.4"
+    ]
+  type = list(string)
 }
