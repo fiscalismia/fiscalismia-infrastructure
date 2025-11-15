@@ -28,15 +28,25 @@ resource "hcloud_firewall" "public_icmp_ping_ingress" {
     }
 }
 
-resource "hcloud_firewall" "egress_public_https_only" {
+resource "hcloud_firewall" "egress_public_https_icmp_only" {
     labels = local.default_labels
-    name   = "egress-public-https-only"
+    name   = "egress-public-https-icmp-only"
 
     rule {
-        description     = "Allow all outbound TCP"
+        description     = "Allow all outbound HTTPS"
         direction       = "out"
         protocol        = "tcp"
         port            = "443"
+        destination_ips = [
+        "0.0.0.0/0",
+        "::/0"
+        ]
+    }
+
+    rule {
+        description     = "Allow all outbound ICMP"
+        direction       = "out"
+        protocol        = "icmp"
         destination_ips = [
         "0.0.0.0/0",
         "::/0"

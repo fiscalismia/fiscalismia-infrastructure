@@ -13,12 +13,35 @@ packages:
   - iptables
   - iptables-services
 
+write_files:
+
+  # NetworkManager provides a way to run custom user scripts.
+  # It runs scripts in /etc/NetworkManager/dispatcher.d/ in alphabetical order.
+  # Each script must be an executable file owned by root and must have write permission only for the file owner.
+  - path: /etc/NetworkManager/dispatcher.d/ifup-local
+    content: |
+      #!/bin/sh
+
+      # enable ip forwarding
+      echo 1 > /proc/sys/net/ipv4/ip_forward
+
+      # subnet_private_class_b_demo_isolated
+      iptables -t nat -A POSTROUTING -s '172.20.0.0/30' -o eth0 -j MASQUERADE
+
+      # subnet_private_class_b_production_isolated
+      iptables -t nat -A POSTROUTING -s '172.24.0.0/28' -o eth0 -j MASQUERADE
+    permissions: '0755'
+
 runcmd:
-  # Make yourself known to host
-  - echo "Hello from cloud-config.nat-gateway.yml!" > ~/hello_world.txt
-  # Enable IP Forwarding (disabled by default)
-  - echo 1 > /proc/sys/net/ipv4/ip_forward
-  # Add a rule to the nat table for packets with the source ip cidr
-  # to the public network interface masquerading source ip as the NAT-Gateway IP
-  - iptables -t nat -A POSTROUTING -s '172.20.0.0/30' -o eth0 -j MASQUERADE # subnet_private_class_b_demo_isolated
-  - iptables -t nat -A POSTROUTING -s '172.24.0.0/28' -o eth0 -j MASQUERADE # subnet_private_class_b_production_isolated
+  # Initialize logfile
+  - export logfile="/root/cloud-config.log"
+  - echo "Hello from cloud-config.nat-gateway.yml!" > ${logfile}
+  # Tests iptables installation
+  - echo "" >> ${logfile} && echo "iptables location is:"
+  - which iptables >> ${logfile} 2>&1
+  # list NetworkManager Config
+  - echo "" >> ${logfile} && echo "NetworkManager Dispatcher Config is:"
+  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
+  # reboots server for network config to take effect
+  - echo "" >> ${logfile} && echo "Rebooting server..."
+  - reboot
