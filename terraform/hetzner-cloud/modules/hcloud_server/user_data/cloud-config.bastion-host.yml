@@ -12,9 +12,13 @@ packages:
   - fail2ban     # SSH brute-force protection
 
 runcmd:
-  # Make yourself known to host
-  - echo "Hello from cloud-config.bastion-host.yml!" > ~/hello_world.txt
-
+  # Initialize logfile
+  - export logfile="/root/cloud-config.log"
+  - echo "Hello from cloud-config.bastion-host.yml!" > ${logfile}
   # Configure Fail2Ban to protect sshd
-  - printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
+  - echo "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
   - systemctl enable --now fail2ban
+  - printf "\nFail2Ban SSHD Config:" >> ${logfile}
+  - cat /etc/fail2ban/jail.local >> ${logfile}
+  - printf "\nsystemctl status of fail2ban:"
+  - systemctl is-active fail2ban >> ${logfile} 2>&1
