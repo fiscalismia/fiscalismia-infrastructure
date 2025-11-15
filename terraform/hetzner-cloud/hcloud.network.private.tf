@@ -68,6 +68,20 @@ resource "hcloud_network_subnet" "subnet_private_class_b_production_exposed" {
 #              ___     __       ___  ___                   __   __       ___  ___  __
 #    |\ |  /\   |     / _`  /\   |  |__  |  |  /\  \ /    |__) /  \ |  |  |  |__  /__`
 #    | \| /~~\  |     \__> /~~\  |  |___ |/\| /~~\  |     |  \ \__/ \__/  |  |___ .__/
+
+##################################### INFO ##############################################################################
+# This is where the magic for internet access of private instances happens.
+# 1)   The private instances setup a default route for non-local traffic to the virtual subnet gateway
+# 1.1) The subnet gateway's IP address is always the first assignable IP address of the subnet's IP range.
+# 1.2) e.g. for the 172.20.0.0/30 Demo Network Subnet CIDR you run "ip route add default via 172.20.0.1"
+# 2)   The demo VM then knows to direct all non-local traffic to this subnet's virtual gateway.
+# 3)   A hetzner network route defines that all non-local network traffic be directed to the private ip of the NAT Gateway
+# 3.1) e.g. the network route in this case directs outgoing 0.0.0.0/0 traffic to "172.20.1.4" (NAT Gateway IPv4)
+# 4)   The NAT Gateway is configured to forward any ipv4 traffic from the demo CIDR to its public network interface
+# 4.1) e.g. you run "iptables -t nat -A POSTROUTING -s '172.20.0.0/30' -o eth0 -j MASQUERADE"
+# 5)   The NAT gateway's public network interface sends the packets to the internet
+# 6)   Return traffic is automatically de-NATed and forwarded back to the private VM.
+##########################################################################################################################
 resource "hcloud_network_route" "demo_network_internet_access_via_nat_gateway" {
   network_id  = hcloud_network.network_private_class_b_demo.id
   destination = "0.0.0.0/0"

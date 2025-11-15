@@ -50,8 +50,12 @@ resource "hcloud_server" "unix_vps" {
     }
   }
 
-  # provisioner "local-exec" {
-  #   command = "echo ${self.name} : ${self.ipv4_address} >> server-ips.txt"
-  # }
+  # prevents known race condition bug in hetzner cloud module
+  # Hetzner does not guarantee ordering of the private_networks list
+  # Sometimes returns incomplete interface lists for a few seconds right after VM creation
+  # so when adding two network blocks, the apply stage diverts from the plan stage
+  lifecycle {
+    ignore_changes = [ network ]
+  }
 
 }
