@@ -23,6 +23,11 @@ module "fiscalismia_bastion_host" {
   ssh_key_name        = hcloud_ssh_key.infrastructure_orchestration.name
 
   labels              = local.default_labels
+
+  depends_on = [
+    hcloud_network.network_private_class_b_demo,
+    hcloud_network.network_private_class_b_production,
+  ]
 }
 
 #     __        __          __          ___ ___  __   __           __   __   ___  __   __
@@ -50,6 +55,11 @@ module "fiscalismia_loadbalancer" {
   cloud_config_file = "cloud-config.bastion-host.yml"
 
   labels            = local.default_labels
+
+  depends_on = [
+    hcloud_network.network_private_class_b_demo,
+    hcloud_network.network_private_class_b_production,
+  ]
 }
 
 #     __        __          __            ___  ___  __        ___ ___          __   __   ___  __   __
@@ -76,4 +86,9 @@ module "fiscalismia_nat_gateway" {
   cloud_config_file = "cloud-config.nat-gateway.yml"
 
   labels            = local.default_labels
+
+  depends_on = [
+    hcloud_network.network_private_class_b_demo,
+    hcloud_network.network_private_class_b_production,
+  ]
 }

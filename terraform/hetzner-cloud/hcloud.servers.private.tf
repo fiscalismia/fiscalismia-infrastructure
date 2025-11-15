@@ -22,7 +22,8 @@ module "fiscalismia_demo" {
   labels            = local.default_labels
 
   depends_on = [
-      module.fiscalismia_loadbalancer
+      module.fiscalismia_loadbalancer,
+      hcloud_network.network_private_class_b_demo,
   ]
 }
 
@@ -46,6 +47,7 @@ module "fiscalismia_monitoring" {
   labels            = local.default_labels
 
   depends_on = [
-      module.fiscalismia_loadbalancer
+      module.fiscalismia_loadbalancer,
+      hcloud_network.network_private_class_b_production,
   ]
 }
