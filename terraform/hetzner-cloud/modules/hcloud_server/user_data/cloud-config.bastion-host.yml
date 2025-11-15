@@ -1,4 +1,4 @@
-#cloud-config
+#cloud-config.bastion-host.yml
 users:
   - name: fiscalismia
     groups: [users, admin]

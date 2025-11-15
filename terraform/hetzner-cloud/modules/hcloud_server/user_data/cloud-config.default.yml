@@ -1,4 +1,4 @@
-#cloud-config
+#cloud-config.default.yml
 users:
   - name: fiscalismia
     groups: [users, admin]

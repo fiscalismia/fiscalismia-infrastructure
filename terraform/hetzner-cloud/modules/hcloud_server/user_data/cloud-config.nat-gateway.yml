@@ -1,4 +1,4 @@
-#cloud-config
+#cloud-config.nat-gateway.yml
 users:
   - name: fiscalismia
     groups: [users, admin]

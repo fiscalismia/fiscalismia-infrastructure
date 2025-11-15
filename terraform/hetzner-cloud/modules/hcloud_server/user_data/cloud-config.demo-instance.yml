@@ -1,4 +1,4 @@
-#cloud-config
+#cloud-config.demo-instance.yml
 users:
   - name: fiscalismia
     groups: [users, admin]

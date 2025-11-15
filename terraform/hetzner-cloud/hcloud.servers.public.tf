@@ -67,7 +67,8 @@ module "fiscalismia_nat_gateway" {
   network_id_2      = hcloud_network.network_private_class_b_production.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
-    hcloud_firewall.egress_all_public.id,
+    # hcloud_firewall.egress_all_public.id,
+    hcloud_firewall.egress_public_https_only.id,
     hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
     hcloud_firewall.private_icmp_ping_ingress_from_loadbalancer.id,
   ]

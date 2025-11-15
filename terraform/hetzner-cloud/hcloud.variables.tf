@@ -52,12 +52,12 @@ variable "network_private_class_b_demo" {
   default       = "172.20.0.0/23"
 }
 variable "subnet_private_class_b_demo_isolated" {
-  description   = "Subnet for demo instance not reachable from the public internet"
+  description   = "For all private instances not reachable from the public internet"
   type          = string
   default       = "172.20.0.0/30"
 }
 variable "subnet_private_class_b_demo_exposed" {
-  description   = "Subnet to attach the public instances to which are required to communicate with the demo instance"
+  description   = "For attaching public instances, required to connect to the private instances"
   type          = string
   default       = "172.20.1.0/29"
 }
@@ -68,12 +68,12 @@ variable "network_private_class_b_production" {
   default       = "172.24.0.0/23"
 }
 variable "subnet_private_class_b_production_isolated" {
-  description   = "Subnet for all private instances not reachable from the public internet"
+  description   = "For all private instances not reachable from the public internet"
   type          = string
   default       = "172.24.0.0/28"
 }
 variable "subnet_private_class_b_production_exposed" {
-  description   = "Subnet to attach the public instances to which are required to communicate with the private instance"
+  description   = "For attaching public instances, required to connect to the private instances"
   type          = string
   default       = "172.24.1.0/29"
 }
