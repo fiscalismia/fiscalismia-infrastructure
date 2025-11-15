@@ -36,6 +36,13 @@ runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.nat-gateway.yml!" > ${logfile}
+  # Configure Fail2Ban to protect sshd
+  - echo "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
+  - systemctl enable --now fail2ban
+  - printf "\nFail2Ban SSHD Config:" >> ${logfile}
+  - cat /etc/fail2ban/jail.local >> ${logfile}
+  - printf "\nsystemctl status of fail2ban:"
+  - systemctl is-active fail2ban >> ${logfile} 2>&1
   # Tests iptables installation
   - printf "\niptables location is:" >> ${logfile}
   - which iptables >> ${logfile} 2>&1
