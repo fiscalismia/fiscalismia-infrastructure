@@ -7,6 +7,17 @@ users:
     lock_passwd: true
 
 write_files:
+  ### Adds a route for default network traffic to the subnet Gateway subnet_private_class_b_demo_isolated
+  - path: /etc/NetworkManager/dispatcher.d/ifup-local
+    content: |
+      #!/bin/sh
+
+      nm-online -q --timeout=30
+      if ! ip route show default | grep -q "via 172.20.0.1"; then
+          ip route add default via 172.20.0.1
+      fi
+    permissions: '0755'
+
   ### Adds DNS Servers for resolving domain names
   - path: /etc/systemd/resolved.conf
     content: |
@@ -18,6 +29,5 @@ write_files:
 runcmd:
   # Make yourself known to host
   - echo "Hello from cloud-config.demo-instance.yml!" > ~/hello_world.txt
-  - ip route add default via 172.20.0.1 # Subnet Gateway of subnet_private_class_b_demo_isolated
   # reboot the server for DNS changes to take effect
   - reboot
