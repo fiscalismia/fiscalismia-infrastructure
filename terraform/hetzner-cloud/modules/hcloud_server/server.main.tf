@@ -35,6 +35,7 @@ resource "hcloud_server" "unix_vps" {
   }
 
   dynamic "network" {
+    # compact removes nulls from a list and Ensures Terraform receives a clean list for for_each
     for_each = compact([
       var.network_id_1 != null ?
         jsonencode({
