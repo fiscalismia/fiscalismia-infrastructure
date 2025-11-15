@@ -6,7 +6,18 @@ users:
     shell: /bin/bash
     lock_passwd: true
 
+write_files:
+  ### Adds DNS Servers for resolving domain names
+  - path: /etc/systemd/resolved.conf
+    content: |
+      [Resolve]
+      DNS=185.12.64.2 185.12.64.1
+      FallbackDNS=8.8.8.8
+    append: true
+
 runcmd:
   # Make yourself known to host
   - echo "Hello from cloud-config.production-instances.yml!" > ~/hello_world.txt
   - ip route add default via 172.24.0.1 # Subnet Gateway IPV4 of subnet_private_class_b_production_isolated
+  # reboot the server for DNS changes to take effect
+  - reboot
