@@ -35,18 +35,25 @@ resource "hcloud_server" "unix_vps" {
   }
 
   dynamic "network" {
-    for_each = var.network_id_1 != null ? [1] : []
-    content {
-      network_id = var.network_id_1
-      ip         = var.private_ip_1
-    }
-  }
+    for_each = compact([
+      var.network_id_1 != null ?
+        jsonencode({
+          id = var.network_id_1
+          ip = var.private_ip_1
+        })
+        : null,
+        var.network_id_2 != null ?
+        jsonencode({
+          id = var.network_id_2
+          ip = var.private_ip_2
+        })
+        : null
+      ]
+    )
 
-  dynamic "network" {
-    for_each = var.network_id_2 != null ? [1] : []
     content {
-      network_id = var.network_id_2
-      ip         = var.private_ip_2
+      network_id = jsondecode(network.value).id
+      ip         = jsondecode(network.value).ip
     }
   }
 

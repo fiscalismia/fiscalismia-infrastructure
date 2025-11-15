@@ -1,13 +1,13 @@
-######################### NETWORKING #######################################
+######################### NETWORKING #########################################################
 # RFC 1918 defines three private IP CIDR Ranges which will never
-# be assigned as public IPs and cannot be routed to from the public internet#
+# be assigned as public IPs and cannot be routed to from the public internet
 
-######################### RFC 1918 Standard ################################
+######################### RFC 1918 Standard ##################################################
 # Class A Block	10.0.0.0 – 10.255.255.255	10.0.0.0/8
 # Class B Block	172.16.0.0 – 172.31.255.255	172.16.0.0/12
 # Class C Block	192.168.0.0 – 192.168.255.255	192.168.0.0/16
 
-######################### RESERVED IPs #####################################
+######################### RESERVED IPs #######################################################
 # 172.31.1.1 is being used as a gateway for the public network interface of servers
 # The network and broadcast IP addresses of any subnet is reserved.
 # The network IP is the first IP and the broadcast IP the last IP in the CIDR range.
@@ -16,7 +16,7 @@
 # The gateway's IP address is always the first assignable IP address of the subnet's IP range:
 # For example, in 172.31.0.0/24, you cannot use 172.31.0.1
 
-######################### SUBNET SIZE #######################################
+######################### SUBNET SIZE ########################################################
 # each network gets assigned a default subnet
 # when creating subnets manually, the minimum size is /30
 
