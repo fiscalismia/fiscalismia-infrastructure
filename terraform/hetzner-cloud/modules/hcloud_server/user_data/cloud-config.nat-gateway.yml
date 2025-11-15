@@ -10,6 +10,8 @@ package_update: true
 package_upgrade: true
 packages:
   - fail2ban     # SSH brute-force protection
+  - iptables
+  - iptables-services
 
 runcmd:
   # Make yourself known to host
