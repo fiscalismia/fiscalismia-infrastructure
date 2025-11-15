@@ -62,6 +62,18 @@ jobs:
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${LOADBALANCER_PUBLIC_KEY}
+        echo "Querying ${NAT_GATEWAY_PUBLIC_KEY} from AWS"
+        aws secretsmanager get-secret-value \
+          --secret-id ${NAT_GATEWAY_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${NAT_GATEWAY_PUBLIC_KEY}
+        echo "Querying ${DEMO_PUBLIC_KEY} from AWS"
+        aws secretsmanager get-secret-value \
+          --secret-id ${DEMO_PUBLIC_KEY} \
+          --output text \
+          --query SecretString | jq --raw-output '.public_key' \
+          >> ~/.ssh/${DEMO_PUBLIC_KEY}
         echo "Querying ${MONITORING_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${MONITORING_PUBLIC_KEY} \
@@ -74,12 +86,6 @@ jobs:
           --output text \
           --query SecretString | jq --raw-output '.public_key' \
           >> ~/.ssh/${PRODUCTION_PUBLIC_KEY}
-        echo "Querying ${DEMO_PUBLIC_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${DEMO_PUBLIC_KEY} \
-          --output text \
-          --query SecretString | jq --raw-output '.public_key' \
-          >> ~/.ssh/${DEMO_PUBLIC_KEY}
 
         mkdir -p ${GITHUB_WORKSPACE}/ssh_public_keys
         cd ~/.ssh/

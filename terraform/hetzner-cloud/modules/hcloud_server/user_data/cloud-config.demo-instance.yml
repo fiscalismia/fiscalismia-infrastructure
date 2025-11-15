@@ -9,4 +9,4 @@ users:
 runcmd:
   # Make yourself known to host
   - echo "Hello from cloud-config.demo-instance.yml!" > ~/hello_world.txt
-  - ip route add default via 172.20.1.4 # NAT Gateway IPV4 in fiscalismia-private-demo-network
+  - ip route add default via 172.20.0.1 # Subnet Gateway of subnet_private_class_b_demo_isolated
