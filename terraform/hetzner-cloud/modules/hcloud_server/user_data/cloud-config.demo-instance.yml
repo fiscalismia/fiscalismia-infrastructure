@@ -1,0 +1,12 @@
+#cloud-config
+users:
+  - name: fiscalismia
+    groups: [users, admin]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+
+runcmd:
+  # Make yourself known to host
+  - echo "Hello from cloud-config.demo-instance.yml!" > ~/hello_world.txt
+  - ip route add default via 172.20.1.4 # NAT Gateway IPV4 in fiscalismia-private-demo-network

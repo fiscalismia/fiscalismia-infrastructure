@@ -1,0 +1,11 @@
+#cloud-config
+users:
+  - name: fiscalismia
+    groups: [users, admin]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+
+runcmd:
+  # Make yourself known to host
+  - echo "Hello from cloud-config.default.yml!" > ~/hello_world.txt

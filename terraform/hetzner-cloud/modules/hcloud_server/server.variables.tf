@@ -34,6 +34,29 @@ variable "is_private" {
   default        = false
 }
 
+variable "network_id_2" {
+  description   = "Instances can be attached to up to 3 networks"
+  type          = string
+  default       = null
+}
+
+variable "private_ip_2" {
+  description   = "IPV4 corresponding to network 2."
+  type          = string
+  default       = null
+}
+
+variable "cloud_config_file" {
+  description   = "The filename of the cloud config to launch the instance with"
+  type          = string
+  default       = "cloud-config.default.yml"
+}
+
+variable "static_public_ip_id" {
+  description   = "Optional id of the static ip that is purchased to assign to a server to retain a permanent ip"
+  type          = string
+  default       = null
+}
 #     __   ___  __          __   ___  __
 #    |__) |__  /  \ |  | | |__) |__  |  \
 #    |  \ |___ \__X \__/ | |  \ |___ |__/
@@ -67,12 +90,12 @@ variable "location" {
   type          = string
 }
 
-variable "network_id" {
-  description   = "ID of our private network where all mutual instance communication happens"
+variable "network_id_1" {
+  description   = "Instances can be attached to up to 3 networks"
   type          = string
 }
 
-variable "private_ipv4" {
-  description   = "The manually assigned private IPV4 from the private subnet CIDR range"
+variable "private_ip_1" {
+  description   = "IPV4 corresponding to network 1"
   type          = string
 }

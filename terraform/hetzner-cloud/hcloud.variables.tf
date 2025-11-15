@@ -3,6 +3,11 @@ variable "default_location" {
   type          = string
   default       = "fsn1"
 }
+variable "default_datacenter" {
+  description   = "The datacenter for our resources such as primary ips"
+  type          = string
+  default       = "fsn1-dc14"
+}
 variable "default_region" {
   description   = "The region for our private server network"
   type          = string

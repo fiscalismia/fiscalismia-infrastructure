@@ -13,16 +13,41 @@ resource "hcloud_server" "unix_vps" {
   rebuild_protection         = var.protect_resource # must be same as delete protection
   delete_protection          = var.protect_resource # must be same as rebuild protection
   keep_disk                  = true
-  user_data                  = file("${path.module}/user_data/cloud-config.yml")
+  user_data                  = file("${path.module}/user_data/${var.cloud_config_file}")
 
-  public_net {
-    ipv4_enabled = var.is_private ? false : true
-    ipv6_enabled = false
+  # public network with static ip
+  dynamic "public_net" {
+    for_each = var.static_public_ip_id != null ? [1] : []
+    content {
+      ipv4_enabled = var.is_private ? false : true
+      ipv4         = var.static_public_ip_id
+      ipv6_enabled = false
+    }
   }
 
-  network {
-    network_id = var.network_id
-    ip         = var.private_ipv4
+  # public network without static ip
+  dynamic "public_net" {
+    for_each = var.static_public_ip_id == null ? [1] : []
+    content {
+      ipv4_enabled = var.is_private ? false : true
+      ipv6_enabled = false
+    }
+  }
+
+  dynamic "network" {
+    for_each = var.network_id_1 != null ? [1] : []
+    content {
+      network_id = var.network_id_1
+      ip         = var.private_ip_1
+    }
+  }
+
+  dynamic "network" {
+    for_each = var.network_id_2 != null ? [1] : []
+    content {
+      network_id = var.network_id_2
+      ip         = var.private_ip_2
+    }
   }
 
   # provisioner "local-exec" {

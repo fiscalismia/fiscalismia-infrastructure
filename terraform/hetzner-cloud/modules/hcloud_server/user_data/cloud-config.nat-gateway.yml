@@ -1,0 +1,22 @@
+#cloud-config
+users:
+  - name: fiscalismia
+    groups: [users, admin]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+
+package_update: true
+package_upgrade: true
+packages:
+  - fail2ban     # SSH brute-force protection
+
+runcmd:
+  # Make yourself known to host
+  - echo "Hello from cloud-config.nat-gateway.yml!" > ~/hello_world.txt
+  # Enable IP Forwarding (disabled by default)
+  - echo 1 > /proc/sys/net/ipv4/ip_forward
+  # Add a rule to the nat table for packets with the source ip cidr
+  # to the public network interface masquerading source ip as the NAT-Gateway IP
+  - iptables -t nat -A POSTROUTING -s '172.20.0.0/30' -o eth0 -j MASQUERADE # subnet_private_class_b_demo_isolated
+  - iptables -t nat -A POSTROUTING -s '172.24.0.0/28' -o eth0 -j MASQUERADE # subnet_private_class_b_production_isolated

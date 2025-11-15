@@ -17,6 +17,7 @@ module "fiscalismia_demo" {
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.demo_instance.name
+  cloud_config_file = "cloud-config.demo-instance.yml"
 
   labels            = local.default_labels
 
@@ -40,6 +41,7 @@ module "fiscalismia_monitoring" {
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.monitoring_instance.name
+  cloud_config_file = "cloud-config.production-instances.yml"
 
   labels            = local.default_labels
 
