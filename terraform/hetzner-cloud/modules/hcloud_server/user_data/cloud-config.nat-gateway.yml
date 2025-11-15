@@ -37,11 +37,11 @@ runcmd:
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.nat-gateway.yml!" > ${logfile}
   # Tests iptables installation
-  - echo "" >> ${logfile} && echo "iptables location is:"
+  - printf "\niptables location is:" >> ${logfile}
   - which iptables >> ${logfile} 2>&1
   # list NetworkManager Config
-  - echo "" >> ${logfile} && echo "NetworkManager Dispatcher Config is:"
+  - printf "\nNetworkManager Dispatcher Config is:" >> ${logfile}
   - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
   # reboots server for network config to take effect
-  - echo "" >> ${logfile} && echo "Rebooting server..."
+  - printf "\nRebooting server..." >> ${logfile}
   - reboot
