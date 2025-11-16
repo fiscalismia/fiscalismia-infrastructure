@@ -10,16 +10,19 @@ module "fiscalismia_demo" {
   is_private        = true
   unix_distro       = var.unix_distro
   location          = var.default_location
-  private_ip_1      = var.fiscalismia_demo_private_ipv4
-  network_id_1      = hcloud_network.network_private_class_b_demo.id
-  private_ip_2      = null
-  network_id_2      = null
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.demo_instance.name
   cloud_config_file = "cloud-config.demo-instance.yml"
 
   labels            = local.default_labels
+
+  networks          = [
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = var.fiscalismia_demo_private_ipv4
+    }
+  ]
 
   depends_on = [
       module.fiscalismia_loadbalancer,
@@ -35,16 +38,19 @@ module "fiscalismia_monitoring" {
   is_private        = true
   unix_distro       = var.unix_distro
   location          = var.default_location
-  private_ip_1      = var.fiscalismia_monitoring_private_ipv4
-  network_id_1      = hcloud_network.network_private_class_b_production.id
-  private_ip_2      = null
-  network_id_2      = null
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.monitoring_instance.name
   cloud_config_file = "cloud-config.production-instances.yml"
 
   labels            = local.default_labels
+
+  networks          = [
+    {
+      network_id    = hcloud_network.network_private_class_b_production.id
+      private_ip    = var.fiscalismia_monitoring_private_ipv4
+    }
+  ]
 
   depends_on = [
       module.fiscalismia_loadbalancer,

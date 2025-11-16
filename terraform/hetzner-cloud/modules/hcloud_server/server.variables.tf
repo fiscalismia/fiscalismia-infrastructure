@@ -34,18 +34,6 @@ variable "is_private" {
   default        = false
 }
 
-variable "network_id_2" {
-  description   = "Instances can be attached to up to 3 networks"
-  type          = string
-  default       = null
-}
-
-variable "private_ip_2" {
-  description   = "IPV4 corresponding to network 2."
-  type          = string
-  default       = null
-}
-
 variable "cloud_config_file" {
   description   = "The filename of the cloud config to launch the instance with"
   type          = string
@@ -90,12 +78,11 @@ variable "location" {
   type          = string
 }
 
-variable "network_id_1" {
-  description   = "Instances can be attached to up to 3 networks"
-  type          = string
-}
-
-variable "private_ip_1" {
-  description   = "IPV4 corresponding to network 1"
-  type          = string
+variable "networks" {
+  description   = "list of 1-3 networks to attach the server to with its own private IPv4 address"
+  type = list(object({
+    network_id = number
+    private_ip = string
+  }))
+  default = []
 }

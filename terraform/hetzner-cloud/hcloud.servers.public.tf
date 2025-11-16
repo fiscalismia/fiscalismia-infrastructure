@@ -10,10 +10,6 @@ module "fiscalismia_bastion_host" {
   unix_distro         = var.unix_distro
   location            = var.default_location
   static_public_ip_id = module.bastion_host_static_ip.ip.id
-  private_ip_1        = var.fiscalismia_bastion_host_private_ipv4_demo_net
-  network_id_1        = hcloud_network.network_private_class_b_demo.id
-  private_ip_2        = var.fiscalismia_bastion_host_private_ipv4_production_net
-  network_id_2        = hcloud_network.network_private_class_b_production.id
   server_type         = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids        = [
     hcloud_firewall.public_ssh_ingress.id,
@@ -23,6 +19,17 @@ module "fiscalismia_bastion_host" {
   # cloud_config_file   = "cloud-config.bastion-host.yml"
 
   labels              = local.default_labels
+
+  networks          = [
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = var.fiscalismia_bastion_host_private_ipv4_demo_net
+    },
+    {
+      network_id    = hcloud_network.network_private_class_b_production.id
+      private_ip    = var.fiscalismia_bastion_host_private_ipv4_production_net
+    }
+  ]
 
   depends_on = [
     hcloud_network.network_private_class_b_demo,
@@ -40,10 +47,6 @@ module "fiscalismia_loadbalancer" {
   server_name       = "Fiscalismia-LoadBalancer"
   unix_distro       = var.unix_distro
   location          = var.default_location
-  private_ip_1      = var.fiscalismia_loadbalancer_private_ipv4_demo_net
-  network_id_1      = hcloud_network.network_private_class_b_demo.id
-  private_ip_2      = var.fiscalismia_loadbalancer_private_ipv4_production_net
-  network_id_2      = hcloud_network.network_private_class_b_production.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.public_https_ingress.id,
@@ -52,6 +55,17 @@ module "fiscalismia_loadbalancer" {
   ssh_key_name      = hcloud_ssh_key.load_balancer_instance.name
 
   labels            = local.default_labels
+
+  networks          = [
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = var.fiscalismia_loadbalancer_private_ipv4_demo_net
+    },
+    {
+      network_id    = hcloud_network.network_private_class_b_production.id
+      private_ip    = var.fiscalismia_loadbalancer_private_ipv4_production_net
+    }
+  ]
 
   depends_on = [
     hcloud_network.network_private_class_b_demo,
@@ -68,10 +82,6 @@ module "fiscalismia_nat_gateway" {
   server_name       = "Fiscalismia-NAT-Gateway"
   unix_distro       = var.unix_distro
   location          = var.default_location
-  private_ip_1      = var.fiscalismia_nat_gateway_private_ipv4_demo_net
-  network_id_1      = hcloud_network.network_private_class_b_demo.id
-  private_ip_2      = var.fiscalismia_nat_gateway_private_ipv4_production_net
-  network_id_2      = hcloud_network.network_private_class_b_production.id
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     # hcloud_firewall.egress_all_public.id,
@@ -81,6 +91,17 @@ module "fiscalismia_nat_gateway" {
   cloud_config_file = "cloud-config.nat-gateway.yml"
 
   labels            = local.default_labels
+
+  networks          = [
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = var.fiscalismia_nat_gateway_private_ipv4_demo_net
+    },
+    {
+      network_id    = hcloud_network.network_private_class_b_production.id
+      private_ip    = var.fiscalismia_nat_gateway_private_ipv4_production_net
+    }
+  ]
 
   depends_on = [
     hcloud_network.network_private_class_b_demo,
