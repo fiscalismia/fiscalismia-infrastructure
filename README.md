@@ -1,5 +1,5 @@
 ## fiscalismia-infrastructure
-Terraform files for provisioning AWS &amp; Hetzner Cloud Infrastructure &amp; k8s manifests for ArgoCD deployment
+Terraform configurations for provisioning AWS & Hetzner Cloud Infrastructure. Ansible Roles for Bastion-Host ProxyJump Instance Provisioning & Deployment. HA-Proxy Loadbalancer Instance for HTTPS Ingress and Hostname Routing. Private Networks without Public IP for Application Servers with mTLS. NAT Gateway Instance for HTTPS Egress. 
 
 ### Prerequisites
 
