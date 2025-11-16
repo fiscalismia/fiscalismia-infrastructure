@@ -6,27 +6,34 @@ users:
     shell: /bin/bash
     lock_passwd: true
 
+write_files:
+  - path: /root/scripts/nat_gw_egresss_setup.sh
+    encoding: b64
+    content: ${nat_gw_egresss_setup_b64}
+    permissions: "0755"
+
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
-  - echo "Hello from cloud-config.bastion-host.yml!" > ${logfile}
-  - date >> ${logfile}
+  - echo "Hello from cloud-config.bastion-host.yml!" > $logfile
+  - date >> $logfile
   ########################### TEMPORARY HTTPS INTERNET ACCESS #####################################################
   # wait for nat gateway to initialize
-  - printf "\n# Sleeping for 15 minutes to wait for NAT-Gateway cloud-init\n" >> ${logfile}
-  - sleep 900 # 10 minutes
-  - echo "TODO CALL nat_gw_egresss_setup.sh HERE" >> ${logfile}
+  - printf "\n# Sleeping for 15 minutes to wait for NAT-Gateway cloud-init\n" >> $logfile
+  # - sleep 900 # 10 minutes
+  - printf "\n# Running NAT Gateway setup script\n" >> $logfile
+  - /root/scripts/nat_gw_egresss_setup.sh >> $logfile 2>&1
   #################################################################################################################
   # Configure Fail2Ban to protect sshd
   - dnf install fail2ban -y
   - |
     printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
     systemctl enable --now fail2ban
-    printf "\n# Fail2Ban SSHD Config:\n" >> ${logfile}
-    cat /etc/fail2ban/jail.local >> ${logfile}
-    printf "\n# systemctl status of fail2ban:\n" >> ${logfile}
-    systemctl is-active fail2ban >> ${logfile} 2>&1
+    printf "\n# Fail2Ban SSHD Config:\n" >> $logfile
+    cat /etc/fail2ban/jail.local >> $logfile
+    printf "\n# systemctl status of fail2ban:\n" >> $logfile
+    systemctl is-active fail2ban >> $logfile 2>&1
   # reboots server for network config to take effect
-  - printf "\n# Rebooting server...\n" >> ${logfile}
-  - date >> ${logfile}
+  - printf "\n# Rebooting server...\n" >> $logfile
+  - date >> $logfile
   - reboot

@@ -41,7 +41,12 @@ data "cloudinit_config" "bastion_host" {
   part {
     filename     = "cloud-config.bastion-host.yml"
     content_type = "text/cloud-config"
-    content      = file("${path.module}/modules/hcloud_server/user_data/cloud-config.bastion-host.yml")
+    content      = templatefile(
+      "${path.module}/modules/hcloud_server/user_data/cloud-config.bastion-host.yml",
+      {
+        nat_gw_egresss_setup_b64 = local.nat_gw_egresss_setup_b64
+      }
+      )
   }
 }
 
