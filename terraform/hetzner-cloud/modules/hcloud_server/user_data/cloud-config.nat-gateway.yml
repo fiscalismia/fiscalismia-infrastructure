@@ -28,20 +28,19 @@ write_files:
       # subnet_private_class_b_demo_isolated
       iptables -t nat -A POSTROUTING -s '172.20.0.0/30' -o eth0 -j MASQUERADE
       iptables -t nat -I POSTROUTING -s '172.20.0.0/30' -j LOG --log-prefix "NAT-GW DEMO_ISOLATED: "
+      iptables -t nat -I POSTROUTING -s '172.20.0.0/30' -m conntrack --ctstate NEW -j LOG --log-prefix "NAT-GW-NEW DEMO_ISOLATED: "
 
       # subnet_private_class_b_production_isolated
       iptables -t nat -A POSTROUTING -s '172.24.0.0/28' -o eth0 -j MASQUERADE
       iptables -t nat -I POSTROUTING -s '172.24.0.0/28' -j LOG --log-prefix "NAT-GW PROD_ISOLATED: "
+      iptables -t nat -I POSTROUTING -s '172.24.0.0/28' -m conntrack --ctstate NEW -j LOG --log-prefix "NAT-GW-NEW PROD_ISOLATED: "
 
       # subnet_private_class_b_production_exposed
       iptables -t nat -A POSTROUTING -s '172.24.1.0/29' -o eth0 -j MASQUERADE
       iptables -t nat -I POSTROUTING -s '172.24.1.0/29' -j LOG --log-prefix "NAT-GW PROD_EXPOSED : "
+      iptables -t nat -I POSTROUTING -s '172.24.1.0/29' -m conntrack --ctstate NEW -j LOG --log-prefix "NAT-GW-NEW PROD_EXPOSED : "
 
-      # Entire Class B Block Log all New Connections	172.16.0.0 - 172.31.255.255
-      iptables -t nat -I POSTROUTING -m conntrack --ctstate NEW -s '172.16.0.0/12' -j LOG --log-prefix "NAT NEW_CLASS_B_CIDR: "
-
-      # Entire Class B Block Log all New Connections	172.16.0.0 - 172.31.255.255
-      iptables -t nat -I POSTROUTING -m conntrack --ctstate NEW -s '0.0.0.0/0' -j LOG --log-prefix "NAT NEW_ENTIRE_CIDR : "
+      # to check logs, run "journalctl -kf"
     permissions: '0755'
 
 runcmd:
