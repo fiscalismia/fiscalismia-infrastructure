@@ -34,6 +34,7 @@ resource "hcloud_server" "unix_vps" {
     }
   }
 
+  # list of 1-3 private network blocks to attach the server to
   dynamic "network" {
     for_each = var.networks
     content {
@@ -41,29 +42,5 @@ resource "hcloud_server" "unix_vps" {
       ip         = network.value.private_ip
     }
   }
-
-  # race condition / inconsistent ordering of dynamic network provider bug prevents this syntax
-  # dynamic "network" {
-  #   # compact removes nulls from a list and Ensures Terraform receives a clean list for for_each
-  #   for_each = compact([
-  #     var.network_id_1 != null ?
-  #       jsonencode({
-  #         id = var.network_id_1
-  #         ip = var.private_ip_1
-  #       })
-  #       : null,
-  #       var.network_id_2 != null ?
-  #       jsonencode({
-  #         id = var.network_id_2
-  #         ip = var.private_ip_2
-  #       })
-  #       : null
-  #     ]
-  #   )
-  #   content {
-  #     network_id = jsondecode(network.value).id
-  #     ip         = jsondecode(network.value).ip
-  #   }
-  # }
 
 }

@@ -12,6 +12,7 @@ module "fiscalismia_bastion_host" {
   static_public_ip_id = module.bastion_host_static_ip.ip.id
   server_type         = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids        = [
+    hcloud_firewall.egress_DENY_ALL_public.id,
     hcloud_firewall.public_ssh_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
   ]
@@ -49,6 +50,7 @@ module "fiscalismia_loadbalancer" {
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
+    hcloud_firewall.egress_DENY_ALL_public.id,
     hcloud_firewall.public_https_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
   ]
@@ -84,7 +86,6 @@ module "fiscalismia_nat_gateway" {
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
-    # hcloud_firewall.egress_all_public.id,
     hcloud_firewall.egress_public_https_icmp_only.id,
   ]
   ssh_key_name      = hcloud_ssh_key.nat_gateway_instance.name

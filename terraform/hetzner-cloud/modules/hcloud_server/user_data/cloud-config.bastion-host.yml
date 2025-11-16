@@ -10,7 +10,7 @@ runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.bastion-host.yml!" > ${logfile}
-  - who >> ${logfile}
+  - date >> ${logfile}
   ########################### TEMPORARY HTTPS INTERNET ACCESS #####################################################
   - export PRIVATE_IP=172.24.1.2
   # configure temporary route to NAT Gateway for internet access from private IPV4 of bastion host
@@ -36,29 +36,29 @@ runcmd:
   #################################################################################################################
   # Configure Fail2Ban to protect sshd
   - dnf install fail2ban -y
-  - echo "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
+  - printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
   - systemctl enable --now fail2ban
-  - printf "\n###Fail2Ban SSHD Config:" >> ${logfile}
+  - printf "\n# Fail2Ban SSHD Config:\n" >> ${logfile}
   - cat /etc/fail2ban/jail.local >> ${logfile}
-  - printf "\n###systemctl status of fail2ban:"
+  - printf "\n# systemctl status of fail2ban:\n" >> ${logfile}
   - systemctl is-active fail2ban >> ${logfile} 2>&1
   # reboots server for network config to take effect
-  - printf "\n###Rebooting server...\n" >> ${logfile}
+  - printf "\n# Rebooting server...\n" >> ${logfile}
   - date >> ${logfile}
   - reboot
 
-# export PRIVATE_IP=172.24.1.2
-# echo "100 nat_prod" >> /usr/share/iproute2/rt_tables
-# export VIRTUAL_GATEWAY=172.24.0.1
-# export PROD_INTERFACE=$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')
-# ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
-# ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table nat_prod
-# # ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
-# ip rule add from ${PRIVATE_IP}/32 table nat_prod priority 100
-# ip route flush cache
-# ping -c 3 -I ${PRIVATE_IP} google.com
-# curl --interface ${PRIVATE_IP} https://ifconfig.me
-# ping -c 3 google.com
-# curl https://ifconfig.me
-
-
+export PRIVATE_IP=172.24.1.2
+export NAT_TABLE=nat_prod
+echo "100 ${NAT_TABLE}" >> /usr/share/iproute2/rt_tables
+export VIRTUAL_GATEWAY=172.24.0.1
+export PROD_INTERFACE=$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')
+ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table ${NAT_TABLE}
+# ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+ip rule add from ${PRIVATE_IP}/32 table ${NAT_TABLE} priority 100
+ip rule add from ${PRIVATE_IP}/32 lookup ${NAT_TABLE}
+ip route flush cache
+ping -c 3 -I ${PRIVATE_IP} google.com && echo ""
+curl --interface ${PRIVATE_IP} https://ifconfig.me && echo ""
+ping -c 3 google.com && echo ""
+curl https://ifconfig.me && echo ""

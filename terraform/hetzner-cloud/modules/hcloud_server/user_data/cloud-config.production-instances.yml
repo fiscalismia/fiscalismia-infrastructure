@@ -30,14 +30,14 @@ runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.production-instances.yml!" > ${logfile}
-  - who >> ${logfile}
+  - date >> ${logfile}
   # list NetworkManager Config
-  - printf "\n###NetworkManager Dispatcher Config is:" >> ${logfile}
+  - printf "\n# NetworkManager Dispatcher Config is:\n" >> ${logfile}
   - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
   # list systemd DNS Config
-  - printf "\n###systemd DNS config is:\n" >> ${logfile}
+  - printf "\n# systemd DNS config is:\n" >> ${logfile}
   - cat /etc/systemd/resolved.conf >> ${logfile}
   # reboots server for network config to take effect
-  - printf "\n###Rebooting server...\n" >> ${logfile}
+  - printf "\n# Rebooting server...\n" >> ${logfile}
   - date >> ${logfile}
   - reboot

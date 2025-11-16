@@ -1,3 +1,12 @@
+########################### INFO #########################################################################
+# WARNING: Hetzner allows all outbound traffic by default if no explicit outbound firewall rule is applied
+# INFO:    All ingress is blocked by default and only explicit allow rules are applied
+##########################################################################################################
+#            __   __   ___  __   __
+#    | |\ | / _` |__) |__  /__` /__`
+#    | | \| \__> |  \ |___ .__/ .__/
+
+
 resource "hcloud_firewall" "public_ssh_ingress" {
     labels = local.default_labels
     name   = "public-ssh-ingress"
@@ -28,36 +37,57 @@ resource "hcloud_firewall" "public_icmp_ping_ingress" {
     }
 }
 
-resource "hcloud_firewall" "egress_public_https_icmp_only" {
-    labels = local.default_labels
-    name   = "egress-public-https-icmp-only"
+resource "hcloud_firewall" "public_https_ingress" {
+    name = "public-https-ingress"
 
     rule {
-        description     = "Allow all outbound HTTPS"
-        direction       = "out"
-        protocol        = "tcp"
-        port            = "443"
-        destination_ips = [
+        description = "Allow HTTPS in from anywhere"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = "443"
+        source_ips  = [
         "0.0.0.0/0",
         "::/0"
         ]
     }
 
+    # TODO: only use for testing - in production we want mTLS
     rule {
-        description     = "Allow all outbound ICMP"
-        direction       = "out"
-        protocol        = "icmp"
-        destination_ips = [
+        description = "Allow HTTP in from anywhere"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = "80"
+        source_ips  = [
         "0.0.0.0/0",
         "::/0"
         ]
     }
 }
 
+#     ___  __   __   ___  __   __
+#    |__  / _` |__) |__  /__` /__`
+#    |___ \__> |  \ |___ .__/ .__/
 
-resource "hcloud_firewall" "egress_all_public" {
+# INFO: if any outbound rule is defined, the default for all other outbound traffic switches to DENY
+# so we simply allow outbound tcp to the server's own loopback address to block all egrress
+resource "hcloud_firewall" "egress_DENY_ALL_public" {
     labels = local.default_labels
-    name   = "egress-all-public"
+    name   = "egress-DENY-ALL-public"
+
+    rule {
+        description     = "Allow all outbound TCP"
+        direction       = "out"
+        protocol        = "tcp"
+        port            = "any"
+        destination_ips = [
+        "127.0.0.1/32",
+        ]
+    }
+}
+
+resource "hcloud_firewall" "egress_ALLOW_ALL_public" {
+    labels = local.default_labels
+    name   = "egress-ALLOW-ALL-public"
 
     rule {
         description     = "Allow all outbound TCP"
@@ -92,27 +122,27 @@ resource "hcloud_firewall" "egress_all_public" {
     }
 }
 
-resource "hcloud_firewall" "public_https_ingress" {
-    name = "public-https-ingress"
+# Rule specifically for the NAT-Gateway to provide internet access to private instances
+resource "hcloud_firewall" "egress_public_https_icmp_only" {
+    labels = local.default_labels
+    name   = "egress-public-https-icmp-only"
 
     rule {
-        description = "Allow HTTPS in from anywhere"
-        direction   = "in"
-        protocol    = "tcp"
-        port        = "443"
-        source_ips  = [
+        description     = "Allow all outbound HTTPS"
+        direction       = "out"
+        protocol        = "tcp"
+        port            = "443"
+        destination_ips = [
         "0.0.0.0/0",
         "::/0"
         ]
     }
 
-    # TODO: only use for testing - in production we want mTLS
     rule {
-        description = "Allow HTTP in from anywhere"
-        direction   = "in"
-        protocol    = "tcp"
-        port        = "80"
-        source_ips  = [
+        description     = "Allow all outbound ICMP"
+        direction       = "out"
+        protocol        = "icmp"
+        destination_ips = [
         "0.0.0.0/0",
         "::/0"
         ]
