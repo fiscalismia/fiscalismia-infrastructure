@@ -23,29 +23,6 @@ variable "unix_distro" {
 #     __   __              ___  ___          ___ ___       __   __        __
 #    |__) |__) | \  /  /\   |  |__     |\ | |__   |  |  | /  \ |__) |__/ /__`
 #    |    |  \ |  \/  /~~\  |  |___    | \| |___  |  |/\| \__/ |  \ |  \ .__/
-
-######################### NETWORKING #######################################
-# RFC 1918 defines three private IP CIDR Ranges which will never
-# be assigned as public IPs and cannot be routed to from the public internet#
-
-######################### RFC 1918 Standard ################################
-# Class A Block	10.0.0.0 – 10.255.255.255	10.0.0.0/8
-# Class B Block	172.16.0.0 – 172.31.255.255	172.16.0.0/12
-# Class C Block	192.168.0.0 – 192.168.255.255	192.168.0.0/16
-
-######################### RESERVED IPs #####################################
-# 172.31.1.1 is being used as a gateway for the public network interface of servers
-# The network and broadcast IP addresses of any subnet is reserved.
-# The network IP is the first IP and the broadcast IP the last IP in the CIDR range.
-# For example, in 172.31.0.0/24, you cannot use 172.31.0.0 as well as 172.31.0.255
-# All private traffic in subnets is routed through the subnet gateway.
-# The gateway's IP address is always the first assignable IP address of the subnet's IP range:
-# For example, in 172.31.0.0/24, you cannot use 172.31.0.1
-
-######################### SUBNET SIZE #######################################
-# each network gets assigned a default subnet
-# when creating subnets manually, the minimum size is /30
-
 variable "network_private_class_b_demo" {
   description   = "RFC 1918 Class B CIDR Range reserved for private networks"
   type          = string

@@ -1,11 +1,13 @@
+########################### INFO ####################################################################
+# WARNING: This file is purely cosmetic. Hetzner allows all private network communication by default
+# so explicitly allowing it via these firewall rules attached to public instances is redundant
+# Private Instances without assigned public ip cannot have firewalls attached.
+# So we do not define their rules here, but rather on the instances themselves via "nftables"
+#####################################################################################################
 #            __   __   ___  __   __
 #    | |\ | / _` |__) |__  /__` /__`
 #    | | \| \__> |  \ |___ .__/ .__/
 
-########################### INFO ##############################################################
-# Private Instances without assigned public ip cannot have firewalls attached.
-# So we do not define their ingress rules here, but rather on the instances themselves via "nftables"
-###############################################################################################
 
 resource "hcloud_firewall" "private_ssh_ingress_from_bastion_host" {
     labels = local.default_labels
@@ -52,6 +54,7 @@ resource "hcloud_firewall" "egress_https_to_private_subnet_cidr_ranges" {
         destination_ips = [
             var.subnet_private_class_b_demo_isolated,
             var.subnet_private_class_b_production_isolated,
+            var.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
         ]
     }
 
@@ -64,6 +67,7 @@ resource "hcloud_firewall" "egress_https_to_private_subnet_cidr_ranges" {
         destination_ips = [
             var.subnet_private_class_b_demo_isolated,
             var.subnet_private_class_b_production_isolated,
+            var.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
         ]
     }
 }

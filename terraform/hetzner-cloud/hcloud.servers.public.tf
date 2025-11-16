@@ -18,9 +18,9 @@ module "fiscalismia_bastion_host" {
   firewall_ids        = [
     hcloud_firewall.public_ssh_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
-    hcloud_firewall.egress_ssh_to_fiscalismia_instances.id,
   ]
   ssh_key_name        = hcloud_ssh_key.infrastructure_orchestration.name
+  # cloud_config_file   = "cloud-config.bastion-host.yml"
 
   labels              = local.default_labels
 
@@ -48,11 +48,8 @@ module "fiscalismia_loadbalancer" {
   firewall_ids      = [
     hcloud_firewall.public_https_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
-    hcloud_firewall.egress_https_to_private_subnet_cidr_ranges.id,
-    hcloud_firewall.egress_icmp_to_private_subnet_cidr_ranges.id,
   ]
   ssh_key_name      = hcloud_ssh_key.load_balancer_instance.name
-  cloud_config_file = "cloud-config.bastion-host.yml"
 
   labels            = local.default_labels
 
@@ -79,8 +76,6 @@ module "fiscalismia_nat_gateway" {
   firewall_ids      = [
     # hcloud_firewall.egress_all_public.id,
     hcloud_firewall.egress_public_https_icmp_only.id,
-    hcloud_firewall.private_ssh_ingress_from_bastion_host.id,
-    hcloud_firewall.private_icmp_ping_ingress_from_loadbalancer.id,
   ]
   ssh_key_name      = hcloud_ssh_key.nat_gateway_instance.name
   cloud_config_file = "cloud-config.nat-gateway.yml"

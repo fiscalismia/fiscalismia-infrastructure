@@ -9,3 +9,4 @@ users:
 runcmd:
   # Make yourself known to host
   - echo "Hello from cloud-config.default.yml!" > ~/hello_world.txt
+  - who >> ~/hello_world.txt

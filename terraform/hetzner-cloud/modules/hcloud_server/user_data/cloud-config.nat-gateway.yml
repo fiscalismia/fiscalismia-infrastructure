@@ -30,25 +30,30 @@ write_files:
 
       # subnet_private_class_b_production_isolated
       iptables -t nat -A POSTROUTING -s '172.24.0.0/28' -o eth0 -j MASQUERADE
+
+      # subnet_private_class_b_production_exposed
+      iptables -t nat -A POSTROUTING -s '172.24.1.0/29' -o eth0 -j MASQUERADE
     permissions: '0755'
 
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.nat-gateway.yml!" > ${logfile}
+  - who >> ${logfile}
   # Configure Fail2Ban to protect sshd
   - echo "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
   - systemctl enable --now fail2ban
-  - printf "\nFail2Ban SSHD Config:" >> ${logfile}
+  - printf "\n###Fail2Ban SSHD Config:\n" >> ${logfile}
   - cat /etc/fail2ban/jail.local >> ${logfile}
-  - printf "\nsystemctl status of fail2ban:"
+  - printf "\n###systemctl status of fail2ban:\n" >> ${logfile}
   - systemctl is-active fail2ban >> ${logfile} 2>&1
   # Tests iptables installation
-  - printf "\niptables location is:" >> ${logfile}
+  - printf "\n###iptables location is:" >> ${logfile}
   - which iptables >> ${logfile} 2>&1
   # list NetworkManager Config
-  - printf "\nNetworkManager Dispatcher Config is:" >> ${logfile}
+  - printf "\n###NetworkManager Dispatcher Config is:\n" >> ${logfile}
   - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
   # reboots server for network config to take effect
-  - printf "\nRebooting server..." >> ${logfile}
+  - printf "\n###Rebooting server...\n" >> ${logfile}
+  - date >> ${logfile}
   - reboot

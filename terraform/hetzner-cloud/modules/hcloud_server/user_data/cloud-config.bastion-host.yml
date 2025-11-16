@@ -6,19 +6,59 @@ users:
     shell: /bin/bash
     lock_passwd: true
 
-package_update: true
-package_upgrade: true
-packages:
-  - fail2ban     # SSH brute-force protection
-
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.bastion-host.yml!" > ${logfile}
+  - who >> ${logfile}
+  ########################### TEMPORARY HTTPS INTERNET ACCESS #####################################################
+  - export PRIVATE_IP=172.24.1.2
+  # configure temporary route to NAT Gateway for internet access from private IPV4 of bastion host
+  - echo "100 nat_prod" >> /usr/share/iproute2/rt_tables
+  # sets the virtual network gateway (first assignable ip in network's CIDR)
+  - export VIRTUAL_GATEWAY=172.24.0.1
+  # gets the ipv4 private network interface name and save it to a variable
+  - export PROD_INTERFACE=$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')
+  # add a link route so the kernel knows how to reach the gateway (should be configured by default in Hetzner)
+  - ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+  # adds route from private ipv4 of bastion to the virtual network gateway
+  - ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table nat_prod
+  # replaces the default public network interface to route via the virtual gateway and private ipv4
+  - ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+  # Add Policy-Based Routing only for the production network private ipv4 of the bastion host
+  - ip rule add from ${PRIVATE_IP}/32 table nat_prod priority 100
+  # Flush the routing cache to apply changes immediately
+  - ip route flush cache
+  - ping -c 3 -I ${PRIVATE_IP} google.com
+  - curl --interface ${PRIVATE_IP} https://ifconfig.me
+  - ping -c 3 google.com
+  - curl https://ifconfig.me
+  #################################################################################################################
   # Configure Fail2Ban to protect sshd
+  - dnf install fail2ban -y
   - echo "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
   - systemctl enable --now fail2ban
-  - printf "\nFail2Ban SSHD Config:" >> ${logfile}
+  - printf "\n###Fail2Ban SSHD Config:" >> ${logfile}
   - cat /etc/fail2ban/jail.local >> ${logfile}
-  - printf "\nsystemctl status of fail2ban:"
+  - printf "\n###systemctl status of fail2ban:"
   - systemctl is-active fail2ban >> ${logfile} 2>&1
+  # reboots server for network config to take effect
+  - printf "\n###Rebooting server...\n" >> ${logfile}
+  - date >> ${logfile}
+  - reboot
+
+# export PRIVATE_IP=172.24.1.2
+# echo "100 nat_prod" >> /usr/share/iproute2/rt_tables
+# export VIRTUAL_GATEWAY=172.24.0.1
+# export PROD_INTERFACE=$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')
+# ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+# ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table nat_prod
+# # ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+# ip rule add from ${PRIVATE_IP}/32 table nat_prod priority 100
+# ip route flush cache
+# ping -c 3 -I ${PRIVATE_IP} google.com
+# curl --interface ${PRIVATE_IP} https://ifconfig.me
+# ping -c 3 google.com
+# curl https://ifconfig.me
+
+

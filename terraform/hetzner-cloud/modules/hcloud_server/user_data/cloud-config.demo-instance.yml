@@ -7,7 +7,7 @@ users:
     lock_passwd: true
 
 write_files:
-  ### Adds a route for default network traffic to the subnet Gateway subnet_private_class_b_demo_isolated
+  ### Adds a route for default network traffic to the singular virtual network Gateway for network_private_class_b_demo
   - path: /etc/NetworkManager/dispatcher.d/ifup-local
     content: |
       #!/bin/sh
@@ -30,19 +30,14 @@ runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.demo-instance.yml!" > ${logfile}
-  # Configure Fail2Ban to protect sshd
-  - echo "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
-  - systemctl enable --now fail2ban
-  - printf "\nFail2Ban SSHD Config:" >> ${logfile}
-  - cat /etc/fail2ban/jail.local >> ${logfile}
-  - printf "\nsystemctl status of fail2ban:"
-  - systemctl is-active fail2ban >> ${logfile} 2>&1
+  - who >> ${logfile}
   # list NetworkManager Config
-  - printf "\nNetworkManager Dispatcher Config is:" >> ${logfile}
+  - printf "\n###NetworkManager Dispatcher Config is:\n" >> ${logfile}
   - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
   # list systemd DNS Config
-  - printf "\nsystemd DNS config:"
+  - printf "\n###systemd DNS config is:\n" >> ${logfile}
   - cat /etc/systemd/resolved.conf >> ${logfile}
   # reboots server for network config to take effect
-  - printf "\nRebooting server..." >> ${logfile}
+  - printf "\n###Rebooting server...\n" >> ${logfile}
+  - date >> ${logfile}
   - reboot
