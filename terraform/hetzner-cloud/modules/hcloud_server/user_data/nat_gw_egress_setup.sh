@@ -5,8 +5,10 @@
 # This allows ephemeral public internet access via NAT Gateway and Private Interface Routing via Private Hetzner networks
 ##########################################################################################################################
 
+sleep 60
+
 ### Variable definition ###
-export ip_log="/root/nat_gw_egress_setup.log"
+export log="/root/nat_gw_egress_setup.log"
 # the private ip is hardcoded in terraform
 export PRIVATE_IP="172.24.1.2"
 # name of the new routing table
@@ -19,7 +21,8 @@ export PUBLIC_IP="$(hostname -I | awk '{print $1}')"
 
 ### Log Variables to File###
 vars=(PRIVATE_IP NAT_TABLE VIRTUAL_GATEWAY PROD_INTERFACE PUBLIC_IP)
-for v in "${vars[@]}"; do echo "$v=${!v}"; done >> "${ip_log}"
+printf "\n# Private IP Settings:\n" >> "${log}"
+for v in "${vars[@]}"; do echo "$v=${!v}"; done >> "${log}"
 
 ### Apply Routing Changes ###
 echo "100 ${NAT_TABLE}" >> /usr/share/iproute2/rt_tables
@@ -38,11 +41,11 @@ ip rule add from all table ${NAT_TABLE} priority 200
 # ip rule add from ${PRIVATE_IP}/32 lookup ${NAT_TABLE}
 ip route flush cache
 
-printf "\n# Testing Connectivity via Private Interface:\n" >> ${logfile}
-ping -c 1 -I ${PRIVATE_IP} 8.8.8.8 | grep -E 'statistics|packets transmitted' >> ${logfile} 2>&1
-printf "\n# Public IP Exposed via Private Interface:\n" >> ${logfile}
-curl -s --connect-timeout 5 --max-time 10 --interface ${PRIVATE_IP} https://ifconfig.me >> ${logfile} 2>&1
-printf "\n# Testing Connectivity via Default Route:\n" >> ${logfile}
-ping -c 1 8.8.8.8 | grep -E 'statistics|packets transmitted' >> ${logfile} 2>&1
-printf "\n# Public IP Exposed via Default Route:\n" >> ${logfile}
-curl -s --connect-timeout 5 --max-time 10 https://ifconfig.me >> ${logfile} 2>&1
+printf "\n# Testing Connectivity via Private Interface:\n" >> ${log}
+ping -c 1 -I ${PRIVATE_IP} 8.8.8.8 | grep -E 'statistics|packets transmitted' >> ${log} 2>&1
+printf "\n# Public IP Exposed via Private Interface:\n" >> ${log}
+curl -s --connect-timeout 5 --max-time 10 --interface ${PRIVATE_IP} https://ifconfig.me >> ${log} 2>&1
+printf "\n# Testing Connectivity via Default Route:\n" >> ${log}
+ping -c 1 8.8.8.8 | grep -E 'statistics|packets transmitted' >> ${log} 2>&1
+printf "\n# Public IP Exposed via Default Route:\n" >> ${log}
+curl -s --connect-timeout 5 --max-time 10 https://ifconfig.me >> ${log} 2>&1
