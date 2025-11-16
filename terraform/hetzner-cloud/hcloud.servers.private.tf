@@ -13,7 +13,7 @@ module "fiscalismia_demo" {
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.demo_instance.name
-  cloud_config_file = "cloud-config.demo-instance.yml"
+  cloud_config      = data.cloudinit_config.demo_instance.rendered
 
   labels            = local.default_labels
 
@@ -25,8 +25,8 @@ module "fiscalismia_demo" {
   ]
 
   depends_on = [
-      module.fiscalismia_loadbalancer,
-      hcloud_network.network_private_class_b_demo,
+    module.fiscalismia_nat_gateway,
+    hcloud_network.network_private_class_b_demo,
   ]
 }
 
@@ -41,7 +41,7 @@ module "fiscalismia_monitoring" {
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.monitoring_instance.name
-  cloud_config_file = "cloud-config.production-instances.yml"
+  cloud_config      = data.cloudinit_config.production_instances.rendered
 
   labels            = local.default_labels
 
@@ -53,7 +53,7 @@ module "fiscalismia_monitoring" {
   ]
 
   depends_on = [
-      module.fiscalismia_loadbalancer,
-      hcloud_network.network_private_class_b_production,
+    module.fiscalismia_nat_gateway,
+    hcloud_network.network_private_class_b_production,
   ]
 }

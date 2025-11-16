@@ -1,0 +1,15 @@
+#cloud-config.sandbox.yml
+users:
+  - name: fiscalismia
+    groups: [users, admin]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+
+runcmd:
+  # Initialize logfile
+  - export logfile="/root/cloud-config.log"
+  - echo "Hello from cloud-config.sandbox.yml!" > $logfile
+  - date >> $logfile
+  - echo "${ENV_VAR1}" >> $logfile
+  - echo "${ENV_VAR2}" >> $logfile

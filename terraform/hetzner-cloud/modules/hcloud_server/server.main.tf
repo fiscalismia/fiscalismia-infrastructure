@@ -13,7 +13,7 @@ resource "hcloud_server" "unix_vps" {
   rebuild_protection         = var.protect_resource # must be same as delete protection
   delete_protection          = var.protect_resource # must be same as rebuild protection
   keep_disk                  = true
-  user_data                  = file("${path.module}/user_data/${var.cloud_config_file}")
+  user_data                  = var.cloud_config
 
   # public network with static ip
   dynamic "public_net" {

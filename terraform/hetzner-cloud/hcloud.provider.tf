@@ -4,6 +4,10 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.54"
     }
+    cloudinit = {
+      source = "hashicorp/cloudinit"
+      version = "~> 2.3.7"
+    }
   }
   backend "s3" {
     bucket = "hangrybear-tf-backend-state-bucket"
@@ -12,6 +16,11 @@ terraform {
     encrypt = true
   }
 }
+
+provider "cloudinit" {
+  # Configuration options
+}
+
 
 provider "hcloud" {
   # set HCLOUD_TOKEN environment variable instead

@@ -34,12 +34,6 @@ variable "is_private" {
   default        = false
 }
 
-variable "cloud_config_file" {
-  description   = "The filename of the cloud config to launch the instance with"
-  type          = string
-  default       = "cloud-config.default.yml"
-}
-
 variable "static_public_ip_id" {
   description   = "Optional id of the static ip that is purchased to assign to a server to retain a permanent ip"
   type          = string
@@ -85,4 +79,9 @@ variable "networks" {
     private_ip = string
   }))
   default = []
+}
+
+variable "cloud_config" {
+  description   = "The rendered data block of cloudinit_config to launch the instance with"
+  type          = string
 }
