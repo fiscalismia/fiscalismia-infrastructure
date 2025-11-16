@@ -11,10 +11,10 @@
 # 172.31.1.1 is being used as a gateway for the public network interface of servers
 # The network and broadcast IP addresses of any subnet is reserved.
 # The network IP is the first IP and the broadcast IP the last IP in the CIDR range.
-# For example, in 172.31.0.0/24, you cannot use 172.31.0.0 as well as 172.31.0.255
-# All private traffic in subnets is routed through the subnet gateway.
-# The gateway's IP address is always the first assignable IP address of the subnet's IP range:
-# For example, in 172.31.0.0/24, you cannot use 172.31.0.1
+# For example, in 172.20.0.0/23, you cannot use 172.20.0.0 as well as 172.20.0.255
+# All private traffic in subnets is routed through the singular virtual network gateway.
+# The gateway's IP address is always the first assignable IP address of the networks IP range:
+# For example, in 172.20.0.0/23, you cannot use 172.20.0.1
 
 ######################### SUBNET SIZE ########################################################
 # each network gets assigned a default subnet
@@ -71,10 +71,10 @@ resource "hcloud_network_subnet" "subnet_private_class_b_production_exposed" {
 
 ##################################### INFO ##############################################################################
 # This is where the magic for internet access of private instances happens.
-# 1)   The private instances setup a default route for non-local traffic to the virtual subnet gateway
-# 1.1) The subnet gateway's IP address is always the first assignable IP address of the subnet's IP range.
-# 1.2) e.g. for the 172.20.0.0/30 Demo Network Subnet CIDR you run "ip route add default via 172.20.0.1"
-# 2)   The demo VM then knows to direct all non-local traffic to this subnet's virtual gateway.
+# 1)   The private instances setup a default route for non-local traffic to the network's singular virtual gateway
+# 1.1) The network gateway's IP address is always the first assignable IP address of the network CIDR range.
+# 1.2) e.g. for the Demo Network 172.20.0.0/23 you run "ip route add default via 172.20.0.1"
+# 2)   The demo VM then knows to direct all non-local traffic to this virtual gateway.
 # 3)   A hetzner network route defines that all non-local network traffic be directed to the private ip of the NAT Gateway
 # 3.1) e.g. the network route in this case directs outgoing 0.0.0.0/0 traffic to "172.20.1.4" (NAT Gateway IPv4)
 # 4)   The NAT Gateway is configured to forward any ipv4 traffic from the demo CIDR to its public network interface
