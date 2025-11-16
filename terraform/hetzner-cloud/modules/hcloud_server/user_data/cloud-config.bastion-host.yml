@@ -12,53 +12,61 @@ runcmd:
   - echo "Hello from cloud-config.bastion-host.yml!" > ${logfile}
   - date >> ${logfile}
   ########################### TEMPORARY HTTPS INTERNET ACCESS #####################################################
-  - export PRIVATE_IP=172.24.1.2
-  # configure temporary route to NAT Gateway for internet access from private IPV4 of bastion host
-  - echo "100 nat_prod" >> /usr/share/iproute2/rt_tables
-  # sets the virtual network gateway (first assignable ip in network's CIDR)
-  - export VIRTUAL_GATEWAY=172.24.0.1
-  # gets the ipv4 private network interface name and save it to a variable
-  - export PROD_INTERFACE=$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')
-  # add a link route so the kernel knows how to reach the gateway (should be configured by default in Hetzner)
-  - ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
-  # adds route from private ipv4 of bastion to the virtual network gateway
-  - ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table nat_prod
-  # replaces the default public network interface to route via the virtual gateway and private ipv4
-  - ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
-  # Add Policy-Based Routing only for the production network private ipv4 of the bastion host
-  - ip rule add from ${PRIVATE_IP}/32 table nat_prod priority 100
-  # Flush the routing cache to apply changes immediately
-  - ip route flush cache
-  - ping -c 3 -I ${PRIVATE_IP} google.com
-  - curl --interface ${PRIVATE_IP} https://ifconfig.me
-  - ping -c 3 google.com
-  - curl https://ifconfig.me
+  # wait for nat gateway to initialize
+  - sleep 600 # 10 minutes
+  - |
+    ### Variable definition ###
+    export ip_log="/root/nat_gw_egress_setup.log"
+    # the private ip is hardcoded in terraform
+    export PRIVATE_IP="172.24.1.2"
+    # name of the new routing table
+    export NAT_TABLE="nat_prod"
+    # sets the virtual network gateway (first assignable ip in network's CIDR)
+    export VIRTUAL_GATEWAY="172.24.0.1"
+    # gets the ipv4 private network interface name and save it to a variable
+    export PROD_INTERFACE="$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')"
+    export PUBLIC_IP="$(hostname -I | awk '{print $1}')"
+
+    ### Log Variables to File###
+    vars=(PRIVATE_IP NAT_TABLE VIRTUAL_GATEWAY PROD_INTERFACE PUBLIC_IP)
+    for v in "${vars[@]}"; do echo "$v=${!v}"; done >> "${ip_log}"
+
+    ### Apply Routing Changes ###
+    echo "100 ${NAT_TABLE}" >> /usr/share/iproute2/rt_tables
+    # add a link route so the kernel knows how to reach the gateway (should be configured by default in Hetzner)
+    ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+    # Send all traffic in the NAT_TABLE to the Hetzner virtual network gateway
+    ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table ${NAT_TABLE}
+    # THIS CAUSES SSH CONNECTION LOSS SO WE COMMENT IT OUT:
+    # ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
+    # Keep SSH alive. Any traffic *from* our public IP must use the main table.
+    ip rule add from ${PUBLIC_IP}/32 table main priority 100
+    # This is the new "default" for all other locally-generated traffic.
+    # It matches everything else and sends it to the nat_prod table.
+    ip rule add from all table ${NAT_TABLE} priority 200
+    # ip rule add from ${PRIVATE_IP}/32 table ${NAT_TABLE} priority 100
+    # ip rule add from ${PRIVATE_IP}/32 lookup ${NAT_TABLE}
+    ip route flush cache
+
+    printf "\n# Testing Connectivity via Private Interface:\n" >> ${logfile}
+    ping -c 1 -I ${PRIVATE_IP} 8.8.8.8 | grep -E 'statistics|packets transmitted' >> ${logfile} 2>&1
+    printf "\n# Public IP Exposed via Private Interface:\n" >> ${logfile}
+    curl -s --connect-timeout 5 --max-time 10 --interface ${PRIVATE_IP} https://ifconfig.me >> ${logfile} 2>&1
+    printf "\n# Testing Connectivity via Default Route:\n" >> ${logfile}
+    ping -c 1 8.8.8.8 | grep -E 'statistics|packets transmitted' >> ${logfile} 2>&1
+    printf "\n# Public IP Exposed via Default Route:\n" >> ${logfile}
+    curl -s --connect-timeout 5 --max-time 10 https://ifconfig.me >> ${logfile} 2>&1
   #################################################################################################################
   # Configure Fail2Ban to protect sshd
   - dnf install fail2ban -y
-  - printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
-  - systemctl enable --now fail2ban
-  - printf "\n# Fail2Ban SSHD Config:\n" >> ${logfile}
-  - cat /etc/fail2ban/jail.local >> ${logfile}
-  - printf "\n# systemctl status of fail2ban:\n" >> ${logfile}
-  - systemctl is-active fail2ban >> ${logfile} 2>&1
+  - |
+    printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
+    systemctl enable --now fail2ban
+    printf "\n# Fail2Ban SSHD Config:\n" >> ${logfile}
+    cat /etc/fail2ban/jail.local >> ${logfile}
+    printf "\n# systemctl status of fail2ban:\n" >> ${logfile}
+    systemctl is-active fail2ban >> ${logfile} 2>&1
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> ${logfile}
   - date >> ${logfile}
   - reboot
-
-export PRIVATE_IP=172.24.1.2
-export NAT_TABLE=nat_prod
-echo "100 ${NAT_TABLE}" >> /usr/share/iproute2/rt_tables
-export VIRTUAL_GATEWAY=172.24.0.1
-export PROD_INTERFACE=$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')
-ip route add ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
-ip route add default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE} table ${NAT_TABLE}
-# ip route replace default via ${VIRTUAL_GATEWAY} dev ${PROD_INTERFACE}
-ip rule add from ${PRIVATE_IP}/32 table ${NAT_TABLE} priority 100
-ip rule add from ${PRIVATE_IP}/32 lookup ${NAT_TABLE}
-ip route flush cache
-ping -c 3 -I ${PRIVATE_IP} google.com && echo ""
-curl --interface ${PRIVATE_IP} https://ifconfig.me && echo ""
-ping -c 3 google.com && echo ""
-curl https://ifconfig.me && echo ""

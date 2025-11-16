@@ -17,7 +17,7 @@ module "fiscalismia_bastion_host" {
     hcloud_firewall.public_icmp_ping_ingress.id,
   ]
   ssh_key_name        = hcloud_ssh_key.infrastructure_orchestration.name
-  # cloud_config_file   = "cloud-config.bastion-host.yml"
+  cloud_config_file   = "cloud-config.bastion-host.yml"
 
   labels              = local.default_labels
 
