@@ -6,6 +6,12 @@ users:
     shell: /bin/bash
     lock_passwd: true
 
+write_files:
+  - path: /root/scripts/sandbox_injected_b64.sh
+    encoding: b64
+    content: ${sandbox_injected_b64}
+    permissions: "0755"
+
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
@@ -13,3 +19,4 @@ runcmd:
   - date >> $logfile
   - echo "${ENV_VAR1}" >> $logfile
   - echo "${ENV_VAR2}" >> $logfile
+  - /root/scripts/sandbox_injected_b64.sh >> $logfile 2>&1

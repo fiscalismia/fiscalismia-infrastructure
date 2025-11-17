@@ -9,7 +9,6 @@ users:
 package_update: true
 package_upgrade: true
 packages:
-  - fail2ban     # SSH brute-force protection
   - iptables
   - iptables-services
 
@@ -48,13 +47,6 @@ runcmd:
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.nat-gateway.yml!" > ${logfile}
   - date >> ${logfile}
-  # Configure Fail2Ban to protect sshd
-  - printf "[sshd]\nenabled = true" > /etc/fail2ban/jail.local
-  - systemctl enable --now fail2ban
-  - printf "\n# Fail2Ban SSHD Config:\n" >> ${logfile}
-  - cat /etc/fail2ban/jail.local >> ${logfile}
-  - printf "\n# systemctl status of fail2ban:\n" >> ${logfile}
-  - systemctl is-active fail2ban >> ${logfile} 2>&1
   # Tests iptables installation
   - printf "\n# iptables location is:\n" >> ${logfile}
   - which iptables >> ${logfile} 2>&1

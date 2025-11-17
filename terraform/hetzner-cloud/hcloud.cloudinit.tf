@@ -19,7 +19,7 @@ data "cloudinit_config" "sandbox" {
     filename     = "sandbox.sh"
     content_type = "text/x-shellscript"
     content      = templatefile(
-      "${path.module}/modules/hcloud_server/user_data/sandbox.sh",
+      "${path.module}/modules/hcloud_server/user_data/sandbox_standalone.sh",
       local.sandbox_env_vars
     )
   }
@@ -29,7 +29,11 @@ data "cloudinit_config" "sandbox" {
     content_type = "text/cloud-config"
     content      = templatefile(
       "${path.module}/modules/hcloud_server/user_data/cloud-config.sandbox.yml",
-      local.sandbox_env_vars
+      {
+        ENV_VAR1 = "first value"
+        ENV_VAR2 = "second value"
+        sandbox_injected_b64 = local.sandbox_injected_b64
+      }
     )
   }
 }
