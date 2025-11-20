@@ -21,14 +21,15 @@ module "fiscalismia_bastion_host" {
 
   labels              = local.default_labels
 
+  # first element in the list is main private ip used for routing to e.g. nat gateway for inet access
   networks          = [
-    {
-      network_id    = hcloud_network.network_private_class_b_demo.id
-      private_ip    = var.fiscalismia_bastion_host_private_ipv4_demo_net
-    },
     {
       network_id    = hcloud_network.network_private_class_b_production.id
       private_ip    = var.fiscalismia_bastion_host_private_ipv4_production_net
+    },
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = var.fiscalismia_bastion_host_private_ipv4_demo_net
     }
   ]
 
@@ -62,14 +63,15 @@ module "fiscalismia_loadbalancer" {
 
   labels              = local.default_labels
 
+  # first element in the list is main private ip used for routing to e.g. nat gateway for inet access
   networks            = [
-    {
-      network_id      = hcloud_network.network_private_class_b_demo.id
-      private_ip      = var.fiscalismia_loadbalancer_private_ipv4_demo_net
-    },
     {
       network_id      = hcloud_network.network_private_class_b_production.id
       private_ip      = var.fiscalismia_loadbalancer_private_ipv4_production_net
+    },
+    {
+      network_id      = hcloud_network.network_private_class_b_demo.id
+      private_ip      = var.fiscalismia_loadbalancer_private_ipv4_demo_net
     }
   ]
 
@@ -99,14 +101,15 @@ module "fiscalismia_nat_gateway" {
 
   labels            = local.default_labels
 
+  # first element in the list is main private ip used for routing to e.g. nat gateway for inet access
   networks          = [
-    {
-      network_id    = hcloud_network.network_private_class_b_demo.id
-      private_ip    = var.fiscalismia_nat_gateway_private_ipv4_demo_net
-    },
     {
       network_id    = hcloud_network.network_private_class_b_production.id
       private_ip    = var.fiscalismia_nat_gateway_private_ipv4_production_net
+    },
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = var.fiscalismia_nat_gateway_private_ipv4_demo_net
     }
   ]
 

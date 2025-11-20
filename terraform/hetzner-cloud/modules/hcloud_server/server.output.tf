@@ -24,3 +24,7 @@ output "server_id_list" {
     server.id
   ]
 }
+
+output "main_private_ipv4" {
+  value = var.networks[0].private_ip
+}
