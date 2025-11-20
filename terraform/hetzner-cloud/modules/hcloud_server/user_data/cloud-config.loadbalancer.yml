@@ -15,4 +15,4 @@ runcmd:
   - echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
   - sudo sysctl --system >> ${logfile} 2>&1
   - printf "\nVerifying sysctl config file content:\n" >> ${logfile}
-  - cat /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf >> ${logfile} 2>&1
+  - sudo cat /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf >> ${logfile} 2>&1
