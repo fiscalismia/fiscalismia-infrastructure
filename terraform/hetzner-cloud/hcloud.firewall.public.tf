@@ -23,6 +23,22 @@ resource "hcloud_firewall" "public_ssh_ingress" {
     }
 }
 
+resource "hcloud_firewall" "public_haproxy_stats_ingress" {
+    labels = local.default_labels
+    name   = "public-haproxy-stats-ingress"
+
+    rule {
+        description     = "Allow port 8404 Access from everywhere"
+        direction       = "in"
+        port            = "8404"
+        protocol        = "tcp"
+        source_ips = [
+        "0.0.0.0/0",
+        "::/0",
+        ]
+    }
+}
+
 resource "hcloud_firewall" "public_icmp_ping_ingress" {
     name = "public-icmp-ping-ingress"
 

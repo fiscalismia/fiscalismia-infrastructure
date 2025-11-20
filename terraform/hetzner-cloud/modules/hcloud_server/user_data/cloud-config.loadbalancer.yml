@@ -25,7 +25,7 @@ runcmd:
   ########################### TEMPORARY HTTPS INTERNET ACCESS ###########################
   # wait for nat gateway to initialize
   - printf "\n# Sleeping to wait for NAT-Gateway cloud-init\n" >> $logfile
-  # - sleep 600 # 10 minutes
+  - sleep 600 # 10 minutes
   - printf "\n# Running NAT Gateway setup script\n" >> $logfile
   - /root/scripts/nat_gw_egresss_setup.sh ${PRIVATE_IP_TO_NAT} >> $logfile 2>&1
   ######################################################################################

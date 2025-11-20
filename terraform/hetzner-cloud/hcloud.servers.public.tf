@@ -56,6 +56,7 @@ module "fiscalismia_loadbalancer" {
   firewall_ids        = [
     hcloud_firewall.egress_DENY_ALL_public.id,
     hcloud_firewall.public_https_ingress.id,
+    hcloud_firewall.public_haproxy_stats_ingress.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
   ]
   ssh_key_name        = hcloud_ssh_key.load_balancer_instance.name
