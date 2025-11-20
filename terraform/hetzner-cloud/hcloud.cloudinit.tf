@@ -49,6 +49,7 @@ data "cloudinit_config" "bastion_host" {
       "${path.module}/modules/hcloud_server/user_data/cloud-config.bastion-host.yml",
       {
         nat_gw_egresss_setup_b64 = local.nat_gw_egresss_setup_b64
+        PRIVATE_IP_TO_NAT = var.fiscalismia_bastion_host_private_ipv4_production_net
       }
       )
   }
@@ -61,7 +62,13 @@ data "cloudinit_config" "loadbalancer" {
   part {
     filename     = "cloud-config.loadbalancer.yml"
     content_type = "text/cloud-config"
-    content      = file("${path.module}/modules/hcloud_server/user_data/cloud-config.loadbalancer.yml")
+    content      = templatefile(
+      "${path.module}/modules/hcloud_server/user_data/cloud-config.loadbalancer.yml",
+      {
+        install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        PRIVATE_IP_TO_NAT = var.fiscalismia_loadbalancer_private_ipv4_production_net
+      }
+      )
   }
 }
 

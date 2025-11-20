@@ -6,13 +6,29 @@ users:
     shell: /bin/bash
     lock_passwd: true
 
+write_files:
+  - path: /root/scripts/install-podman-docker-compose-fedora.sh
+    encoding: b64
+    content: ${install_podman_docker-compose_b64}
+    permissions: "0755"
+
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
-  - echo "Hello from cloud-config.loadbalancer.yml!" > ${logfile}
-  - date >> ${logfile}
+  - echo "Hello from cloud-config.loadbalancer.yml!" > $logfile
+  - date >> $logfile
+  ########################### TEMPORARY HTTPS INTERNET ACCESS ###########################
+  # wait for nat gateway to initialize
+  - printf "\n# Sleeping to wait for NAT-Gateway cloud-init\n" >> $logfile
+  - sleep 600 # 10 minutes
+  - printf "\n# Running NAT Gateway setup script\n" >> $logfile
+  - /root/scripts/nat_gw_egresss_setup.sh ${PRIVATE_IP_TO_NAT} >> $logfile 2>&1
+  ######################################################################################
+  # Install podman and docker-compose v2 plugin
+  - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
+  - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
   # Allow unpriviledged user running the HAProxy docker container to bind to ports below 1024
   - echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
-  - sudo sysctl --system >> ${logfile} 2>&1
-  - printf "\nVerifying sysctl config file content:\n" >> ${logfile}
-  - sudo cat /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf >> ${logfile} 2>&1
+  - sudo sysctl --system >> $logfile 2>&1
+  - printf "\nVerifying sysctl config file content:\n" >> $logfile
+  - sudo cat /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf >> $logfile 2>&1

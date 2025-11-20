@@ -7,3 +7,7 @@ variable "datacenter" {
   description   = "The datacenter for our resources such as primary ips"
   type          = string
 }
+variable "primary_ip_name" {
+  description   = "Name of the resource"
+  type          = string
+}

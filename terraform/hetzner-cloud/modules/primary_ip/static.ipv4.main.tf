@@ -1,5 +1,5 @@
-resource "hcloud_primary_ip" "bastion_host_static_ipv4" {
-  name              = "bastion-host-static-ipv4"
+resource "hcloud_primary_ip" "static_ipv4" {
+  name              = var.primary_ip_name
   datacenter        = var.datacenter
   type              = "ipv4"
   assignee_type     = "server"
