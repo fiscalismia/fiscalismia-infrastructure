@@ -120,45 +120,45 @@ jobs:
         path: |
           ssh_public_keys/*hcloud.pub
 
-  terraform-review-hcloud:
-    needs:
-      - terraform-plan-hcloud
+  # terraform-review-hcloud:
+  #   needs:
+  #     - terraform-plan-hcloud
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write # for aws OIDC STS tokens to work
-      contents: read
-      actions: read
+  #   permissions:
+  #     id-token: write # for aws OIDC STS tokens to work
+  #     contents: read
+  #     actions: read
 
-    steps:
-    - name: Checkout SCM
-      uses: actions/checkout@v5
+  #   steps:
+  #   - name: Checkout SCM
+  #     uses: actions/checkout@v5
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3.1.2
+  #   - name: Set up Terraform
+  #     uses: hashicorp/setup-terraform@v3.1.2
 
-    - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.0
-      with:
-        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
-        role-session-name: TerraformReviewHcloud_STSSession
-        aws-region: ${{ vars.AWS_REGION }}
+  #   - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
+  #     uses: aws-actions/configure-aws-credentials@v5.1.0
+  #     with:
+  #       role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
+  #       role-session-name: TerraformReviewHcloud_STSSession
+  #       aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Download Planfile Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hcloud-planfile
-        path: planfiles/
+  #   - name: Download Planfile Artifacts
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: hcloud-planfile
+  #       path: planfiles/
 
-    - name: Review Hcloud planfile
-      env:
-        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-      run: |
-        aws sts get-caller-identity
-        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
-        terraform init
-        terraform show ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
+  #   - name: Review Hcloud planfile
+  #     env:
+  #       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+  #     run: |
+  #       aws sts get-caller-identity
+  #       cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
+  #       terraform init
+  #       terraform show ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
 
   terraform-apply-hcloud:
     environment: prod # requires manual approval before running

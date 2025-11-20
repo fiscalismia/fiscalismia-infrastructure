@@ -69,44 +69,44 @@ jobs:
         path: |
           planfiles/aws*
 
-  terraform-review-aws:
-    needs:
-      - terraform-plan-aws
+  # terraform-review-aws:
+  #   needs:
+  #     - terraform-plan-aws
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write # for aws OIDC STS tokens to work
-      contents: read
-      actions: read
+  #   permissions:
+  #     id-token: write # for aws OIDC STS tokens to work
+  #     contents: read
+  #     actions: read
 
-    steps:
-    - name: Checkout SCM
-      uses: actions/checkout@v5
+  #   steps:
+  #   - name: Checkout SCM
+  #     uses: actions/checkout@v5
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3.1.2
+  #   - name: Set up Terraform
+  #     uses: hashicorp/setup-terraform@v3.1.2
 
-    - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Terraform Pipeline Role
-      uses: aws-actions/configure-aws-credentials@v5.1.0
-      with:
-        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
-        role-session-name: TerraformReviewAWS_STSSession
-        aws-region: ${{ vars.AWS_REGION }}
+  #   - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Terraform Pipeline Role
+  #     uses: aws-actions/configure-aws-credentials@v5.1.0
+  #     with:
+  #       role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
+  #       role-session-name: TerraformReviewAWS_STSSession
+  #       aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Download AWS Planfile Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: aws-planfile
-        path: planfiles/
+  #   - name: Download AWS Planfile Artifact
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: aws-planfile
+  #       path: planfiles/
 
-    - name: Review AWS planfile
-      run: |
-        aws sts get-caller-identity
+  #   - name: Review AWS planfile
+  #     run: |
+  #       aws sts get-caller-identity
 
-        cd ${GITHUB_WORKSPACE}/terraform/aws
-        terraform init
-        terraform show ${GITHUB_WORKSPACE}/planfiles/aws.plan
+  #       cd ${GITHUB_WORKSPACE}/terraform/aws
+  #       terraform init
+  #       terraform show ${GITHUB_WORKSPACE}/planfiles/aws.plan
 
   terraform-apply-aws:
     environment: prod # requires manual approval before running
