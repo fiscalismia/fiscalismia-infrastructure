@@ -112,7 +112,7 @@ jobs:
     environment: prod # requires manual approval before running
     timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     needs:
-      - terraform-review-aws
+      - terraform-plan-aws
 
     runs-on: ubuntu-latest
 
