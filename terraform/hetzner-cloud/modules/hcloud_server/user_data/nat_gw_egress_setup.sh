@@ -6,14 +6,13 @@
 # PARAM $1 is the private IPv4 address of the public instance wanting to gain ephemeral internet access
 ##########################################################################################################################
 
-set -eou pipefail
-
+# wait for the private network interface to initialize.
 sleep 60
 
 ### Variable definition ###
 export log="/root/nat_gw_egress_setup.log"
 # the private ip is hardcoded in terraform
-export PRIVATE_IP=$1
+export PRIVATE_IP="$1"
 # name of the new routing table
 export NAT_TABLE="nat_prod"
 # sets the virtual network gateway (first assignable ip in network's CIDR)
@@ -22,15 +21,17 @@ export VIRTUAL_GATEWAY="172.24.0.1"
 export PRIVATE_INTERFACE="$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')"
 export PUBLIC_IP="$(hostname -I | awk '{print $1}')"
 
+if ! [ -z "$1" ]; then echo "No Private IPv4 address passed as Param 1"; fi >> ${log}
+
 ### Log Variables to File###
 vars=(PRIVATE_IP NAT_TABLE VIRTUAL_GATEWAY PRIVATE_INTERFACE PUBLIC_IP)
 printf "\n# Private IP Settings:\n" >> "${log}"
-for v in "${vars[@]}"; do echo "$v=${!v}"; done >> "${log}"
+for v in "${vars[@]}"; do echo "$v=${!v}"; done >> ${log}
 
 ### Apply Routing Changes ###
 echo "100 ${NAT_TABLE}" >> /usr/share/iproute2/rt_tables
 # add a link route so the kernel knows how to reach the gateway (should be configured by default in Hetzner)
-ip route add ${VIRTUAL_GATEWAY} dev ${PRIVATE_INTERFACE}
+ip route add ${VIRTUAL_GATEWAY} dev ${PRIVATE_INTERFACE} > /dev/null 2>&1
 # Send all traffic in the NAT_TABLE to the Hetzner virtual network gateway
 ip route add default via ${VIRTUAL_GATEWAY} dev ${PRIVATE_INTERFACE} table ${NAT_TABLE}
 # THIS CAUSES SSH CONNECTION LOSS SO WE COMMENT IT OUT:

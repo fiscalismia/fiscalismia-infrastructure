@@ -66,6 +66,7 @@ data "cloudinit_config" "loadbalancer" {
       "${path.module}/modules/hcloud_server/user_data/cloud-config.loadbalancer.yml",
       {
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        nat_gw_egresss_setup_b64 = local.nat_gw_egresss_setup_b64
         PRIVATE_IP_TO_NAT = var.fiscalismia_loadbalancer_private_ipv4_production_net
       }
       )
