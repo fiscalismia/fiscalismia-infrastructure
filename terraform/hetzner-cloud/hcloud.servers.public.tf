@@ -56,7 +56,7 @@ module "fiscalismia_loadbalancer" {
     hcloud_firewall.public_icmp_ping_ingress.id,
   ]
   ssh_key_name      = hcloud_ssh_key.load_balancer_instance.name
-  cloud_config      = data.cloudinit_config.sandbox.rendered
+  cloud_config      = data.cloudinit_config.loadbalancer.rendered
 
   labels            = local.default_labels
 

@@ -9,8 +9,8 @@ output "server_ips_human_readable" {
     try(module.fiscalismia_nat_gateway.server_ipv4_ascii_list, []),
     try(module.fiscalismia_demo.server_ipv4_ascii_list, []),
     try(module.fiscalismia_monitoring.server_ipv4_ascii_list, []),
-    # try(module.fiscalismia_frontend.server_ipv4_ascii_list, []),
-    # try(module.fiscalismia_backend.server_ipv4_ascii_list, []),
+    try(module.fiscalismia_frontend.server_ipv4_ascii_list, []),
+    try(module.fiscalismia_backend.server_ipv4_ascii_list, []),
     ["#################################################"],
   ))
 }

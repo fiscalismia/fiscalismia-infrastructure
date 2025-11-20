@@ -1,0 +1,18 @@
+#cloud-config.loadbalancer.yml
+users:
+  - name: fiscalismia
+    groups: [users, admin]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+
+runcmd:
+  # Initialize logfile
+  - export logfile="/root/cloud-config.log"
+  - echo "Hello from cloud-config.loadbalancer.yml!" > ${logfile}
+  - date >> ${logfile}
+  # Allow unpriviledged user running the HAProxy docker container to bind to ports below 1024
+  - echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
+  - sudo sysctl --system >> ${logfile} 2>&1
+  - printf "\nVerifying sysctl config file content:\n" >> ${logfile}
+  - cat /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf >> ${logfile} 2>&1

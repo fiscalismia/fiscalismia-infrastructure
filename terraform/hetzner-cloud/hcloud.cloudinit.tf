@@ -54,6 +54,17 @@ data "cloudinit_config" "bastion_host" {
   }
 }
 
+data "cloudinit_config" "loadbalancer" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "cloud-config.loadbalancer.yml"
+    content_type = "text/cloud-config"
+    content      = file("${path.module}/modules/hcloud_server/user_data/cloud-config.loadbalancer.yml")
+  }
+}
+
 data "cloudinit_config" "demo_instance" {
   gzip          = false
   base64_encode = false
