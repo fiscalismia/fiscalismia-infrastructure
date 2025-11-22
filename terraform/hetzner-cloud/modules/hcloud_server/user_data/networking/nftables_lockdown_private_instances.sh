@@ -18,11 +18,12 @@ export NAT_GATEWAY_PRIVATE_IP="$3"
 export TARGET_INSTANCE_PRIVATE_IP="$4"
 
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
-    echo "Error: Missing required parameters." > &2
-    echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <TARGET_INSTANCE_PRIVATE_IP>" >&2
+    echo "Error: Missing required parameters."
+    echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <TARGET_INSTANCE_PRIVATE_IP>"
     exit 1
 fi
 
+### INSTALLATION ###
 sudo dnf install --quiet -y nftables
 which nft
 # enable nftables on boot and start immediately
@@ -31,3 +32,10 @@ sudo systemctl enable nftables
 sudo systemctl start nftables
 # check nftables status
 echo "# Checking status of nftables:" && sudo systemctl status nftables
+
+### CONFIGURATION ###
+sudo nft add table ip private_ingress
+sudo nft add table ip private_egress
+
+# https://linux-audit.com/networking/nftables/nftables-beginners-guide-to-traffic-filtering/
+# https://www.centron.de/en/tutorial/install-and-configure-nftables-firewall-on-linux/

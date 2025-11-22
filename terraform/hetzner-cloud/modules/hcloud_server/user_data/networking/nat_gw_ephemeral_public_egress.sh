@@ -22,8 +22,8 @@ export PRIVATE_INTERFACE="$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '
 export PUBLIC_IP="$(hostname -I | awk '{print $1}')"
 
 if [ -z "$1" ]; then
-    echo "Error: Missing required parameters." > &2
-    echo "Usage: $0 <PRIVATE_IP>" >&2
+    echo "Error: Missing required parameters."
+    echo "Usage: $0 <PRIVATE_IP>"
     exit 1
 fi
 
