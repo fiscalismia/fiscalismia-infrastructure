@@ -7,9 +7,10 @@ users:
     lock_passwd: true
 
 write_files:
-  - path: /root/scripts/nat_gw_egresss_setup.sh
+  ### TEMPORARY HTTP/HTTPS INTERNET ACCESS ###
+  - path: /root/scripts/nat_gw_ephemeral_public_egress.sh
     encoding: b64
-    content: ${nat_gw_egresss_setup_b64}
+    content: ${nat_gw_ephemeral_public_egress_b64}
     permissions: "0755"
 
 runcmd:
@@ -17,12 +18,12 @@ runcmd:
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.bastion-host.yml!" > $logfile
   - date >> $logfile
-  ########################### TEMPORARY HTTPS INTERNET ACCESS ###########################
+  ########################### TEMPORARY HTTP/HTTPS INTERNET ACCESS ###########################
   # wait for nat gateway to initialize
   - printf "\n# Sleeping to wait for NAT-Gateway cloud-init\n" >> $logfile
   - sleep 600 # 10 minutes
   - printf "\n# Running NAT Gateway setup script\n" >> $logfile
-  - /root/scripts/nat_gw_egresss_setup.sh ${PRIVATE_IP_TO_NAT} >> $logfile 2>&1
+  - /root/scripts/nat_gw_ephemeral_public_egress.sh ${PRIVATE_IP_TO_NAT} >> $logfile 2>&1
   ######################################################################################
   # Configure Fail2Ban to protect sshd
   - dnf install fail2ban -y

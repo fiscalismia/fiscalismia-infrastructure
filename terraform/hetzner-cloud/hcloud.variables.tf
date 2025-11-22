@@ -59,6 +59,13 @@ variable "subnet_private_class_b_production_exposed" {
 #    |__) |__) | \  /  /\   |  |__     | |__) /__`
 #    |    |  \ |  \/  /~~\  |  |___    | |    .__/
 
+# hetzner defined virtual network gateways, at first assigable ip address of network
+variable "virtual_network_gateway_demo_net" {
+  default = "172.20.0.1"
+}
+variable "virtual_network_gateway_production_net" {
+  default = "172.24.0.1"
+}
 # strictly private instances without native internet access
 variable "fiscalismia_demo_private_ipv4" {
   default = "172.20.0.2"

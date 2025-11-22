@@ -21,7 +21,11 @@ export VIRTUAL_GATEWAY="172.24.0.1"
 export PRIVATE_INTERFACE="$(ip --oneline -4 address | grep ${PRIVATE_IP} | awk '{print $2}')"
 export PUBLIC_IP="$(hostname -I | awk '{print $1}')"
 
-if ! [ -z "$1" ]; then echo "No Private IPv4 address passed as Param 1"; fi >> ${log}
+if [ -z "$1" ]; then
+    echo "Error: Missing required parameters." > &2
+    echo "Usage: $0 <PRIVATE_IP>" >&2
+    exit 1
+fi
 
 ### Log Variables to File###
 vars=(PRIVATE_IP NAT_TABLE VIRTUAL_GATEWAY PRIVATE_INTERFACE PUBLIC_IP)

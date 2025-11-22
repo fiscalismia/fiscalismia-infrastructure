@@ -13,8 +13,8 @@ write_files:
       #!/bin/sh
 
       nm-online -q --timeout=30
-      if ! ip route show default | grep -q "via 172.20.0.1"; then
-          ip route add default via 172.20.0.1
+      if ! ip route show default | grep -q "via ${VIRTUAL_NETWORK_GATEWAY}"; then
+          ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
       fi
     permissions: '0755'
 
@@ -26,18 +26,51 @@ write_files:
       FallbackDNS=8.8.8.8
     append: true
 
+  ### INSTALL PODMAN & DOCKER COMPOSE V2 ###
+  - path: /root/scripts/install-podman-docker-compose-fedora.sh
+    encoding: b64
+    content: ${install_podman_docker-compose_b64}
+    permissions: "0755"
+
+  ### Adds nftables installation and configuration to lockdown private IPv4 access ###
+  - path: /root/scripts/nftables_lockdown_private_instances.sh
+    encoding: b64
+    content: ${nftables_lockdown_private_instances_b64}
+    permissions: "0755"
+
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
-  - echo "Hello from cloud-config.demo-instance.yml!" > ${logfile}
-  - date >> ${logfile}
+  - echo "Hello from cloud-config.demo-instance.yml!" > $logfile
+  - date >> $logfile
   # list NetworkManager Config
-  - printf "\n# NetworkManager Dispatcher Config is:\n" >> ${logfile}
-  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
+  - printf "\n# NetworkManager Dispatcher Config is:\n" >> $logfile
+  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> $logfile
   # list systemd DNS Config
-  - printf "\n# systemd DNS config is:\n" >> ${logfile}
-  - cat /etc/systemd/resolved.conf >> ${logfile}
-  # reboots server for network config to take effect
-  - printf "\n# Rebooting server...\n" >> ${logfile}
-  - date >> ${logfile}
+  - printf "\n# systemd DNS config is:\n" >> $logfile
+  - cat /etc/systemd/resolved.conf >> $logfile
+  ########################### TEMPORARY HTTP/HTTPS INTERNET ACCESS ###########################
+  # wait for nat gateway to initialize
+  - printf "\n# Sleeping to wait for NAT-Gateway cloud-init\n" >> $logfile
+  - sleep 600 # 10 minutes
+  # add temporary internet access, equivalent command to above setup for persistent access
+  - echo "# Adding temporary internet access for nftables installation..." >> $logfile
+  - ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
+  - ip route flush cache
+  - sudo systemctl restart systemd-resolved
+  # Lockdown private network interface access to minimal required config
+  - |
+    /root/scripts/nftables_lockdown_private_instances.sh \
+      ${LOADBALANCER_PRIVATE_IP} \
+      ${BASTION_HOST_PRIVATE_IP} \
+      ${NAT_GATEWAY_PRIVATE_IP} \
+      ${TARGET_INSTANCE_PRIVATE_IP} \
+      >> $logfile 2>&1
+  # Install podman and docker-compose v2 plugin
+  - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
+  - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
+  ######################################################################################
+  # reboots server for persistent network config to take effect
+  - printf "\n# Rebooting server...\n" >> $logfile
+  - date >> $logfile
   - reboot
