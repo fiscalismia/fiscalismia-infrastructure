@@ -1,5 +1,5 @@
 ## fiscalismia-infrastructure
-Terraform configurations for provisioning AWS & Hetzner Cloud Infrastructure. Ansible Roles for Bastion-Host ProxyJump Instance Provisioning & Deployment. HA-Proxy Loadbalancer Instance for HTTPS Ingress and Hostname Routing. Private Networks without Public IP for Application Servers with mTLS. NAT Gateway Instance for HTTPS Egress. 
+Terraform configurations for provisioning AWS & Hetzner Cloud Infrastructure. Ansible Roles for Bastion-Host ProxyJump Instance Deployment & Updating. HA-Proxy Loadbalancer Instance for HTTPS Ingress and Hostname Routing. Private Networks without Public IP for Application Servers with mTLS. NAT Gateway Instance for HTTPS and DNS Egress.
 
 ### Prerequisites
 
@@ -140,24 +140,6 @@ chmod 400 ${PRIVATE_KEY_FILE}
 echo "set ${PRIVATE_KEY_FILE} to read-only"
 ```
 
-### Ansible Provisioning
-
-**Provision Backend**
-```bash
-export ANSIBLE_CONFIG="ansible/fiscalismia-backend/ansible.cfg"
-ansible-playbook ansible/fiscalismia-backend/provision.yaml
-    -e "ssh_key_override=${PRIVATE_KEY_FILE}"
-    -e "docker_runner_pw=${DOCKER_RUNNER_PSWD}"
-```
-
-**Provision Frontend**
-```bash
-export ANSIBLE_CONFIG="ansible/fiscalismia-frontend/ansible.cfg"
-ansible-playbook ansible/fiscalismia-frontend/provision.yaml
-  -e "ssh_key_override=${PRIVATE_KEY_FILE}"
-  -e "docker_runner_pw=${DOCKER_RUNNER_PSWD}"
-```
-
 ### Ansible Deployment
 
 **Deploy Backend**
@@ -188,6 +170,12 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
   -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
 ```
 
+### Ansible Updates
+
+```bash
+# TODO
+```
+
 ### Network Firewall with nftables
 
 To secure our private instances which cannot have a hetzner cloud firewall attached, since those only work on public network interfaces, we construct an `nftables.conf` file ourselves.
@@ -196,7 +184,7 @@ It limits the private instances in both the demo and production network to:
 - Ingress on Port 22 TCP from the Private IPv4 of the Bastion-Host
 - Ingress on Port 443 TCP from the Private IPv4 of the LoadBalancer
 - Ingress on ICMP Protocol for Pings from the Private IPv4 of the LoadBalancer
-- Egress on Port {80,443} TCP to the Private IPv4 of the NAT-Gateway (via the Virtual Network Gateway)
+- Egress on Port {80,443} TCP and 53 UDP to the Private IPv4 of the NAT-Gateway (via the Virtual Network Gateway)
 
 #### Basic Concepts
 

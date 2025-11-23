@@ -2,15 +2,15 @@
 
 ############ USAGE INSTRUCTIONS ##################
 # PARAM $1 = log_name_specifier
-# PARAM $2 = public ip (e.g. that of portquiz.net)
-# ./portscan_public_egress.sh nat_gw 49.13.27.238
+# PARAM $2 = private ip (e.g. that of demo instance)
+# ./portscan_private_ingress.sh demo 172.20.0.2
 ##################################################
 
 set -eou pipefail
 
 timeout_seconds=0.05
 rate_limit_seconds=0.01
-log_file=/tmp/portscan_public_egress_$1.log
+log_file=/tmp/portscan_private_ingress_$1.log
 target_server=$2
 rm -f ${log_file} | true
 touch ${log_file}

@@ -113,6 +113,10 @@ data "cloudinit_config" "production_instances" {
   part {
     filename     = "cloud-config.production-instances.yml"
     content_type = "text/cloud-config"
-    content      = file("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml")
+    content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml",
+      {
+        VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_production_net
+      }
+      )
   }
 }

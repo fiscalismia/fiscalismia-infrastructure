@@ -10,11 +10,10 @@ write_files:
   ### Adds a route for default network traffic to the singular virtual network Gateway for network_private_class_b_production
   - path: /etc/NetworkManager/dispatcher.d/ifup-local
     content: |
-      #!/bin/sh
+      #!/usr/bin/env bash
 
-      nm-online -q --timeout=30
-      if ! ip route show default | grep -q "via 172.24.0.1"; then
-          ip route add default via 172.24.0.1
+      if ! ip route show default | grep -q "via ${VIRTUAL_NETWORK_GATEWAY}"; then
+          ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
       fi
     permissions: '0755'
 
@@ -29,15 +28,15 @@ write_files:
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
-  - echo "Hello from cloud-config.production-instances.yml!" > ${logfile}
-  - date >> ${logfile}
+  - echo "Hello from cloud-config.production-instances.yml!" > $logfile
+  - date >> $logfile
   # list NetworkManager Config
-  - printf "\n# NetworkManager Dispatcher Config is:\n" >> ${logfile}
-  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
+  - printf "\n# NetworkManager Dispatcher Config is:\n" >> $logfile
+  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> $logfile
   # list systemd DNS Config
-  - printf "\n# systemd DNS config is:\n" >> ${logfile}
-  - cat /etc/systemd/resolved.conf >> ${logfile}
+  - printf "\n# systemd DNS config is:\n" >> $logfile
+  - cat /etc/systemd/resolved.conf >> $logfile
   # reboots server for network config to take effect
-  - printf "\n# Rebooting server...\n" >> ${logfile}
-  - date >> ${logfile}
+  - printf "\n# Rebooting server...\n" >> $logfile
+  - date >> $logfile
   - reboot

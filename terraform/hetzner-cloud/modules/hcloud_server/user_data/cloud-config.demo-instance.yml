@@ -10,9 +10,8 @@ write_files:
   ### Adds a route for default network traffic to the singular virtual network Gateway for network_private_class_b_demo
   - path: /etc/NetworkManager/dispatcher.d/ifup-local
     content: |
-      #!/bin/sh
+      #!/usr/bin/env bash
 
-      nm-online -q --timeout=30
       if ! ip route show default | grep -q "via ${VIRTUAL_NETWORK_GATEWAY}"; then
           ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
       fi
@@ -55,22 +54,25 @@ runcmd:
   - sleep 600 # 10 minutes
   # add temporary internet access, equivalent command to above setup for persistent access
   - echo "# Adding temporary internet access for nftables installation..." >> $logfile
-  - ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
-  - ip route flush cache
-  - sudo systemctl restart systemd-resolved
-  # Lockdown private network interface access to minimal required config
-  - |
-    /root/scripts/nftables_lockdown_private_instances.sh \
-      ${LOADBALANCER_PRIVATE_IP} \
-      ${BASTION_HOST_PRIVATE_IP} \
-      ${NAT_GATEWAY_PRIVATE_IP} \
-      ${TARGET_INSTANCE_PRIVATE_IP} \
-      >> $logfile 2>&1
-  # Install podman and docker-compose v2 plugin
-  - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
-  - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
-  ######################################################################################
-  # reboots server for persistent network config to take effect
-  - printf "\n# Rebooting server...\n" >> $logfile
-  - date >> $logfile
-  - reboot
+  # - nm-online -q --timeout=30 # check if NetworkManager is online
+  # - ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
+  # - ip route flush cache
+  # - sudo systemctl restart systemd-resolved
+  # - sudo systemctl restart NetworkManager
+
+  # # Lockdown private network interface access to minimal required config
+  # - |
+  #   /root/scripts/nftables_lockdown_private_instances.sh \
+  #     ${LOADBALANCER_PRIVATE_IP} \
+  #     ${BASTION_HOST_PRIVATE_IP} \
+  #     ${NAT_GATEWAY_PRIVATE_IP} \
+  #     ${TARGET_INSTANCE_PRIVATE_IP} \
+  #     >> $logfile 2>&1
+  # # Install podman and docker-compose v2 plugin
+  # - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
+  # - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
+  # ######################################################################################
+  # # reboots server for persistent network config to take effect
+  # - printf "\n# Rebooting server...\n" >> $logfile
+  # - date >> $logfile
+  # - reboot

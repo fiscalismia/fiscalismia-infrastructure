@@ -55,11 +55,11 @@ table ip $TABLE_NAME {
         ct state established,related accept
 
         # Allow SSH Ingress from Bastion Host
-        ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new,established accept
+        ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
 
         # Allow HTTPS & ICMP Ingress from Loadbalancer
         # TODO remove port 80 in production
-        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport {80,443} ct state new,established accept
+        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport {80,443} ct state new accept
         ip saddr $LOADBALANCER_PRIVATE_IP icmp type echo-request accept
     }
 
@@ -68,7 +68,16 @@ table ip $TABLE_NAME {
         # Drop all egress by default unless explicitly allowed
         type filter hook output priority 0; policy drop;
 
-        ip daddr $NAT_GATEWAY_PRIVATE_IP tcp dport {80,443} ct state new,established accept
+        # Allow Loopback
+        oif lo accept
+
+        # Allow DNS queries to Hetzner DNS Servers and the Fallback DNS Server
+        ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} udp dport 53 ct state new accept
+
+        # Allow established and related connections
+        ct state established,related accept
+
+        ip daddr $NAT_GATEWAY_PRIVATE_IP tcp dport {80,443} ct state new accept
     }
 
     # Drop all packages to be forwarded (we're not a gateway!)

@@ -139,7 +139,7 @@ resource "hcloud_firewall" "egress_ALLOW_ALL_public" {
 }
 
 # Rule specifically for the NAT-Gateway to provide outbound internet access to private instances
-resource "hcloud_firewall" "egress_public_http_https_icmp_only" {
+resource "hcloud_firewall" "egress_public_http_https_dns_icmp" {
     labels = local.default_labels
     name   = "egress-public-https-icmp-only"
 
@@ -159,6 +159,17 @@ resource "hcloud_firewall" "egress_public_http_https_icmp_only" {
         direction       = "out"
         protocol        = "tcp"
         port            = "80"
+        destination_ips = [
+        "0.0.0.0/0",
+        "::/0"
+        ]
+    }
+
+    rule {
+        description     = "Allow all outbound DNS"
+        direction       = "out"
+        protocol        = "udp"
+        port            = "53"
         destination_ips = [
         "0.0.0.0/0",
         "::/0"
