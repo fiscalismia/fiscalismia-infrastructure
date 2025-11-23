@@ -16,8 +16,8 @@ rm -f ${log_file} | true
 touch ${log_file}
 
 echo "Starting Portscan..." >> ${log_file}
-echo "####################" >> ${log_file}
 date >> ${log_file}
+echo "####################" >> ${log_file}
 
 # scan all open outbound ports and write to log file
 for destination_port in {1..65536}; do
@@ -29,7 +29,7 @@ for destination_port in {1..65536}; do
   fi
 done
 
-echo "###################" >> ${log_file}
 echo "Portscan Complete!" >> ${log_file}
 date >> ${log_file}
+echo "###################" >> ${log_file}
 echo "Output can be found in $log_file"

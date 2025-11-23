@@ -12,6 +12,7 @@ write_files:
     content: |
       #!/usr/bin/env bash
 
+      nm-online -q --timeout=30 # wait for NetworkManager
       if ! ip route show default | grep -q "via ${VIRTUAL_NETWORK_GATEWAY}"; then
           ip route add default via ${VIRTUAL_NETWORK_GATEWAY}
       fi
@@ -24,6 +25,18 @@ write_files:
       DNS=185.12.64.2 185.12.64.1
       FallbackDNS=8.8.8.8
     append: true
+
+  ### INSTALL PODMAN & DOCKER COMPOSE V2 ###
+  - path: /root/scripts/install-podman-docker-compose-fedora.sh
+    encoding: b64
+    content: ${install_podman_docker-compose_b64}
+    permissions: "0755"
+
+  ### Adds nftables installation and configuration to lockdown private IPv4 access ###
+  - path: /root/scripts/nftables_lockdown_private_instances.sh
+    encoding: b64
+    content: ${nftables_lockdown_private_instances_b64}
+    permissions: "0755"
 
 runcmd:
   # Initialize logfile

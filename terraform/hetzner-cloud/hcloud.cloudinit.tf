@@ -89,7 +89,26 @@ data "cloudinit_config" "demo_instance" {
         LOADBALANCER_PRIVATE_IP = var.fiscalismia_loadbalancer_private_ipv4_demo_net
         BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_demo_net
         NAT_GATEWAY_PRIVATE_IP = var.fiscalismia_nat_gateway_private_ipv4_demo_net
-        TARGET_INSTANCE_PRIVATE_IP = var.fiscalismia_demo_private_ipv4
+      }
+      )
+  }
+}
+
+data "cloudinit_config" "production_instances" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "cloud-config.production-instances.yml"
+    content_type = "text/cloud-config"
+    content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml",
+      {
+        nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
+        install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_production_net
+        LOADBALANCER_PRIVATE_IP = var.fiscalismia_loadbalancer_private_ipv4_production_net
+        BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_production_net
+        NAT_GATEWAY_PRIVATE_IP = var.fiscalismia_nat_gateway_private_ipv4_production_net
       }
       )
   }
@@ -103,20 +122,5 @@ data "cloudinit_config" "nat_gateway" {
     filename     = "cloud-config.nat-gateway.yml"
     content_type = "text/cloud-config"
     content      = file("${path.module}/modules/hcloud_server/user_data/cloud-config.nat-gateway.yml")
-  }
-}
-
-data "cloudinit_config" "production_instances" {
-  gzip          = false
-  base64_encode = false
-
-  part {
-    filename     = "cloud-config.production-instances.yml"
-    content_type = "text/cloud-config"
-    content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml",
-      {
-        VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_production_net
-      }
-      )
   }
 }

@@ -184,7 +184,9 @@ It limits the private instances in both the demo and production network to:
 - Ingress on Port 22 TCP from the Private IPv4 of the Bastion-Host
 - Ingress on Port 443 TCP from the Private IPv4 of the LoadBalancer
 - Ingress on ICMP Protocol for Pings from the Private IPv4 of the LoadBalancer
-- Egress on Port {80,443} TCP and 53 UDP to the Private IPv4 of the NAT-Gateway (via the Virtual Network Gateway)
+- Egress on Port {80,443} TCP to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
+- Egress on Port 53 UDP for DNS Queries to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
+- Egress for ICMP for pings to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
 
 #### Basic Concepts
 
@@ -196,7 +198,7 @@ See [NFTables Setup Guide](https://www.centron.de/en/tutorial/install-and-config
   - _inet_: Unified for both IPv4 and IPv6.
   - _ip_: IPv4-only filtering.
   - _ip6_: IPv6-only filtering.
-  - _arp_: ARP packet filtering.
+  - _arp_: Address resolution protocol to query for MAC-Addresses on Layer 2 before initiating TCP traffic. Required for private subnet traffic to work.
   - _bridge_: Ethernet bridge packet filtering.
   - _netdev_: Filtering at the network device level.
 
