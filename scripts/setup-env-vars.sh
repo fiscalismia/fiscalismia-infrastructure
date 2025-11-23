@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # extract the current directory name from pwd command (everything behind the last backslash
 CURRENT_DIR=$(pwd | sed 's:.*/::')

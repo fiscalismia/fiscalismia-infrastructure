@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ############ USAGE INSTRUCTIONS ##################
 # PARAM $1 = log_name_specifier

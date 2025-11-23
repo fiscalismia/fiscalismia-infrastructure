@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # INFO: Can be executed directly via cloudinit_config.part as text/x-shellscript
 

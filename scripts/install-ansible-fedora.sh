@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check for Python 3 Installation
 python_location=$(which python3 2>&1)

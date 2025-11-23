@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # INFO: Can be injected into cloud-config.yml files as base64 encoded env var as a parameter of templatefile.
 # after using base64encode(filepath) and saving a a local variable

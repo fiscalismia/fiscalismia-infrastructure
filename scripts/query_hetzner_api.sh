@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##############################################################
 # Call Script with API_ENDPOINT Selection String at Position 1

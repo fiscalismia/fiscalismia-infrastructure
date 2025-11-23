@@ -59,7 +59,16 @@ terraform apply \
   -auto-approve
 ```
 
-3. Terraform for dynamic AWS resources provisioned and destroyed via pipeline
+3. Provide custom variables
+
+Create `terraform/aws/terraform.tfvars` file and change any desired variables by overwriting the default values within `variables.tf`
+```bash
+secret_api_key                        = "klmasfdjlkfaedf7z77DAw___020"
+test_sheet_url                        = "https://docs.google.com/spreadsheets/d/{YOUR_ID}/edit"
+forecasted_budget_notification_email  = "example@domain.com"
+```
+
+4. Terraform for dynamic AWS resources provisioned and destroyed via pipeline
 
 **INFO:** This can be run in github actions pipeline via `arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline`
 
@@ -179,6 +188,53 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
   -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
 ```
 
+### Network Firewall with nftables
+
+To secure our private instances which cannot have a hetzner cloud firewall attached, since those only work on public network interfaces, we construct an `nftables.conf` file ourselves.
+
+It limits the private instances in both the demo and production network to:
+- Ingress on Port 22 TCP from the Private IPv4 of the Bastion-Host
+- Ingress on Port 443 TCP from the Private IPv4 of the LoadBalancer
+- Ingress on ICMP Protocol for Pings from the Private IPv4 of the LoadBalancer
+- Egress on Port {80,443} TCP to the Private IPv4 of the NAT-Gateway (via the Virtual Network Gateway)
+
+#### Basic Concepts
+
+See [wiki.nftables.org/](https://wiki.nftables.org/wiki-nftables/index.php/Configuring_chains#Base_chain_types)
+See [Hetzner Cloud Community](https://community.hetzner.com/tutorials/firewall-using-nftables)
+See [NFTables Setup Guide](https://www.centron.de/en/tutorial/install-and-configure-nftables-firewall-on-linux/)
+
+- **Families**
+  - _inet_: Unified for both IPv4 and IPv6.
+  - _ip_: IPv4-only filtering.
+  - _ip6_: IPv6-only filtering.
+  - _arp_: ARP packet filtering.
+  - _bridge_: Ethernet bridge packet filtering.
+  - _netdev_: Filtering at the network device level.
+
+- **Tables** are top level containers for rules, directed at certain families
+- **Chain** Chains always point to Hooks and can also define a default policy to apply to e.g. all traffic not specifically matched.
+  - _filter_: is used to filter packets, most commonly used for most nftables configs.
+  - _route_: is used to reroute packets if any relevant IP header field or the packet mark is modified. It is equivalent to the iptables mangle semtantics, but only for the output hook (for other hooks use type filter instead).
+  - _nat_: is used to perform Networking Address Translation (NAT). Only the first packet of a given flow hits this chain; subsequent packets bypass it. Therefore, never use this chain for filtering.
+- **Hooks** Within chains, they define when the rules should be evaluated
+  - _prerouting_: sees all incoming packets, before any routing decision has been made.
+  - _input_: sees incoming packets that are addressed to the local system.
+  - _forward_: sees incoming packets that are not addressed to the local system.
+  - _output_: sees packets that originated from processes in the local machine.
+  - _postrouting_: sees all packets after routing, just before they leave the local system.
+- **Policies** Define the default rules to apply when no rule matches
+  - _accept_: Allows all unmatched traffic (useful for testing).
+  - _drop_: Discards unmatched packets (secure, common in production).
+  - _reject_: Sends a rejection notice (reveals server presence).
+- **Connection Tracking** The ct system continuously analyzes each connection to determine its current state. It does that by analyzing OSI layers 3 and 4.
+  - _new_: The connection is starting. (e.g. in a TCP connection, a SYN packet is received)
+  - _established_: The connection has been established. So the firewall has seen two-way communication.
+  - _related_: This is an expected connection.
+  - _invalid_: This is a special state used for packets that do not follow the expected behavior of a connection.
+
+-----
+
 <details closed>
 <summary><b>AWS Serverless (Lambda, API Gateway) and S3 storage</b></summary>
 
@@ -206,70 +262,6 @@ ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
 - 2 S3 Buckets accessed by Lambda for storing processed images and sheet output
 - Respective IAM Roles and Permissions to allow access between API GW - Lambda - S3
 
-#### 1. Provide custom variables
-
-Create `terraform/aws/terraform.tfvars` file and change any desired variables by overwriting the default values within `variables.tf`
-```bash
-secret_api_key                        = "klmasfdjlkfaedf7z77DAw___020"
-test_sheet_url                        = "https://docs.google.com/spreadsheets/d/{YOUR_ID}/edit"
-forecasted_budget_notification_email  = "example@domain.com"
-```
-
 </details>
 
 -----
-
-### NFTABLES CONFIG TODO
-
-```hcl
-resource "hcloud_firewall" "private_ssh_ingress_from_bastion_host" {
-    labels = local.default_labels
-    name   = "private-ssh-ingress-from-bastion"
-
-    rule {
-        description     = "Allow SSH port 22 Access from Bastion Host only"
-        direction       = "in"
-        port            = "22"
-        protocol        = "tcp"
-        source_ips  = [
-            var.fiscalismia_bastion_host_private_ipv4
-        ]
-    }
-}
-resource "hcloud_firewall" "private_icmp_ping_ingress_from_loadbalancer" {
-    name = "private-icmp-ingress-lb"
-
-    rule {
-        description = "Allow Ping (ICMP) from the Load Balancer only"
-        direction   = "in"
-        protocol    = "icmp"
-        source_ips  = [
-            var.fiscalismia_loadbalancer_private_ipv4
-        ]
-    }
-}
-
-resource "hcloud_firewall" "private_https_ingress_from_loadbalancer" {
-    name = "private-https-ingress-lb"
-
-    rule {
-        description = "Allow HTTPS from the Load Balancer only"
-        direction   = "in"
-        protocol    = "tcp"
-        port        = "443"
-        source_ips  = [
-            var.fiscalismia_loadbalancer_private_ipv4
-        ]
-    }
-    # TODO: only use for testing - in production we want mTLS
-    rule {
-        description = "Allow HTTP from the Load Balancer only"
-        direction   = "in"
-        protocol    = "tcp"
-        port        = "80"
-        source_ips  = [
-            var.fiscalismia_loadbalancer_private_ipv4
-        ]
-    }
-}
-```

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ################################ INFO ########################################################################################
 # This file is intended for private instances without a public ip assigned, to which hcloud does not allow attaching firewalls
@@ -7,6 +7,7 @@
 # PARAM $2 is the bastion-host private ipv4 for ssh ingress allowance
 # PARAM $3 is the nat-gateway private ipv4 for https and http egress allowance
 # PARAM $4 is the private ipv4 of the instance to lockdown in nftables
+# e.g. ./scripts/nftables_lockdown_private_instances.sh 172.20.1.3 172.20.1.2 172.20.1.4 172.20.0.2
 ##############################################################################################################################
 
 # wait for the private network interface to initialize.
@@ -16,8 +17,10 @@ export LOADBALANCER_PRIVATE_IP="$1"
 export BASTION_HOST_PRIVATE_IP="$2"
 export NAT_GATEWAY_PRIVATE_IP="$3"
 export TARGET_INSTANCE_PRIVATE_IP="$4"
+export TABLE_NAME='lockdown_private_instances'
+export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     echo "Error: Missing required parameters."
     echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <TARGET_INSTANCE_PRIVATE_IP>"
     exit 1
@@ -26,16 +29,64 @@ fi
 ### INSTALLATION ###
 sudo dnf install --quiet -y nftables
 which nft
-# enable nftables on boot and start immediately
-echo "# Enabling and starting nftables..."
-sudo systemctl enable nftables
-sudo systemctl start nftables
-# check nftables status
-echo "# Checking status of nftables:" && sudo systemctl status nftables
 
 ### CONFIGURATION ###
-sudo nft add table ip private_ingress
-sudo nft add table ip private_egress
 
-# https://linux-audit.com/networking/nftables/nftables-beginners-guide-to-traffic-filtering/
-# https://www.centron.de/en/tutorial/install-and-configure-nftables-firewall-on-linux/
+cat << EOF > $CONFIG_PATH
+#!/usr/sbin/nft -f
+
+# Delete previous table
+table ip $TABLE_NAME
+delete table ip $TABLE_NAME
+
+# Create new table
+table ip $TABLE_NAME {
+
+    # Filter ingress traffic
+    chain input {
+
+        # Drop all ingress by default unless explicitly allowed
+        type filter hook input priority 0; policy drop;
+
+        # Allow loopback to localhost for internal services
+        iif lo accept
+
+        # Allow established and related connections
+        ct state established,related accept
+
+        # Allow SSH Ingress from Bastion Host
+        ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new,established accept
+
+        # Allow HTTPS & ICMP Ingress from Loadbalancer
+        # TODO remove port 80 in production
+        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport {80,443} ct state new,established accept
+        ip saddr $LOADBALANCER_PRIVATE_IP icmp type echo-request accept
+    }
+
+    # Allow all outgoing traffic
+    chain output {
+        # Drop all egress by default unless explicitly allowed
+        type filter hook output priority 0; policy drop;
+
+        ip daddr $NAT_GATEWAY_PRIVATE_IP tcp dport {80,443} ct state new,established accept
+    }
+
+    # Drop all packages to be forwarded (we're not a gateway!)
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+    }
+}
+EOF
+
+### START SERVICE ###
+echo "# Enabling and starting nftables with $CONFIG_PATH..."
+sudo cat $CONFIG_PATH
+sudo chmod a+x $CONFIG_PATH
+# sudo $CONFIG_PATH
+# sudo systemctl enable nftables
+# sudo systemctl start nftables
+echo "# Checking status of nftables:"
+sudo systemctl status nftables
+
+### DEBUG ###
+# ls -l /etc/nftables/ # example nft configs not activated

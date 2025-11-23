@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ################################ INFO ####################################################################################
 # This file is intended for public instances with a public ip assigned, but with firewall rules blocking all public egress
