@@ -28,6 +28,7 @@ fi
 
 ### INSTALLATION ###
 sudo dnf install --quiet -y nftables
+printf "\n# network filter tables installed binary path:\n"
 which nft
 
 ### CONFIGURATION ###
@@ -113,11 +114,14 @@ EOF
 echo "# Enabling and starting nftables with $CONFIG_PATH..."
 sudo chmod a+x $CONFIG_PATH
 sudo $CONFIG_PATH
+printf "\n# Listing network filter tables:\n"
 sudo nft list tables
+printf "\n# Listing network filter rulesets:\n"
 sudo nft list ruleset
+printf "\n# Enabling and starting nftables systemd service...\n"
 sudo systemctl enable nftables
 sudo systemctl start nftables
-echo "# Checking status of nftables:"
+printf "\n# Checking status of nftables:\n"
 sudo systemctl status nftables
 
 ### DEBUG ###
