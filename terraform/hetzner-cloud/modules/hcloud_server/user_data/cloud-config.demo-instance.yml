@@ -52,7 +52,7 @@ runcmd:
   ########################### TEMPORARY HTTP/HTTPS INTERNET ACCESS ###########################
   # wait for nat gateway to initialize
   - printf "\n# Sleeping to wait for NAT-Gateway cloud-init\n" >> $logfile
-  - sleep 600
+  - sleep 600 # 10 minutes
   # add temporary internet access, equivalent command to above setup for persistent access
   - echo "# Adding temporary internet access for nftables installation..." >> $logfile
   - sudo /etc/NetworkManager/dispatcher.d/ifup-local
