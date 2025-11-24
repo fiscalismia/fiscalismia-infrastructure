@@ -7,10 +7,16 @@ locals {
   nftables_lockdown_private_instances_b64 = base64encode(
     file("${path.module}/modules/hcloud_server/user_data/networking/nftables_lockdown_private_instances.sh")
   )
+  nftables_lockdown_loadbalancer_b64 = base64encode(
+    file("${path.module}/modules/hcloud_server/user_data/networking/nftables_lockdown_loadbalancer.sh")
+  )
 
   ### TOOLS ###
   install_podman_docker-compose_b64 = base64encode(
     file("${path.module}/modules/hcloud_server/user_data/tools/install-podman-docker-compose-fedora.sh")
+  )
+  install_network_hardening_tools_b64 = base64encode(
+    file("${path.module}/modules/hcloud_server/user_data/tools/install-network-hardening-tools.sh")
   )
 
   ### TESTS ###

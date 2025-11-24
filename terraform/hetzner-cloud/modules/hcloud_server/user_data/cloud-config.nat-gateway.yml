@@ -14,6 +14,12 @@ packages:
 
 write_files:
 
+  ### INSTALL NETWORK HARDENING TOOLS ###
+  - path: /root/scripts/install-network-hardening-tools.sh
+    encoding: b64
+    content: ${install_network_hardening_tools_b64}
+    permissions: "0755"
+
   # NetworkManager provides a way to run custom user scripts.
   # It runs scripts in /etc/NetworkManager/dispatcher.d/ in alphabetical order.
   # Each script must be an executable file owned by root and must have write permission only for the file owner.
@@ -45,15 +51,17 @@ write_files:
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
-  - echo "Hello from cloud-config.nat-gateway.yml!" > ${logfile}
-  - date >> ${logfile}
+  - echo "Hello from cloud-config.nat-gateway.yml!" > $logfile
+  - date >> $logfile
   # Tests iptables installation
-  - printf "\n# iptables location is:\n" >> ${logfile}
-  - which iptables >> ${logfile} 2>&1
+  - printf "\n# iptables location is:\n" >> $logfile
+  - which iptables >> $logfile 2>&1
   # list NetworkManager Config
-  - printf "\n# NetworkManager Dispatcher Config is:\n" >> ${logfile}
-  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> ${logfile}
+  - printf "\n# NetworkManager Dispatcher Config is:\n" >> $logfile
+  - cat /etc/NetworkManager/dispatcher.d/ifup-local >> $logfile
+  # install network hardening tools for security evaluation of firewall rules
+  - /root/scripts/install-network-hardening-tools.sh $logfile
   # reboots server for network config to take effect
-  - printf "\n# Rebooting server...\n" >> ${logfile}
-  - date >> ${logfile}
+  - printf "\n# Rebooting server...\n" >> $logfile
+  - date >> $logfile
   - reboot

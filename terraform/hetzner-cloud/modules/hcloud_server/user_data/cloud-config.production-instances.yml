@@ -32,6 +32,12 @@ write_files:
     content: ${install_podman_docker-compose_b64}
     permissions: "0755"
 
+  ### INSTALL NETWORK HARDENING TOOLS ###
+  - path: /root/scripts/install-network-hardening-tools.sh
+    encoding: b64
+    content: ${install_network_hardening_tools_b64}
+    permissions: "0755"
+
   ### Adds nftables installation and configuration to lockdown private IPv4 access ###
   - path: /root/scripts/nftables_lockdown_private_instances.sh
     encoding: b64
@@ -58,6 +64,11 @@ runcmd:
   - sudo /etc/NetworkManager/dispatcher.d/ifup-local
   - ip route flush cache
   - sudo systemctl restart systemd-resolved
+  # Install podman and docker-compose v2 plugin
+  - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
+  - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
+  # install network hardening tools for security evaluation of firewall rules
+  - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
   - |
     /root/scripts/nftables_lockdown_private_instances.sh \
@@ -66,9 +77,6 @@ runcmd:
       ${NAT_GATEWAY_PRIVATE_IP} \
       ${VIRTUAL_NETWORK_GATEWAY} \
       >> $logfile 2>&1
-  # Install podman and docker-compose v2 plugin
-  - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
-  - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile
   - date >> $logfile

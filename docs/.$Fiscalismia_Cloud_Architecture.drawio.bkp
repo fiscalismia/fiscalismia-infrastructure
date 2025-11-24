@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram name="Page-1" id="SFjtN74bUgn6KRebL6FT">
-    <mxGraphModel dx="814" dy="996" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="-280" dy="398" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1646,11 +1646,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="EdTSj90gQSWQzZlCZsUx-188" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;dashed=1;strokeColor=#00CCCC;fontFamily=Helvetica;" parent="1" source="EdTSj90gQSWQzZlCZsUx-184" target="mAx34IeTYbzBOSO-Cvki-51" edge="1">
+        <mxCell id="EdTSj90gQSWQzZlCZsUx-188" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;dashed=1;strokeColor=#00CCCC;fontFamily=Helvetica;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="EdTSj90gQSWQzZlCZsUx-184" target="0LTqX92W0SrwLmbtw7zn-3" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="898" y="2410" />
-              <mxPoint x="1430" y="2410" />
+              <mxPoint x="1419" y="2410" />
+              <mxPoint x="1419" y="2299" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -1707,18 +1708,6 @@
         </mxCell>
         <mxCell id="dZomsxdbjYwcMkCxCwu0-1" value="&lt;font&gt;network_private_class_b_demo&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&quot;172.20.0.0/23&quot;&amp;nbsp; RFC 1918 Class B CIDR Range reserved for private networks&lt;br&gt;subnet_private_class_b_demo_isolated &quot;172.20.0.0/30&quot;&amp;nbsp;&amp;nbsp;For all private instances not reachable from the public internet&lt;/font&gt;&lt;div&gt;&lt;font&gt;subnet_private_class_b_demo_exposed&amp;nbsp;&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&quot;172.20.1.0/29&quot;&amp;nbsp;&amp;nbsp;For attaching public instances, required to connect to the private instances&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;rounded=0;fontFamily=Lucida Console;fontSize=10;" parent="1" vertex="1">
           <mxGeometry x="1767" y="1548" width="760" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="dZomsxdbjYwcMkCxCwu0-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.007;entryY=0.457;entryDx=0;entryDy=0;endArrow=none;endFill=0;dashed=1;strokeWidth=2;strokeColor=#FF9933;entryPerimeter=0;fontFamily=Helvetica;" parent="1" source="EdTSj90gQSWQzZlCZsUx-47" target="dZomsxdbjYwcMkCxCwu0-5" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="2034" y="1760" as="sourcePoint" />
-            <Array as="points">
-              <mxPoint x="1510" y="1920" />
-              <mxPoint x="2481" y="1920" />
-              <mxPoint x="2481" y="2260" />
-              <mxPoint x="2517" y="2260" />
-              <mxPoint x="2517" y="2259" />
-            </Array>
-          </mxGeometry>
         </mxCell>
         <mxCell id="dZomsxdbjYwcMkCxCwu0-3" value="" style="group;fontFamily=Helvetica;" parent="1" vertex="1" connectable="0">
           <mxGeometry x="2516" y="2247" width="85" height="30" as="geometry" />
@@ -1859,8 +1848,8 @@
         <mxCell id="T3EVVozRcLlW4yHXdnjV-1" value="Hetzner Private Network" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#bac8d3;strokeColor=#23445d;fontStyle=4;fontFamily=Helvetica;" parent="1" vertex="1">
           <mxGeometry x="1767" y="1799.25" width="760" height="21.5" as="geometry" />
         </mxCell>
-        <mxCell id="dZomsxdbjYwcMkCxCwu0-25" value="Public Internet Egress&lt;div&gt;HTTPS Port 443 TCP&lt;br&gt;HTTP Port 80 TCP&lt;br&gt;DNS Port 53 UDP&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=0;fontFamily=Helvetica;" parent="1" vertex="1">
-          <mxGeometry x="2570" y="1920" width="190" height="87.5" as="geometry" />
+        <mxCell id="dZomsxdbjYwcMkCxCwu0-25" value="Public Internet Egress&lt;div&gt;HTTPS Port 443 TCP&lt;br&gt;HTTP Port 80 TCP&lt;br&gt;DNS Port 53 UDP&lt;br&gt;ICMP for Pings&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=0;fontFamily=Helvetica;" parent="1" vertex="1">
+          <mxGeometry x="2570" y="1900" width="190" height="107.5" as="geometry" />
         </mxCell>
         <mxCell id="T3EVVozRcLlW4yHXdnjV-8" value="Hetzner Public Network" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=4;fontFamily=Helvetica;" parent="1" vertex="1">
           <mxGeometry x="2558" y="2028" width="212" height="21.5" as="geometry" />
@@ -1909,18 +1898,39 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Um2kgr0GeyFBiLk9JGw8-5" value="" style="group;verticalAlign=middle;" parent="1" vertex="1" connectable="0">
-          <mxGeometry x="1467.15" y="2230" width="249.5" height="90" as="geometry" />
+          <mxGeometry x="1518" y="1760" width="210" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="Um2kgr0GeyFBiLk9JGw8-2" value="&lt;b&gt;Security Hardening:&lt;/b&gt;&lt;br&gt;all public egress is blocked in the firewall. So Internet Connectivity is achieved via Private IPV4 Forwarding via NAT-Gateway." style="text;html=1;whiteSpace=wrap;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=middle;rounded=0;" parent="Um2kgr0GeyFBiLk9JGw8-5" vertex="1">
-          <mxGeometry width="249.5" height="89.99999999999974" as="geometry" />
+        <mxCell id="Um2kgr0GeyFBiLk9JGw8-2" value="&lt;b&gt;Security Hardening for Public Instances:&lt;/b&gt;&lt;br&gt;&lt;ol&gt;&lt;li&gt;public egress is blocked in the firewall. Internet Connectivity is achieved via Private IPV4 Forwarding via NAT-Gateway.&lt;/li&gt;&lt;li&gt;Ingress is limited to SSH for Bastion-Host and HTTPS for Loadbalancer as well as ICMP&lt;/li&gt;&lt;/ol&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=middle;rounded=0;fontSize=11;" parent="Um2kgr0GeyFBiLk9JGw8-5" vertex="1">
+          <mxGeometry width="210" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="Um2kgr0GeyFBiLk9JGw8-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;strokeColor=#CC0000;strokeWidth=2;endArrow=none;endFill=0;dashed=1;curved=0;fontFamily=Helvetica;" parent="Um2kgr0GeyFBiLk9JGw8-5" edge="1">
+        <mxCell id="dZomsxdbjYwcMkCxCwu0-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.007;entryY=0.457;entryDx=0;entryDy=0;endArrow=none;endFill=0;dashed=1;strokeWidth=2;strokeColor=#FF9933;entryPerimeter=0;fontFamily=Helvetica;" parent="1" source="EdTSj90gQSWQzZlCZsUx-47" target="dZomsxdbjYwcMkCxCwu0-5" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="82.84999999999991" y="81.96408100878847" as="sourcePoint" />
-            <mxPoint x="149.8499999999999" y="81.96408100878847" as="targetPoint" />
+            <mxPoint x="2034" y="1760" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="149.8499999999999" y="81.96408100878847" />
+              <mxPoint x="1510" y="1920" />
+              <mxPoint x="2481" y="1920" />
+              <mxPoint x="2481" y="2260" />
+              <mxPoint x="2517" y="2260" />
+              <mxPoint x="2517" y="2259" />
             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0LTqX92W0SrwLmbtw7zn-1" value="" style="group;strokeColor=none;fontFamily=Helvetica;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1380" y="2239" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="0LTqX92W0SrwLmbtw7zn-2" value="TCP" style="whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#00CCCC;fontFamily=Helvetica;" vertex="1" parent="0LTqX92W0SrwLmbtw7zn-1">
+          <mxGeometry x="26" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="0LTqX92W0SrwLmbtw7zn-3" value="443" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1406" y="2269" width="25" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="0LTqX92W0SrwLmbtw7zn-4" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#00CCCC;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1416.5" y="2199" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="0LTqX92W0SrwLmbtw7zn-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#00CCCC;fontFamily=Helvetica;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="0LTqX92W0SrwLmbtw7zn-2" target="0LTqX92W0SrwLmbtw7zn-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1566" y="2240" as="sourcePoint" />
+            <mxPoint x="1585" y="2240" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>

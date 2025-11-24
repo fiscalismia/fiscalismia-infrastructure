@@ -13,6 +13,12 @@ write_files:
     content: ${nat_gw_ephemeral_public_egress_b64}
     permissions: "0755"
 
+  ### INSTALL NETWORK HARDENING TOOLS ###
+  - path: /root/scripts/install-network-hardening-tools.sh
+    encoding: b64
+    content: ${install_network_hardening_tools_b64}
+    permissions: "0755"
+
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
@@ -34,11 +40,8 @@ runcmd:
     cat /etc/fail2ban/jail.local >> $logfile
     printf "\n# systemctl status of fail2ban:\n" >> $logfile
     systemctl is-active fail2ban >> $logfile 2>&1
-  # install dig, netcat and nmap for security evaluation of firewall rules
-  - sudo dnf install nmap-ncat dig -y --quiet
-  - echo "Installed [nmap] port scanner version:$(nmap --version)." >> $logfile
-  - echo "Installed [nc] port scanner version:$(nc --version)." >> $logfile
-  - echo "Installed [dig] dns resolver version:$(dig -v)." >> $logfile
+  # install network hardening tools for security evaluation of firewall rules
+  - /root/scripts/install-network-hardening-tools.sh $logfile
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile
   - date >> $logfile

@@ -49,6 +49,7 @@ data "cloudinit_config" "bastion_host" {
       "${path.module}/modules/hcloud_server/user_data/cloud-config.bastion-host.yml",
       {
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         PRIVATE_IP_TO_NAT = var.fiscalismia_bastion_host_private_ipv4_production_net
       }
       )
@@ -65,8 +66,11 @@ data "cloudinit_config" "loadbalancer" {
     content      = templatefile(
       "${path.module}/modules/hcloud_server/user_data/cloud-config.loadbalancer.yml",
       {
+        nftables_lockdown_loadbalancer_b64 = local.nftables_lockdown_loadbalancer_b64
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
+        BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_production_net
         PRIVATE_IP_TO_NAT = var.fiscalismia_loadbalancer_private_ipv4_production_net
       }
       )
@@ -85,6 +89,7 @@ data "cloudinit_config" "demo_instance" {
       {
         nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_demo_net
         LOADBALANCER_PRIVATE_IP = var.fiscalismia_loadbalancer_private_ipv4_demo_net
         BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_demo_net
@@ -105,6 +110,7 @@ data "cloudinit_config" "production_instances" {
       {
         nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_production_net
         LOADBALANCER_PRIVATE_IP = var.fiscalismia_loadbalancer_private_ipv4_production_net
         BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_production_net
@@ -121,6 +127,9 @@ data "cloudinit_config" "nat_gateway" {
   part {
     filename     = "cloud-config.nat-gateway.yml"
     content_type = "text/cloud-config"
-    content      = file("${path.module}/modules/hcloud_server/user_data/cloud-config.nat-gateway.yml")
+    content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.nat-gateway.yml",
+    {
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+    })
   }
 }
