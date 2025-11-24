@@ -7,7 +7,7 @@
 ###################################################################################################################################
 
 export LOG_FILE="$1"
-export TOOL_SUITE='nmap-ncat dig net-tools'
+export TOOL_SUITE='nmap nmap-ncat dig net-tools'
 
 if [[ -z "$1" ]]; then
     echo "Error: Missing required parameters."
@@ -17,7 +17,11 @@ fi
 
 # install networking tools for security evaluation of firewall rules
 sudo dnf install $TOOL_SUITE -y --quiet
-echo "Installed [nmap] port scanner version:$(nmap --version)." >> $LOG_FILE
-echo "Installed [nc] port scanner version:$(nc --version)." >> $LOG_FILE
-echo "Installed [dig] dns resolver version:$(dig -v)." >> $LOG_FILE
-echo "Installed [netstat] port analyzer version:$(netstat --version)." >> $LOG_FILE
+printf "\n# Installed [nmap] port scanner version:\n" >> $LOG_FILE
+nmap --version >> $LOG_FILE 2>&1
+printf "\n# Installed [nc] port scanner version:\n" >> $LOG_FILE
+nc --version >> $LOG_FILE 2>&1
+printf "\n# Installed [dig] dns resolver version:\n" >> $LOG_FILE
+dig -v >> $LOG_FILE 2>&1
+printf "\n# Installed [netstat] port analyzer version:\n" >> $LOG_FILE
+netstat --version >> $LOG_FILE 2>&1
