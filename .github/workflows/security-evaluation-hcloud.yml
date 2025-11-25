@@ -87,7 +87,7 @@ jobs:
 
     - name: Create SSH Config for Bastion-Host ProxyJump
       run: |
-        cat << EOF | >> ~/.ssh/config
+        cat << EOF > ~/.ssh/config
         Host bastion-host
             HostName $BASTION_HOST_PUBLIC_IP
             User root
