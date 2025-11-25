@@ -63,8 +63,6 @@ jobs:
         query_aws_plaintext_secret ${DEMO_PRIVATE_KEY}
         query_aws_plaintext_secret ${PRODUCTION_PRIVATE_KEY}
 
-        ssh-agent -l
-
     - name: Extract Hcloud Server IP Adresses from Remote State
       env:
         S3_BUCKET: hangrybear-tf-backend-state-bucket

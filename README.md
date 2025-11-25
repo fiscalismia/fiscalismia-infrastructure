@@ -19,12 +19,12 @@ cd ~/git/fiscalismia-infrastructure/scripts/ && ./setup-env-vars.sh
 
 ```bash
 cd ~/.ssh/
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-infrastructure-master-key-hcloud -C "Fiscalismia Infrastructure OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-loadbalancer-instance-key-hcloud -C "Fiscalismia Load Balancer OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-nat-gateway-instance-key-hcloud -C "Fiscalismia NAT Gateway OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-instance-key-hcloud -C "Fiscalismia Demo Instance OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-monitoring-instance-key-hcloud -C "Fiscalismia Monitoring OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
-ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-instances-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User cl.subs.contracts+hetzner@pm.me to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-infrastructure-master-key-hcloud -C "Fiscalismia Infrastructure OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-loadbalancer-instance-key-hcloud -C "Fiscalismia Load Balancer OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-nat-gateway-instance-key-hcloud -C "Fiscalismia NAT Gateway OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-demo-instance-key-hcloud -C "Fiscalismia Demo Instance OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-monitoring-instance-key-hcloud -C "Fiscalismia Monitoring OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
+ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-instances-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
 ```
 
 1. Terraform for Hetzner Cloud
