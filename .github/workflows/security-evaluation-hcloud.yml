@@ -42,13 +42,18 @@ jobs:
         set -eou pipefail
         mkdir -p ~/.ssh/
 
+        echo "Starting ssh-agent and exporting environment variables"
+        eval "$(ssh-agent -s)"
+        echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+        echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
+
         query_aws_plaintext_secret() {
           echo "Querying $1 from AWS"
           aws secretsmanager get-secret-value \
             --secret-id $1 \
             --output text \
             --query SecretString \
-            >> ~/.ssh/$1
+            | ssh-add -
         }
 
         query_aws_plaintext_secret ${MASTER_PRIVATE_KEY}
@@ -58,8 +63,7 @@ jobs:
         query_aws_plaintext_secret ${DEMO_PRIVATE_KEY}
         query_aws_plaintext_secret ${PRODUCTION_PRIVATE_KEY}
 
-        cd ~/.ssh/
-        ls -l
+        ssh-agent -l
 
     - name: Extract Hcloud Server IP Adresses from Remote State
       env:
@@ -93,14 +97,12 @@ jobs:
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-infrastructure-master-key-hcloud
 
         Host demo
             HostName $DEMO_INSTANCE_PRIVATE_IP
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-demo-instance-key-hcloud
             ProxyJump bastion-host
 
         Host loadbalancer
@@ -108,7 +110,6 @@ jobs:
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-loadbalancer-instance-key-hcloud
             ProxyJump bastion-host
 
         Host nat-gateway
@@ -116,7 +117,6 @@ jobs:
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-nat-gateway-instance-key-hcloud
             ProxyJump bastion-host
 
         Host monitoring
@@ -124,7 +124,6 @@ jobs:
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-monitoring-instance-key-hcloud
             ProxyJump bastion-host
 
         Host frontend
@@ -132,7 +131,6 @@ jobs:
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-production-instances-key-hcloud
             ProxyJump bastion-host
 
         Host backend
@@ -140,10 +138,10 @@ jobs:
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/fiscalismia-production-instances-key-hcloud
             ProxyJump bastion-host
         EOF
 
         chmod 600 ~/.ssh/config
         cat ~/.ssh/config
-        ls -hla ~/.ssh/
+
+        ssh bastion-host "ip -4 a"
