@@ -20,6 +20,39 @@
 # each network gets assigned a default subnet
 # when creating subnets manually, the minimum size is /30
 
+
+locals {
+  network_config = yamldecode(file("${path.module}/config/network.private.ips.yml"))
+
+  # Demo Instance Network
+  network_private_class_b_demo          = local.network_config.networks.demo.cidr
+  subnet_private_class_b_demo_isolated  = local.network_config.networks.demo.subnets.isolated
+  subnet_private_class_b_demo_exposed   = local.network_config.networks.demo.subnets.exposed
+
+  # Production Instances Network
+  network_private_class_b_production         = local.network_config.networks.production.cidr
+  subnet_private_class_b_production_isolated = local.network_config.networks.production.subnets.isolated
+  subnet_private_class_b_production_exposed  = local.network_config.networks.production.subnets.exposed
+
+  # Hetzner assigned Virtual Network Gateways
+  virtual_network_gateway_demo_net           = local.network_config.ips.gateways.demo
+  virtual_network_gateway_production_net     = local.network_config.ips.gateways.production
+
+  # strictly private instances
+  fiscalismia_demo_private_ipv4              = local.network_config.ips.private_instances.demo
+  fiscalismia_monitoring_private_ipv4        = local.network_config.ips.private_instances.monitoring
+  fiscalismia_frontend_private_ipv4          = local.network_config.ips.private_instances.frontend
+  fiscalismia_backend_private_ipv4           = local.network_config.ips.private_instances.backend
+
+  # Private IPs of publicly exposed instances
+  fiscalismia_bastion_host_private_ipv4_demo_net        = local.network_config.ips.exposed_instances.bastion_host.demo
+  fiscalismia_bastion_host_private_ipv4_production_net  = local.network_config.ips.exposed_instances.bastion_host.production
+  fiscalismia_loadbalancer_private_ipv4_demo_net        = local.network_config.ips.exposed_instances.loadbalancer.demo
+  fiscalismia_loadbalancer_private_ipv4_production_net  = local.network_config.ips.exposed_instances.loadbalancer.production
+  fiscalismia_nat_gateway_private_ipv4_demo_net         = local.network_config.ips.exposed_instances.nat_gateway.demo
+  fiscalismia_nat_gateway_private_ipv4_production_net   = local.network_config.ips.exposed_instances.nat_gateway.production
+}
+
 #     __   ___        __           ___ ___       __   __
 #    |  \ |__   |\/| /  \    |\ | |__   |  |  | /  \ |__) |__/
 #    |__/ |___  |  | \__/    | \| |___  |  |/\| \__/ |  \ |  \
@@ -27,20 +60,20 @@
 resource "hcloud_network" "network_private_class_b_demo" {
   labels                    = local.default_labels
   name                      = "fiscalismia-private-demo-network"
-  ip_range                  = var.network_private_class_b_demo
+  ip_range                  = local.network_private_class_b_demo
   expose_routes_to_vswitch  = false
 }
 resource "hcloud_network_subnet" "subnet_private_class_b_demo_isolated" {
   type         = "cloud"
   network_id   = hcloud_network.network_private_class_b_demo.id
   network_zone = var.default_region
-  ip_range     = var.subnet_private_class_b_demo_isolated
+  ip_range     = local.subnet_private_class_b_demo_isolated
 }
 resource "hcloud_network_subnet" "subnet_private_class_b_demo_exposed" {
   type         = "cloud"
   network_id   = hcloud_network.network_private_class_b_demo.id
   network_zone = var.default_region
-  ip_range     = var.subnet_private_class_b_demo_exposed
+  ip_range     = local.subnet_private_class_b_demo_exposed
 }
 #     __   __   __   __        __  ___    __                ___ ___       __   __
 #    |__) |__) /  \ |  \ |  | /  `  |  | /  \ |\ |    |\ | |__   |  |  | /  \ |__) |__/
@@ -49,20 +82,20 @@ resource "hcloud_network_subnet" "subnet_private_class_b_demo_exposed" {
 resource "hcloud_network" "network_private_class_b_production" {
   labels                    = local.default_labels
   name                      = "fiscalismia-private-production-network"
-  ip_range                  = var.network_private_class_b_production
+  ip_range                  = local.network_private_class_b_production
   expose_routes_to_vswitch  = false
 }
 resource "hcloud_network_subnet" "subnet_private_class_b_production_isolated" {
   type         = "cloud"
   network_id   = hcloud_network.network_private_class_b_production.id
   network_zone = var.default_region
-  ip_range     = var.subnet_private_class_b_production_isolated
+  ip_range     = local.subnet_private_class_b_production_isolated
 }
 resource "hcloud_network_subnet" "subnet_private_class_b_production_exposed" {
   type         = "cloud"
   network_id   = hcloud_network.network_private_class_b_production.id
   network_zone = var.default_region
-  ip_range     = var.subnet_private_class_b_production_exposed
+  ip_range     = local.subnet_private_class_b_production_exposed
 }
 
 #              ___     __       ___  ___                   __   __       ___  ___  __
@@ -85,10 +118,10 @@ resource "hcloud_network_subnet" "subnet_private_class_b_production_exposed" {
 resource "hcloud_network_route" "demo_network_internet_access_via_nat_gateway" {
   network_id  = hcloud_network.network_private_class_b_demo.id
   destination = "0.0.0.0/0"
-  gateway     = var.fiscalismia_nat_gateway_private_ipv4_demo_net
+  gateway     = local.fiscalismia_nat_gateway_private_ipv4_demo_net
 }
 resource "hcloud_network_route" "production_network_internet_access_via_nat_gateway" {
   network_id  = hcloud_network.network_private_class_b_production.id
   destination = "0.0.0.0/0"
-  gateway     = var.fiscalismia_nat_gateway_private_ipv4_production_net
+  gateway     = local.fiscalismia_nat_gateway_private_ipv4_production_net
 }

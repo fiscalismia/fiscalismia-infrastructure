@@ -25,11 +25,11 @@ module "fiscalismia_bastion_host" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_production.id
-      private_ip    = var.fiscalismia_bastion_host_private_ipv4_production_net
+      private_ip    = local.fiscalismia_bastion_host_private_ipv4_production_net
     },
     {
       network_id    = hcloud_network.network_private_class_b_demo.id
-      private_ip    = var.fiscalismia_bastion_host_private_ipv4_demo_net
+      private_ip    = local.fiscalismia_bastion_host_private_ipv4_demo_net
     }
   ]
 
@@ -68,11 +68,11 @@ module "fiscalismia_loadbalancer" {
   networks            = [
     {
       network_id      = hcloud_network.network_private_class_b_production.id
-      private_ip      = var.fiscalismia_loadbalancer_private_ipv4_production_net
+      private_ip      = local.fiscalismia_loadbalancer_private_ipv4_production_net
     },
     {
       network_id      = hcloud_network.network_private_class_b_demo.id
-      private_ip      = var.fiscalismia_loadbalancer_private_ipv4_demo_net
+      private_ip      = local.fiscalismia_loadbalancer_private_ipv4_demo_net
     }
   ]
 
@@ -106,11 +106,11 @@ module "fiscalismia_nat_gateway" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_production.id
-      private_ip    = var.fiscalismia_nat_gateway_private_ipv4_production_net
+      private_ip    = local.fiscalismia_nat_gateway_private_ipv4_production_net
     },
     {
       network_id    = hcloud_network.network_private_class_b_demo.id
-      private_ip    = var.fiscalismia_nat_gateway_private_ipv4_demo_net
+      private_ip    = local.fiscalismia_nat_gateway_private_ipv4_demo_net
     }
   ]
 

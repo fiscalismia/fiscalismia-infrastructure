@@ -50,7 +50,7 @@ data "cloudinit_config" "bastion_host" {
       {
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
-        PRIVATE_IP_TO_NAT = var.fiscalismia_bastion_host_private_ipv4_production_net
+        PRIVATE_IP_TO_NAT = local.fiscalismia_bastion_host_private_ipv4_production_net
       }
       )
   }
@@ -70,8 +70,8 @@ data "cloudinit_config" "loadbalancer" {
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
-        BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_production_net
-        PRIVATE_IP_TO_NAT = var.fiscalismia_loadbalancer_private_ipv4_production_net
+        BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
+        PRIVATE_IP_TO_NAT = local.fiscalismia_loadbalancer_private_ipv4_production_net
       }
       )
   }
@@ -90,10 +90,10 @@ data "cloudinit_config" "demo_instance" {
         nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
-        VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_demo_net
-        LOADBALANCER_PRIVATE_IP = var.fiscalismia_loadbalancer_private_ipv4_demo_net
-        BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_demo_net
-        NAT_GATEWAY_PRIVATE_IP = var.fiscalismia_nat_gateway_private_ipv4_demo_net
+        VIRTUAL_NETWORK_GATEWAY = local.virtual_network_gateway_demo_net
+        LOADBALANCER_PRIVATE_IP = local.fiscalismia_loadbalancer_private_ipv4_demo_net
+        BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_demo_net
+        NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_demo_net
       }
       )
   }
@@ -111,10 +111,10 @@ data "cloudinit_config" "production_instances" {
         nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
-        VIRTUAL_NETWORK_GATEWAY = var.virtual_network_gateway_production_net
-        LOADBALANCER_PRIVATE_IP = var.fiscalismia_loadbalancer_private_ipv4_production_net
-        BASTION_HOST_PRIVATE_IP = var.fiscalismia_bastion_host_private_ipv4_production_net
-        NAT_GATEWAY_PRIVATE_IP = var.fiscalismia_nat_gateway_private_ipv4_production_net
+        VIRTUAL_NETWORK_GATEWAY = local.virtual_network_gateway_production_net
+        LOADBALANCER_PRIVATE_IP = local.fiscalismia_loadbalancer_private_ipv4_production_net
+        BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
+        NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_production_net
       }
       )
   }

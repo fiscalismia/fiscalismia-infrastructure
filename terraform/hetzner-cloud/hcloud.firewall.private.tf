@@ -19,8 +19,8 @@ resource "hcloud_firewall" "private_ssh_ingress_from_bastion_host" {
         port            = "22"
         protocol        = "tcp"
         source_ips  = [
-            var.fiscalismia_bastion_host_private_ipv4_demo_net,
-            var.fiscalismia_bastion_host_private_ipv4_production_net,
+            local.fiscalismia_bastion_host_private_ipv4_demo_net,
+            local.fiscalismia_bastion_host_private_ipv4_production_net,
         ]
     }
 }
@@ -32,8 +32,8 @@ resource "hcloud_firewall" "private_icmp_ping_ingress_from_loadbalancer" {
         direction   = "in"
         protocol    = "icmp"
         source_ips  = [
-            var.fiscalismia_loadbalancer_private_ipv4_demo_net,
-            var.fiscalismia_loadbalancer_private_ipv4_production_net,
+            local.fiscalismia_loadbalancer_private_ipv4_demo_net,
+            local.fiscalismia_loadbalancer_private_ipv4_production_net,
         ]
     }
 }
@@ -52,9 +52,9 @@ resource "hcloud_firewall" "egress_https_to_private_subnet_cidr_ranges" {
         protocol        = "tcp"
         port            = "443"
         destination_ips = [
-            var.subnet_private_class_b_demo_isolated,
-            var.subnet_private_class_b_production_isolated,
-            var.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
+            local.subnet_private_class_b_demo_isolated,
+            local.subnet_private_class_b_production_isolated,
+            local.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
         ]
     }
 
@@ -65,9 +65,9 @@ resource "hcloud_firewall" "egress_https_to_private_subnet_cidr_ranges" {
         protocol        = "tcp"
         port            = "80"
         destination_ips = [
-            var.subnet_private_class_b_demo_isolated,
-            var.subnet_private_class_b_production_isolated,
-            var.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
+            local.subnet_private_class_b_demo_isolated,
+            local.subnet_private_class_b_production_isolated,
+            local.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
         ]
     }
 }
@@ -82,10 +82,10 @@ resource "hcloud_firewall" "egress_ssh_to_fiscalismia_instances" {
         protocol        = "tcp"
         port            = "22"
         destination_ips = [
-            var.subnet_private_class_b_demo_isolated,
-            var.subnet_private_class_b_production_isolated,
-            var.subnet_private_class_b_demo_exposed,       # ipv4 of public instances in demo net
-            var.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
+            local.subnet_private_class_b_demo_isolated,
+            local.subnet_private_class_b_production_isolated,
+            local.subnet_private_class_b_demo_exposed,       # ipv4 of public instances in demo net
+            local.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
         ]
     }
 }
@@ -98,10 +98,10 @@ resource "hcloud_firewall" "egress_icmp_to_private_subnet_cidr_ranges" {
         direction       = "out"
         protocol        = "icmp"
         destination_ips = [
-            var.subnet_private_class_b_demo_isolated,
-            var.subnet_private_class_b_production_isolated,
-            var.subnet_private_class_b_demo_exposed,       # ipv4 of public instances in demo net
-            var.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
+            local.subnet_private_class_b_demo_isolated,
+            local.subnet_private_class_b_production_isolated,
+            local.subnet_private_class_b_demo_exposed,       # ipv4 of public instances in demo net
+            local.subnet_private_class_b_production_exposed, # ipv4 of public instances in production net
         ]
     }
 }

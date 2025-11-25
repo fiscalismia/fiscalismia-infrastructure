@@ -20,7 +20,7 @@ module "fiscalismia_demo" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_demo.id
-      private_ip    = var.fiscalismia_demo_private_ipv4
+      private_ip    = local.fiscalismia_demo_private_ipv4
     }
   ]
 
@@ -48,7 +48,7 @@ module "fiscalismia_monitoring" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_production.id
-      private_ip    = var.fiscalismia_monitoring_private_ipv4
+      private_ip    = local.fiscalismia_monitoring_private_ipv4
     }
   ]
 
@@ -75,7 +75,7 @@ module "fiscalismia_backend" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_production.id
-      private_ip    = var.fiscalismia_backend_private_ipv4
+      private_ip    = local.fiscalismia_backend_private_ipv4
     }
   ]
 
@@ -102,7 +102,7 @@ module "fiscalismia_frontend" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_production.id
-      private_ip    = var.fiscalismia_frontend_private_ipv4
+      private_ip    = local.fiscalismia_frontend_private_ipv4
     }
   ]
 
