@@ -45,37 +45,37 @@ jobs:
         aws secretsmanager get-secret-value \
           --secret-id ${MASTER_PRIVATE_KEY} \
           --output text \
-          --query SecretString | jq --raw-output '.private_key' \
+          --query SecretString \
           >> ~/.ssh/${MASTER_PRIVATE_KEY}
         echo "Querying ${LOADBALANCER_PRIVATE_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${LOADBALANCER_PRIVATE_KEY} \
           --output text \
-          --query SecretString | jq --raw-output '.private_key' \
+          --query SecretString \
           >> ~/.ssh/${LOADBALANCER_PRIVATE_KEY}
         echo "Querying ${NAT_GATEWAY_PRIVATE_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${NAT_GATEWAY_PRIVATE_KEY} \
           --output text \
-          --query SecretString | jq --raw-output '.private_key' \
+          --query SecretString \
           >> ~/.ssh/${NAT_GATEWAY_PRIVATE_KEY}
         echo "Querying ${DEMO_PRIVATE_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${DEMO_PRIVATE_KEY} \
           --output text \
-          --query SecretString | jq --raw-output '.private_key' \
+          --query SecretString \
           >> ~/.ssh/${DEMO_PRIVATE_KEY}
         echo "Querying ${MONITORING_PRIVATE_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${MONITORING_PRIVATE_KEY} \
           --output text \
-          --query SecretString | jq --raw-output '.private_key' \
+          --query SecretString \
           >> ~/.ssh/${MONITORING_PRIVATE_KEY}
         echo "Querying ${PRODUCTION_PRIVATE_KEY} from AWS"
         aws secretsmanager get-secret-value \
           --secret-id ${PRODUCTION_PRIVATE_KEY} \
           --output text \
-          --query SecretString | jq --raw-output '.private_key' \
+          --query SecretString \
           >> ~/.ssh/${PRODUCTION_PRIVATE_KEY}
 
         cd ~/.ssh/
