@@ -41,42 +41,22 @@ jobs:
       run: |
         set -eou pipefail
         mkdir -p ~/.ssh/
-        echo "Querying ${MASTER_PRIVATE_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${MASTER_PRIVATE_KEY} \
-          --output text \
-          --query SecretString \
-          >> ~/.ssh/${MASTER_PRIVATE_KEY}
-        echo "Querying ${LOADBALANCER_PRIVATE_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${LOADBALANCER_PRIVATE_KEY} \
-          --output text \
-          --query SecretString \
-          >> ~/.ssh/${LOADBALANCER_PRIVATE_KEY}
-        echo "Querying ${NAT_GATEWAY_PRIVATE_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${NAT_GATEWAY_PRIVATE_KEY} \
-          --output text \
-          --query SecretString \
-          >> ~/.ssh/${NAT_GATEWAY_PRIVATE_KEY}
-        echo "Querying ${DEMO_PRIVATE_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${DEMO_PRIVATE_KEY} \
-          --output text \
-          --query SecretString \
-          >> ~/.ssh/${DEMO_PRIVATE_KEY}
-        echo "Querying ${MONITORING_PRIVATE_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${MONITORING_PRIVATE_KEY} \
-          --output text \
-          --query SecretString \
-          >> ~/.ssh/${MONITORING_PRIVATE_KEY}
-        echo "Querying ${PRODUCTION_PRIVATE_KEY} from AWS"
-        aws secretsmanager get-secret-value \
-          --secret-id ${PRODUCTION_PRIVATE_KEY} \
-          --output text \
-          --query SecretString \
-          >> ~/.ssh/${PRODUCTION_PRIVATE_KEY}
+
+        query_aws_plaintext_secret() {
+          echo "Querying $1 from AWS"
+          aws secretsmanager get-secret-value \
+            --secret-id $1 \
+            --output text \
+            --query SecretString \
+            >> ~/.ssh/$1
+        }
+
+        query_aws_plaintext_secret ${MASTER_PRIVATE_KEY}
+        query_aws_plaintext_secret ${LOADBALANCER_PRIVATE_KEY}
+        query_aws_plaintext_secret ${NAT_GATEWAY_PRIVATE_KEY}
+        query_aws_plaintext_secret ${MONITORING_PRIVATE_KEY}
+        query_aws_plaintext_secret ${DEMO_PRIVATE_KEY}
+        query_aws_plaintext_secret ${PRODUCTION_PRIVATE_KEY}
 
         cd ~/.ssh/
         ls -l
