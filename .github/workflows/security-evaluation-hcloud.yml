@@ -160,7 +160,7 @@ jobs:
 
         echo "Generated Targets: $TARGETS"
 
-        ssh loadbalancer "mkdir $REMOTE_DIR"
+        ssh loadbalancer "mkdir -p $REMOTE_DIR"
         scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
         ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
         ssh loadbalancer "${REMOTE_DIR}${SCRIPT_NAME} $TARGETS >> $REMOTE_LOG 2>&1"
