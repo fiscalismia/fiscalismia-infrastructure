@@ -165,3 +165,4 @@ jobs:
         ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
         REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' >> $REMOTE_LOG 2>&1"
         ssh loadbalancer "$REMOTE_COMMAND"
+        ssh loadbalancer "cat $REMOTE_LOG"
