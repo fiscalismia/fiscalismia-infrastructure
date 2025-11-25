@@ -53,7 +53,7 @@ jobs:
             --secret-id $1 \
             --output text \
             --query SecretString \
-            | ssh-add -
+            | ssh-add - > /dev/null 2>&1
         }
 
         query_aws_plaintext_secret ${MASTER_PRIVATE_KEY}
