@@ -49,7 +49,7 @@ EOT
 output "hcloud_serverlist" {
   value = join("\n", [
     "",
-    "############ PUBLIC NETWORK INTERFACES ##########",
+    "############ PUBLIC NETWORK INTERFACES ###################",
     format("%-40s %s", "Fiscalismia-Bastion-Host:", local.hcloud_fiscalismia_bastion_host_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_bastion_host_ipv4 : local.no_ip),
     format("%-40s %s", "Fiscalismia-Loadbalancer:", local.hcloud_fiscalismia_loadbalancer_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_loadbalancer_ipv4 : local.no_ip),
     format("%-40s %s", "Fiscalismia-Nat-Gateway:", local.hcloud_fiscalismia_nat_gateway_ipv4 != "127.0.0.1" ? local.hcloud_fiscalismia_nat_gateway_ipv4 : local.no_ip),
