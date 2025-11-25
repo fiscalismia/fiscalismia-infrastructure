@@ -17,8 +17,9 @@ output "server_ips_human_readable" {
   ))
 }
 
-### output specifically for AWS REMOTE STATE to read from
-### marking as sensitive to hide from cli output since these are redundant
+### output specifically for REMOTE STATE to read from
+### Alternatively can parse directly from state backend s3 bucket with the following syntax:
+### bastion_ip=$(cat state.tfstate | jq .outputs.fiscalismia_bastion_host_ipv4.value )
 output "fiscalismia_bastion_host_ipv4" {
   value     = try(module.fiscalismia_bastion_host.server_ipv4_list[0], null)
   sensitive = true

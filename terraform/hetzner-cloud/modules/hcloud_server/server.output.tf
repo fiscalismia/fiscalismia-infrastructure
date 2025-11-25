@@ -28,3 +28,7 @@ output "server_id_list" {
 output "main_private_ipv4" {
   value = var.networks[0].private_ip
 }
+
+output "secondary_private_ipv4" {
+  value = try(var.networks[1].private_ip, null)
+}

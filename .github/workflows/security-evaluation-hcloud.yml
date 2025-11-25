@@ -86,7 +86,6 @@ jobs:
         echo "FRONTEND_INSTANCE_PRIVATE_IP=$front_ip" >> $GITHUB_ENV
         echo "BACKEND_INSTANCE_PRIVATE_IP=$back_ip" >> $GITHUB_ENV
 
-
     - name: Create SSH Config for Bastion-Host ProxyJump
       run: |
         cat << EOF > ~/.ssh/config
@@ -140,6 +139,26 @@ jobs:
         EOF
 
         chmod 600 ~/.ssh/config
-        cat ~/.ssh/config
 
-        ssh bastion-host "ip -4 a"
+    - name: Security Evaluation of Loadbalancer
+      env:
+        SCRIPT_NAME: evaluate_loadbalancer_firewall.sh
+        SCRIPT_PATH: security/hcloud/
+        NETWORK_YML: terraform/hetzner-cloud/config/network.private.ips.yml
+        REMOTE_DIR: /root/security/
+        REMOTE_LOG: /root/security_evaluation.log
+      run: |
+        echo "Parsing Network addresses..."
+        TARGETS=$(yq '
+          .ips.gateways | to_entries | .[] | "virtual_network_gateway_" + .key + "_net:" + .value,
+          .ips.private_instances | to_entries | .[] | "fiscalismia_" + .key + "_private_ipv4:" + .value,
+          (.ips.exposed_instances | to_entries | .[] | .key as $parent | .value | to_entries | .[] | "fiscalismia_" + $parent + "_private_ipv4_" + .key + "_net:" + .value)
+        ' $NETWORK_YML | tr '\n' ' ')
+
+        echo "Generated Targets: $TARGETS"
+
+        ssh loadbalancer "mkdir $REMOTE_DIR"
+        scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
+        ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
+        ssh loadbalancer "${REMOTE_DIR}${SCRIPT_NAME} $TARGETS >> $REMOTE_LOG 2>&1"
+        ssh loadbalancer "cat $REMOTE_LOG"
