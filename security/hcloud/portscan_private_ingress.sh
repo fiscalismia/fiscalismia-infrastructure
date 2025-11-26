@@ -14,6 +14,7 @@ success_count=0
 error_count=0
 
 echo ""
+echo "Evaluating Network-Sentinel Connectivity to Private Network Targets"
 date
 echo "################# ICMP EVALUATION #############################"
 for instance in "${instance_ips[@]}"; do
