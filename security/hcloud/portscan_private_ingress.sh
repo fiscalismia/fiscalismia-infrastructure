@@ -42,7 +42,7 @@ for instance in "${instance_ips[@]}"; do
   variable_name="${instance%:*}"
   if [[ "$variable_name" == *"private_ip"* ]];then
     printf "\n##### Testing TCP ports for $variable_name at address $ip_address...\n"
-    for port in {{79..81},{442..444}}; do
+    for port in {{22-25},{79..81},{442..444}}; do
       # EXECUTE NETCAT PORTSCAN COMMAND
       timeout $timeout_seconds nc -vz4 $ip_address $port > /dev/null 2>&1
       exit_code=$?

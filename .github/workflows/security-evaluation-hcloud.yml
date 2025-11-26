@@ -184,5 +184,19 @@ jobs:
         echo "##### RESULTS CAN BE FOUND IN loadbalancer:$REMOTE_LOG AFTER PORTSCAN COMPLETES"
 
     - name: Private Ingress Security Evaluation via Network Sentinel
+      env:
+        SCRIPT_NAME: portscan_private_ingress.sh
+        SCRIPT_PATH: security/hcloud/
+        REMOTE_DIR: /root/security/
+        REMOTE_LOG: /root/portscan_private_ingress.log
       run: |
-        ssh network-sentinel "ip -4 a"
+
+        ssh network-sentinel "mkdir -p $REMOTE_DIR"
+        ssh network-sentinel "echo $TARGETS > ${REMOTE_DIR}targets"
+
+        scp ${SCRIPT_PATH}${SCRIPT_NAME} network-sentinel:$REMOTE_DIR
+        ssh network-sentinel "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
+        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1 &"
+        ssh network-sentinel "$REMOTE_COMMAND"
+
+        echo "##### RESULTS CAN BE FOUND IN network-sentinel:$REMOTE_LOG AFTER PORTSCAN COMPLETES"
