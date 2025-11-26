@@ -158,12 +158,11 @@ jobs:
           (.ips.exposed_instances | to_entries | .[] | .key as $parent | .value | to_entries | .[] | "fiscalismia_" + $parent + "_private_ipv4_" + .key + "_net:" + .value)
         ' $NETWORK_YML | tr '\n' ' ')
 
-        echo "Generated Targets: $TARGETS"
-        ssh loadbalancer "echo $TARGETS > ${REMOTE_DIR}targets && chmod 0777 ${REMOTE_DIR}targets"
-
         ssh loadbalancer "mkdir -p $REMOTE_DIR"
+        ssh loadbalancer "echo $TARGETS > ${REMOTE_DIR}targets"
+
         scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
         ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} $(cat ${REMOTE_DIR}targets) > $REMOTE_LOG 2>&1"
+        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1"
         ssh loadbalancer "$REMOTE_COMMAND"
         ssh loadbalancer "cat $REMOTE_LOG"
