@@ -160,8 +160,8 @@ jobs:
         echo "Parsing Network addresses..."
         PRIVATE_NETWORK_TARGETS=$(yq '
           .ips.gateways | to_entries | .[] | "virtual_network_gateway_" + .key + "_net:" + .value,
-          .ips.private_instances | to_entries | .[] | "fiscalismia_" + .key + "_private_ipv4:" + .value,
-          (.ips.exposed_instances | to_entries | .[] | .key as $parent | .value | to_entries | .[] | "fiscalismia_" + $parent + "_private_ipv4_" + .key + "_net:" + .value)
+          .ips.private_instances | to_entries | .[] | .key + "_private_ipv4:" + .value,
+          (.ips.exposed_instances | to_entries | .[] | .key as $parent | .value | to_entries | .[] | $parent + "_private_ipv4_" + .key + "_net:" + .value)
         ' $NETWORK_CONFIG | tr '\n' ' ')
         echo "TARGETS=$PRIVATE_NETWORK_TARGETS" >> $GITHUB_ENV
 
