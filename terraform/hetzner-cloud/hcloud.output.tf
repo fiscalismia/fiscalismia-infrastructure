@@ -40,6 +40,10 @@ output "fiscalismia_nat_gateway_private_ipv4" {
   value     = try(module.fiscalismia_nat_gateway.main_private_ipv4, null)
   sensitive = true
 }
+output "fiscalismia_network_sentinel_private_ipv4" {
+  value     = try(module.fiscalismia_network_sentinel.main_private_ipv4, null)
+  sensitive = true
+}
 output "fiscalismia_demo_private_ipv4" {
   value     = try(module.fiscalismia_demo.main_private_ipv4, null)
   sensitive = true

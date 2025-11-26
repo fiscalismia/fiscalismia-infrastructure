@@ -1,0 +1,29 @@
+#cloud-config.nat-gateway.yml
+users:
+  - name: fiscalismia
+    groups: [users, admin]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+
+package_update: true
+package_upgrade: true
+packages:
+  - openbsd-inetd
+
+write_files:
+
+  ### INSTALL NETWORK HARDENING TOOLS ###
+  - path: /root/scripts/install-network-hardening-tools.sh
+    encoding: b64
+    content: ${install_network_hardening_tools_b64}
+    permissions: "0755"
+
+runcmd:
+  # Initialize logfile
+  - export logfile="/root/cloud-config.log"
+  - echo "Hello from cloud-config.network-sentinel.yml!" > $logfile
+  - date >> $logfile
+  - sleep 30 # wait for initialization to settle
+  # install network hardening tools for security evaluation of firewall rules
+  - /root/scripts/install-network-hardening-tools.sh $logfile

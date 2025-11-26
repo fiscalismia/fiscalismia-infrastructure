@@ -119,3 +119,37 @@ module "fiscalismia_nat_gateway" {
     hcloud_network.network_private_class_b_production,
   ]
 }
+
+module "fiscalismia_network_sentinel" {
+  source            = "./modules/hcloud_server/"
+
+  server_name       = "Network-Sentinel"
+  is_private        = true
+  unix_distro       = var.unix_distro
+  location          = var.default_location
+  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  firewall_ids      = [
+    hcloud_firewall.egress_public_http_https_dns_icmp.id,
+  ]
+  ssh_key_name      = hcloud_ssh_key.infrastructure_orchestration.name
+  cloud_config      = data.cloudinit_config.network_sentinel.rendered
+
+  labels            = local.default_labels
+
+  networks          = [
+    {
+      network_id    = hcloud_network.network_private_class_b_production.id
+      private_ip    = local.fiscalismia_network_sentinel_private_ipv4_production_net
+    },
+    {
+      network_id    = hcloud_network.network_private_class_b_demo.id
+      private_ip    = local.fiscalismia_network_sentinel_private_ipv4_demo_net
+    }
+  ]
+
+  depends_on = [
+    module.fiscalismia_nat_gateway,
+    hcloud_network.network_private_class_b_demo,
+    hcloud_network.network_private_class_b_production,
+  ]
+}

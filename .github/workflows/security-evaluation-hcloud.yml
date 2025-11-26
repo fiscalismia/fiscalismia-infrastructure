@@ -12,8 +12,8 @@ on:
 
 jobs:
   security-evaluate-hcloud:
-    # environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
-    # timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
+    environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
+    timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
 
     permissions:
@@ -73,6 +73,7 @@ jobs:
         S3_KEY: state.tfstate
       run : |
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${S3_KEY} .
+
         bastion_ip=$(cat state.tfstate | jq .outputs.fiscalismia_bastion_host_ipv4.value )
         demo_ip=$(cat state.tfstate | jq .outputs.fiscalismia_demo_private_ipv4.value )
         lb_ip=$(cat state.tfstate | jq .outputs.fiscalismia_loadbalancer_private_ipv4.value )
@@ -80,6 +81,7 @@ jobs:
         monitor_ip=$(cat state.tfstate | jq .outputs.fiscalismia_monitoring_private_ipv4.value )
         front_ip=$(cat state.tfstate | jq .outputs.fiscalismia_frontend_private_ipv4.value )
         back_ip=$(cat state.tfstate | jq .outputs.fiscalismia_backend_private_ipv4.value )
+        sentinel_ip=$(cat state.tfstate | jq .outputs.fiscalismia_network_sentinel_private_ipv4.value )
 
         echo "BASTION_HOST_PUBLIC_IP=$bastion_ip" >> $GITHUB_ENV
         echo "DEMO_INSTANCE_PRIVATE_IP=$demo_ip" >> $GITHUB_ENV
@@ -88,6 +90,7 @@ jobs:
         echo "MONITORING_INSTANCE_PRIVATE_IP=$monitor_ip" >> $GITHUB_ENV
         echo "FRONTEND_INSTANCE_PRIVATE_IP=$front_ip" >> $GITHUB_ENV
         echo "BACKEND_INSTANCE_PRIVATE_IP=$back_ip" >> $GITHUB_ENV
+        echo "NETWORK_SENTINEL_PRIVATE_IP=$sentinel_ip" >> $GITHUB_ENV
 
     - name: Create SSH Config for Bastion-Host ProxyJump
       run: |
@@ -114,6 +117,13 @@ jobs:
 
         Host nat-gateway
             HostName $NAT_GATEWAY_PRIVATE_IP
+            User root
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ProxyJump bastion-host
+
+        Host network-sentinel
+            HostName $NETWORK_SENTINEL_PRIVATE_IP
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
@@ -172,3 +182,7 @@ jobs:
         ssh loadbalancer "$REMOTE_COMMAND"
 
         echo "##### RESULTS CAN BE FOUND IN loadbalancer:$REMOTE_LOG AFTER PORTSCAN COMPLETES"
+
+    - name: Private Ingress Security Evaluation via Network Sentinel
+      run: |
+        ssh network-sentinel "ip -4 a"

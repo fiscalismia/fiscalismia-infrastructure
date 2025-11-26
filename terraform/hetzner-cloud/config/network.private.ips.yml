@@ -34,3 +34,6 @@ ips:
     nat_gateway:
       demo:       "172.20.1.4"
       production: "172.24.1.4"
+    network_sentinel:
+      demo:       "172.20.1.5"
+      production: "172.24.1.5"

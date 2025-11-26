@@ -133,3 +133,19 @@ data "cloudinit_config" "nat_gateway" {
     })
   }
 }
+
+data "cloudinit_config" "network_sentinel" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "cloud-config.network-sentinel.yml"
+    content_type = "text/cloud-config"
+    content      = templatefile(
+      "${path.module}/modules/hcloud_server/user_data/cloud-config.network-sentinel.yml",
+      {
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+      }
+      )
+  }
+}

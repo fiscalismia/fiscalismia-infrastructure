@@ -52,7 +52,7 @@ cd ~/git/fiscalismia-infrastructure/terraform/aws/
 source ../.env
 terraform init
 terraform apply \
-  --target=module.oidc_sts_pipeline_access \
+  -target=module.oidc_sts_pipeline_access \
   -target=module.s3_image_storage \
   -target=module.s3_raw_data_etl_storage \
   -target=module.s3_infrastructure_storage \
