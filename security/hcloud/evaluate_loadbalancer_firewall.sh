@@ -42,23 +42,24 @@ for instance in "${instance_ips[@]}"; do
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
   if [[ "$variable_name" == *"demo_private_ip"* ]] || \
-    [[ "$variable_name" == *"monitoring_private_ip"* ]] \
-    [[ "$variable_name" == *"frontend_private_ip"* ]] \
+    [[ "$variable_name" == *"monitoring_private_ip"* ]] || \
+    [[ "$variable_name" == *"frontend_private_ip"* ]] || \
     [[ "$variable_name" == *"backend_private_ip"* ]];then
-      echo "Testing TCP ports 1-65536 for $variable_name..."
-    # for port in {1..65536}; do
-    #   timeout $timeout_seconds nc -vz4 $ip_address $port
-    #   if (( $? == 0 )); then
-    #     success_count=$((++success_count))
-    #     echo "OK: $variable_name port $port is reachable"
-    #   elif (( $? == 1 )); then
-    #     success_count=$((++success_count))
-    #     echo "OK: $variable_name port $port is reachable [but refuses connection]"
-    #   elif (( $? > 1 )); then
-    #     error_count=$((++error_count))
-    #     echo "ERROR: $variable_name port $port timeout"
-    #   fi
-    # done
+      echo "# Testing TCP ports 1-65536 for $variable_name..."
+    for port in {1..65536}; do
+      timeout $timeout_seconds nc -vz4 $ip_address $port
+      if (( $? == 0 )); then
+        success_count=$((++success_count))
+        echo "OK: $variable_name port $port is reachable"
+      elif (( $? == 1 )); then
+        success_count=$((++success_count))
+        echo "OK: $variable_name port $port is reachable [but refuses connection]"
+      elif (( $? > 1 )); then
+        error_count=$((++error_count))
+        echo "ERROR: $variable_name port $port timeout"
+      fi
+    done
+    echo ""
   fi
 done
 echo "################# METRICS #####################################"
