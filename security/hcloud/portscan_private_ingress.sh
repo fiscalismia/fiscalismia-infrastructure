@@ -10,54 +10,65 @@ fi
 
 instance_list_string="$1"
 instance_ips=($instance_list_string)
-success_count=0
-error_count=0
+open_count=0
+closed_count=0
 
 echo ""
 echo "Evaluating Network-Sentinel Connectivity to Private Network Targets"
 date
-echo "################# ICMP EVALUATION #############################"
+echo "################# ICMP EVALUATION #######################################"
 for instance in "${instance_ips[@]}"; do
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
   ping -c 1 -W 0.02 "$ip_address" > /dev/null 2>&1
   exit_code=$?
   if (( exit_code == 0 )); then
-    success_count=$((++success_count))
+    open_count=$((++open_count))
     echo "OK: $variable_name ping resolves"
   elif (( exit_code > 0 )); then
-    error_count=$((++error_count))
+    closed_count=$((++closed_count))
     echo "ERROR: $variable_name ping timed out."
   fi
 done
-echo "===> RESULTS | SUCCESS Count: $success_count | ERROR Count: $error_count <==="
+echo "===> RESULTS | OPEN Count: $open_count | CLOSED Count: $closed_count <==="
 
 timeout_seconds=0.05
 echo ""
-echo "################# TCP EVALUATION #############################"
+echo "################# TCP EVALUATION #######################################"
 for instance in "${instance_ips[@]}"; do
-  success_count=0
-  error_count=0
+  open_count=0
+  closed_count=0
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
-  if [[ "$variable_name" == *"private_ip"* ]];then
+  # Scan all Private IPs in network, except the network_sentinel itself
+  if [[ "$variable_name" == *"private_ip"* ]] \
+    && ! [[ "$variable_name" == *"network_sentinel"* ]];then
     printf "\n##### Testing TCP ports for $variable_name at address $ip_address...\n"
-    for port in {{22-25},{79..81},{442..444}}; do
+    for port in {{22..25},{79..81},{442..444}}; do
       # EXECUTE NETCAT PORTSCAN COMMAND
-      timeout $timeout_seconds nc -vz4 $ip_address $port > /dev/null 2>&1
+      NCAT_OUTPUT=$(timeout $timeout_seconds nc -vz4 $ip_address $port 2>&1)
       exit_code=$?
       if (( exit_code == 0 )); then
-        success_count=$((++success_count))
-        echo "OK: $variable_name port $port is reachable [hast listener]"
+        open_count=$((++open_count))
+        echo "OK: $variable_name port $port is reachable [has listener]"
       elif (( exit_code == 1 )); then
-        success_count=$((++success_count))
-        echo "OK: $variable_name port $port is reachable [but refuses connection]"
+        if [[ "$NCAT_OUTPUT" == *"No route to host"* ]];then
+          closed_count=$((++closed_count))
+        elif [[ "$NCAT_OUTPUT" == *"Connection refused"* ]]; then
+          open_count=$((++open_count))
+          # echo "OK: $variable_name port $port is reachable [but refuses connection]"
+        else
+          closed_count=$((++closed_count))
+        fi
       elif (( exit_code > 1 )); then
-        error_count=$((++error_count))
+        closed_count=$((++closed_count))
         # echo "ERROR: $variable_name port $port timeout [blocked by firewall]"
       fi
     done
-    echo "===> RESULTS | SUCCESS Count: $success_count | ERROR Count: $error_count <==="
+    echo "====> RESULTS <===="
+    echo "OPEN   Ports: $open_count"
+    echo "CLOSED Ports: $closed_count"
   fi
 done
-echo "###############################################################"
+echo ""
+echo "#########################################################################"
