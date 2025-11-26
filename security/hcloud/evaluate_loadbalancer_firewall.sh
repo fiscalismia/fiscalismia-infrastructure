@@ -31,3 +31,31 @@ done
 echo "################# METRICS #####################################"
 echo "SUCCESS Count: $success_count"
 echo "ERROR Count: $error_count"
+
+
+timeout_seconds=0.005
+success_count=0
+error_count=0
+echo ""
+echo "################# TCP EVALUATION #############################"
+date
+for instance in "${instance_ips[@]}"; do
+  ip_address="${instance#*:}"
+  variable_name="${instance%:*}"
+  for port in {1..65536}; do
+    timeout $timeout_seconds nc -vz4 $ip_address $port
+    if (( $? == 1 )); then
+      success_count=$((++success_count))
+      echo "OK: $variable_name port $port is reachable [but refuses connection]"
+    elif (( $? == 0 )); then
+      success_count=$((++success_count))
+      echo "OK: $variable_name port $port is reachable"
+    else
+      error_count=$((++error_count))
+      echo "ERROR: $variable_name port $port timeout"
+    fi
+  done
+done
+echo "################# METRICS #####################################"
+echo "SUCCESS Count: $success_count"
+echo "ERROR Count: $error_count"
