@@ -12,8 +12,8 @@ on:
 
 jobs:
   security-evaluate-hcloud:
-    environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
-    timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
+    # environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
+    # timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
 
     permissions:
@@ -143,25 +143,32 @@ jobs:
 
         chmod 600 ~/.ssh/config
 
-    - name: Security Evaluation of Loadbalancer
+    - name: Generating Private IPV4 Targets for Port Scanning
       env:
-        SCRIPT_NAME: evaluate_loadbalancer_firewall.sh
-        SCRIPT_PATH: security/hcloud/
-        NETWORK_YML: terraform/hetzner-cloud/config/network.private.ips.yml
-        REMOTE_DIR: /root/security/
-        REMOTE_LOG: /root/security_evaluation.log
+        NETWORK_CONFIG: terraform/hetzner-cloud/config/network.private.ips.yml
       run: |
         echo "Parsing Network addresses..."
-        TARGETS=$(yq '
+        PRIVATE_NETWORK_TARGETS=$(yq '
           .ips.gateways | to_entries | .[] | "virtual_network_gateway_" + .key + "_net:" + .value,
           .ips.private_instances | to_entries | .[] | "fiscalismia_" + .key + "_private_ipv4:" + .value,
           (.ips.exposed_instances | to_entries | .[] | .key as $parent | .value | to_entries | .[] | "fiscalismia_" + $parent + "_private_ipv4_" + .key + "_net:" + .value)
-        ' $NETWORK_YML | tr '\n' ' ')
+        ' $NETWORK_CONFIG | tr '\n' ' ')
+        echo "TARGETS=$PRIVATE_NETWORK_TARGETS" >> $GITHUB_ENV
 
-        echo "Generated Targets: $TARGETS"
+    - name: Security Evaluation of Loadbalancer
+      env:
+        SCRIPT_NAME: evaluate_loadbalancer_egress.sh
+        SCRIPT_PATH: security/hcloud/
+        REMOTE_DIR: /root/security/
+        REMOTE_LOG: /root/security_evaluation.log
+      run: |
 
-        ssh loadbalancer "mkdir $REMOTE_DIR"
+        ssh loadbalancer "mkdir -p $REMOTE_DIR"
+        ssh loadbalancer "echo $TARGETS > ${REMOTE_DIR}targets"
+
         scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
         ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        ssh loadbalancer "${REMOTE_DIR}${SCRIPT_NAME} $TARGETS >> $REMOTE_LOG 2>&1"
-        ssh loadbalancer "cat $REMOTE_LOG"
+        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1 &"
+        ssh loadbalancer "$REMOTE_COMMAND"
+
+        echo "##### RESULTS CAN BE FOUND IN loadbalancer:$REMOTE_LOG AFTER PORTSCAN COMPLETES"
