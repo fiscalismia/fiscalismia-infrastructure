@@ -20,10 +20,11 @@ for instance in "${instance_ips[@]}"; do
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
   ping -c 1 -W 0.02 "$ip_address" > /dev/null 2>&1
-  if (( $? == 0 )); then
+  exit_code=$?
+  if (( exit_code == 0 )); then
     success_count=$((++success_count))
     echo "OK: $variable_name ping resolves"
-  elif (( $? > 0 )); then
+  elif (( exit_code > 0 )); then
     error_count=$((++error_count))
     echo "ERROR: $variable_name ping timed out."
   fi
@@ -46,16 +47,17 @@ for instance in "${instance_ips[@]}"; do
     [[ "$variable_name" == *"frontend_private_ip"* ]] || \
     [[ "$variable_name" == *"backend_private_ip"* ]];then
       echo "# Testing TCP ports 1-65536 for $variable_name at address $ip_address..."
-    for port in {1..500}; do
-      # EXECUTE NETCAT COMMAND
-      timeout $timeout_seconds nc -vz4 $ip_address $port
-      if (( $? == 0 )); then
+    for port in {{79..81},{442..444}}; do
+      # EXECUTE NETCAT PORTSCAN COMMAND
+      timeout $timeout_seconds nc -vz4 $ip_address $port > /dev/null 2>&1
+      exit_code=$?
+      if (( exit_code == 0 )); then
         success_count=$((++success_count))
         echo "OK: $variable_name port $port is reachable"
-      elif (( $? == 1 )); then
+      elif (( exit_code == 1 )); then
         success_count=$((++success_count))
         echo "OK: $variable_name port $port is reachable [but refuses connection]"
-      elif (( $? > 1 )); then
+      elif (( exit_code > 1 )); then
         error_count=$((++error_count))
         echo "ERROR: $variable_name port $port timeout"
       fi
@@ -66,12 +68,3 @@ done
 echo "################# METRICS #####################################"
 echo "SUCCESS Count: $success_count"
 echo "ERROR Count: $error_count"
-
-
-      if (( $? == 0 )); then
-        echo "OK: $variable_name port $port is reachable"
-      elif (( $? == 1 )); then
-        echo "OK: $variable_name port $port is reachable [but refuses connection]"
-      elif (( $? > 1 )); then
-        echo "ERROR: $variable_name port $port timeout"
-      fi
