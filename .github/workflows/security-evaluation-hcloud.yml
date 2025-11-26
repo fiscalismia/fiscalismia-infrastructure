@@ -163,6 +163,7 @@ jobs:
 
         scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
         ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1"
+        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1 &"
         ssh loadbalancer "$REMOTE_COMMAND"
-        ssh loadbalancer "cat $REMOTE_LOG"
+
+        echo "##### RESULTS CAN BE FOUND IN loadbalancer:$REMOTE_LOG AFTER PORTSCAN COMPLETES"

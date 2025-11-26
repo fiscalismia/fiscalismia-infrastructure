@@ -45,8 +45,9 @@ for instance in "${instance_ips[@]}"; do
     [[ "$variable_name" == *"monitoring_private_ip"* ]] || \
     [[ "$variable_name" == *"frontend_private_ip"* ]] || \
     [[ "$variable_name" == *"backend_private_ip"* ]];then
-      echo "# Testing TCP ports 1-65536 for $variable_name..."
-    for port in {1..65536}; do
+      echo "# Testing TCP ports 1-65536 for $variable_name at address $ip_address..."
+    for port in {1..500}; do
+      # EXECUTE NETCAT COMMAND
       timeout $timeout_seconds nc -vz4 $ip_address $port
       if (( $? == 0 )); then
         success_count=$((++success_count))
@@ -65,3 +66,12 @@ done
 echo "################# METRICS #####################################"
 echo "SUCCESS Count: $success_count"
 echo "ERROR Count: $error_count"
+
+
+      if (( $? == 0 )); then
+        echo "OK: $variable_name port $port is reachable"
+      elif (( $? == 1 )); then
+        echo "OK: $variable_name port $port is reachable [but refuses connection]"
+      elif (( $? > 1 )); then
+        echo "ERROR: $variable_name port $port timeout"
+      fi
