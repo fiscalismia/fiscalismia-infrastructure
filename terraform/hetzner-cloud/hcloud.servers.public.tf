@@ -127,7 +127,8 @@ module "network_sentinel" {
   server_name       = "Network-Sentinel"
   unix_distro       = var.unix_distro
   location          = var.default_location
-  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  # CPU Performance Optimized
+  server_type       = "cpx32" # "cpx22" 7.72€ / Month | "cpx33" 13.03€/Month
   firewall_ids      = [
     hcloud_firewall.egress_public_http_https_dns_icmp.id,
   ]

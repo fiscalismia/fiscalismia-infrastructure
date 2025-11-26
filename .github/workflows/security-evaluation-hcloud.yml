@@ -12,8 +12,8 @@ on:
 
 jobs:
   security-evaluate-hcloud:
-    # environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
-    # timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
+    environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
+    timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
 
     permissions:
@@ -171,6 +171,7 @@ jobs:
         SCRIPT_PATH: security/hcloud/
         REMOTE_DIR: /root/security/
         REMOTE_LOG: /root/security_evaluation.log
+        LOG_NAME: security_evaluation.log
       run: |
 
         ssh loadbalancer "mkdir -p $REMOTE_DIR"
@@ -178,10 +179,10 @@ jobs:
 
         scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
         ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1 &"
+        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1"
         ssh loadbalancer "$REMOTE_COMMAND"
-
-        echo "##### RESULTS CAN BE FOUND IN loadbalancer:$REMOTE_LOG AFTER PORTSCAN COMPLETES"
+        scp loadbalancer:$REMOTE_LOG ./$LOG_NAME
+        cat ./$LOG_NAME
 
     - name: Private Ingress Security Evaluation via Network Sentinel
       env:
@@ -189,6 +190,7 @@ jobs:
         SCRIPT_PATH: security/hcloud/
         REMOTE_DIR: /root/security/
         REMOTE_LOG: /root/portscan_private_ingress.log
+        LOG_NAME: portscan_private_ingress.log
       run: |
 
         ssh network-sentinel "mkdir -p $REMOTE_DIR"
@@ -199,4 +201,6 @@ jobs:
         REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1 &"
         ssh network-sentinel "$REMOTE_COMMAND"
 
-        echo "##### RESULTS CAN BE FOUND IN network-sentinel:$REMOTE_LOG AFTER PORTSCAN COMPLETES"
+        echo "Portscan takes about an hour. Find the log at network-sentinel:$REMOTE_COMMAND"
+        # scp network-sentinel:$REMOTE_LOG ./$LOG_NAME
+        # cat ./$LOG_NAME
