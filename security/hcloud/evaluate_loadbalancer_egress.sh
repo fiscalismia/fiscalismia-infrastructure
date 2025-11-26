@@ -41,19 +41,18 @@ for instance in "${instance_ips[@]}"; do
   error_count=0
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
-  if [[ "$variable_name" == *"private_ip"* ]];then
-  # if [[ "$variable_name" == *"demo_private_ip"* ]] || \
-  #   [[ "$variable_name" == *"monitoring_private_ip"* ]] || \
-  #   [[ "$variable_name" == *"frontend_private_ip"* ]] || \
-  #   [[ "$variable_name" == *"backend_private_ip"* ]];then
+  if [[ "$variable_name" == *"demo_private_ip"* ]] || \
+    [[ "$variable_name" == *"monitoring_private_ip"* ]] || \
+    [[ "$variable_name" == *"frontend_private_ip"* ]] || \
+    [[ "$variable_name" == *"backend_private_ip"* ]];then
     printf "\n##### Testing TCP ports for $variable_name at address $ip_address...\n"
-    for port in {{79..81},{442..444}}; do
+    for port in {80,443}; do
       # EXECUTE NETCAT PORTSCAN COMMAND
       timeout $timeout_seconds nc -vz4 $ip_address $port > /dev/null 2>&1
       exit_code=$?
       if (( exit_code == 0 )); then
         success_count=$((++success_count))
-        echo "OK: $variable_name port $port is reachable [hast listener]"
+        echo "OK: $variable_name port $port is reachable [has listener]"
       elif (( exit_code == 1 )); then
         success_count=$((++success_count))
         echo "OK: $variable_name port $port is reachable [but refuses connection]"
@@ -62,9 +61,7 @@ for instance in "${instance_ips[@]}"; do
         echo "ERROR: $variable_name port $port timeout [blocked by firewall]"
       fi
     done
-    echo "===> RESULTS"
-    echo "SUCCESS Count: $success_count"
-    echo "ERROR Count: $error_count"
+    echo "===> RESULTS | SUCCESS Count: $success_count | ERROR Count: $error_count <==="
   fi
 done
 echo "###############################################################"
