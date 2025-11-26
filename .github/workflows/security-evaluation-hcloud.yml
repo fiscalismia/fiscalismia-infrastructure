@@ -81,7 +81,7 @@ jobs:
         monitor_ip=$(cat state.tfstate | jq .outputs.fiscalismia_monitoring_private_ipv4.value )
         front_ip=$(cat state.tfstate | jq .outputs.fiscalismia_frontend_private_ipv4.value )
         back_ip=$(cat state.tfstate | jq .outputs.fiscalismia_backend_private_ipv4.value )
-        sentinel_ip=$(cat state.tfstate | jq .outputs.fiscalismia_network_sentinel_private_ipv4.value )
+        sentinel_ip=$(cat state.tfstate | jq .outputs.network_sentinel_private_ipv4.value )
 
         echo "BASTION_HOST_PUBLIC_IP=$bastion_ip" >> $GITHUB_ENV
         echo "DEMO_INSTANCE_PRIVATE_IP=$demo_ip" >> $GITHUB_ENV

@@ -39,20 +39,21 @@ locals {
   virtual_network_gateway_production_net     = local.network_config.ips.gateways.production
 
   # strictly private instances
-  fiscalismia_demo_private_ipv4                             = local.network_config.ips.private_instances.demo
-  fiscalismia_monitoring_private_ipv4                       = local.network_config.ips.private_instances.monitoring
-  fiscalismia_frontend_private_ipv4                         = local.network_config.ips.private_instances.frontend
-  fiscalismia_backend_private_ipv4                          = local.network_config.ips.private_instances.backend
+  fiscalismia_demo_private_ipv4                        = local.network_config.ips.private_instances.demo
+  fiscalismia_monitoring_private_ipv4                  = local.network_config.ips.private_instances.monitoring
+  fiscalismia_frontend_private_ipv4                    = local.network_config.ips.private_instances.frontend
+  fiscalismia_backend_private_ipv4                     = local.network_config.ips.private_instances.backend
 
   # Private IPs of publicly exposed instances
-  fiscalismia_bastion_host_private_ipv4_demo_net            = local.network_config.ips.exposed_instances.bastion_host.demo
-  fiscalismia_bastion_host_private_ipv4_production_net      = local.network_config.ips.exposed_instances.bastion_host.production
-  fiscalismia_loadbalancer_private_ipv4_demo_net            = local.network_config.ips.exposed_instances.loadbalancer.demo
-  fiscalismia_loadbalancer_private_ipv4_production_net      = local.network_config.ips.exposed_instances.loadbalancer.production
-  fiscalismia_nat_gateway_private_ipv4_demo_net             = local.network_config.ips.exposed_instances.nat_gateway.demo
-  fiscalismia_nat_gateway_private_ipv4_production_net       = local.network_config.ips.exposed_instances.nat_gateway.production
-  fiscalismia_network_sentinel_private_ipv4_demo_net        = local.network_config.ips.exposed_instances.network_sentinel.demo
-  fiscalismia_network_sentinel_private_ipv4_production_net  = local.network_config.ips.exposed_instances.network_sentinel.production
+  fiscalismia_bastion_host_private_ipv4_demo_net       = local.network_config.ips.exposed_instances.bastion_host.demo
+  fiscalismia_bastion_host_private_ipv4_production_net = local.network_config.ips.exposed_instances.bastion_host.production
+  fiscalismia_loadbalancer_private_ipv4_demo_net       = local.network_config.ips.exposed_instances.loadbalancer.demo
+  fiscalismia_loadbalancer_private_ipv4_production_net = local.network_config.ips.exposed_instances.loadbalancer.production
+  fiscalismia_nat_gateway_private_ipv4_demo_net        = local.network_config.ips.exposed_instances.nat_gateway.demo
+  fiscalismia_nat_gateway_private_ipv4_production_net  = local.network_config.ips.exposed_instances.nat_gateway.production
+  # Network Surveillance Machine
+  network_sentinel_private_ipv4_demo_net               = local.network_config.ips.exposed_instances.network_sentinel.demo
+  network_sentinel_private_ipv4_production_net         = local.network_config.ips.exposed_instances.network_sentinel.production
 }
 
 #     __   ___        __           ___ ___       __   __

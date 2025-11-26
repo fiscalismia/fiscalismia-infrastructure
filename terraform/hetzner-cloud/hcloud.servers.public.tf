@@ -120,11 +120,11 @@ module "fiscalismia_nat_gateway" {
   ]
 }
 
-module "fiscalismia_network_sentinel" {
+# Dedicated Security Hardening Evaluation Instance with no public ingress but all open Private Ports for network portscans
+module "network_sentinel" {
   source            = "./modules/hcloud_server/"
 
   server_name       = "Network-Sentinel"
-  is_private        = true
   unix_distro       = var.unix_distro
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
@@ -139,11 +139,11 @@ module "fiscalismia_network_sentinel" {
   networks          = [
     {
       network_id    = hcloud_network.network_private_class_b_production.id
-      private_ip    = local.fiscalismia_network_sentinel_private_ipv4_production_net
+      private_ip    = local.network_sentinel_private_ipv4_production_net
     },
     {
       network_id    = hcloud_network.network_private_class_b_demo.id
-      private_ip    = local.fiscalismia_network_sentinel_private_ipv4_demo_net
+      private_ip    = local.network_sentinel_private_ipv4_demo_net
     }
   ]
 
