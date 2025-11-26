@@ -14,8 +14,8 @@ success_count=0
 error_count=0
 
 echo ""
-echo "################# ICMP EVALUATION #############################"
 date
+echo "################# ICMP EVALUATION #############################"
 for instance in "${instance_ips[@]}"; do
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
@@ -34,12 +34,11 @@ echo "SUCCESS Count: $success_count"
 echo "ERROR Count: $error_count"
 
 timeout_seconds=0.05
-success_count=0
-error_count=0
 echo ""
 echo "################# TCP EVALUATION #############################"
-date
 for instance in "${instance_ips[@]}"; do
+  success_count=0
+  error_count=0
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
   if [[ "$variable_name" == *"demo_private_ip"* ]] || \
@@ -53,18 +52,19 @@ for instance in "${instance_ips[@]}"; do
       exit_code=$?
       if (( exit_code == 0 )); then
         success_count=$((++success_count))
-        echo "OK: $variable_name port $port is reachable"
+        echo "OK: $variable_name port $port is reachable [hast listener]"
       elif (( exit_code == 1 )); then
         success_count=$((++success_count))
         echo "OK: $variable_name port $port is reachable [but refuses connection]"
       elif (( exit_code > 1 )); then
         error_count=$((++error_count))
-        echo "ERROR: $variable_name port $port timeout"
+        echo "ERROR: $variable_name port $port timeout [blocked by firewall]"
       fi
     done
-    echo ""
   fi
+  echo ""
+  echo "################# METRICS #####################################"
+  echo $variable_name at address $ip_address...
+  echo "SUCCESS Count: $success_count"
+  echo "ERROR Count: $error_count"
 done
-echo "################# METRICS #####################################"
-echo "SUCCESS Count: $success_count"
-echo "ERROR Count: $error_count"
