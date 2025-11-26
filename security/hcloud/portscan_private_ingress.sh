@@ -29,9 +29,7 @@ for instance in "${instance_ips[@]}"; do
     echo "ERROR: $variable_name ping timed out."
   fi
 done
-echo "################# METRICS #####################################"
-echo "SUCCESS Count: $success_count"
-echo "ERROR Count: $error_count"
+echo "===> RESULTS | SUCCESS Count: $success_count | ERROR Count: $error_count <==="
 
 timeout_seconds=0.05
 echo ""
