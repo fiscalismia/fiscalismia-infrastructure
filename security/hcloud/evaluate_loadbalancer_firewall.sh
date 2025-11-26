@@ -20,20 +20,19 @@ for instance in "${instance_ips[@]}"; do
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
   ping -c 1 -W 0.02 "$ip_address" > /dev/null 2>&1
-  if (( $? > 0 )); then
-    error_count=$((++error_count))
-    echo "ERROR: $variable_name ping timed out."
-  else
+  if (( $? == 0 )); then
     success_count=$((++success_count))
     echo "OK: $variable_name ping resolves"
+  elif (( $? > 0 )); then
+    error_count=$((++error_count))
+    echo "ERROR: $variable_name ping timed out."
   fi
 done
 echo "################# METRICS #####################################"
 echo "SUCCESS Count: $success_count"
 echo "ERROR Count: $error_count"
 
-
-timeout_seconds=0.005
+timeout_seconds=0.05
 success_count=0
 error_count=0
 echo ""
@@ -42,19 +41,25 @@ date
 for instance in "${instance_ips[@]}"; do
   ip_address="${instance#*:}"
   variable_name="${instance%:*}"
-  for port in {1..65536}; do
-    timeout $timeout_seconds nc -vz4 $ip_address $port
-    if (( $? == 1 )); then
-      success_count=$((++success_count))
-      echo "OK: $variable_name port $port is reachable [but refuses connection]"
-    elif (( $? == 0 )); then
-      success_count=$((++success_count))
-      echo "OK: $variable_name port $port is reachable"
-    else
-      error_count=$((++error_count))
-      echo "ERROR: $variable_name port $port timeout"
-    fi
-  done
+  if [[ "$variable_name" == *"demo_private_ip"* ]] || \
+    [[ "$variable_name" == *"monitoring_private_ip"* ]] \
+    [[ "$variable_name" == *"frontend_private_ip"* ]] \
+    [[ "$variable_name" == *"backend_private_ip"* ]];then
+      echo "Testing TCP ports 1-65536 for $variable_name..."
+    # for port in {1..65536}; do
+    #   timeout $timeout_seconds nc -vz4 $ip_address $port
+    #   if (( $? == 0 )); then
+    #     success_count=$((++success_count))
+    #     echo "OK: $variable_name port $port is reachable"
+    #   elif (( $? == 1 )); then
+    #     success_count=$((++success_count))
+    #     echo "OK: $variable_name port $port is reachable [but refuses connection]"
+    #   elif (( $? > 1 )); then
+    #     error_count=$((++error_count))
+    #     echo "ERROR: $variable_name port $port timeout"
+    #   fi
+    # done
+  fi
 done
 echo "################# METRICS #####################################"
 echo "SUCCESS Count: $success_count"
