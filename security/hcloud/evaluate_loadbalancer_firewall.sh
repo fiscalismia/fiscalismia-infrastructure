@@ -61,10 +61,10 @@ for instance in "${instance_ips[@]}"; do
         echo "ERROR: $variable_name port $port timeout [blocked by firewall]"
       fi
     done
-  fi
   echo ""
-  echo "################# METRICS #####################################"
   echo $variable_name at address $ip_address...
   echo "SUCCESS Count: $success_count"
   echo "ERROR Count: $error_count"
+  fi
 done
+echo "###############################################################"
