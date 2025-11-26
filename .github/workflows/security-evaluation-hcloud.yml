@@ -159,7 +159,7 @@ jobs:
         ' $NETWORK_YML | tr '\n' ' ')
 
         echo "Generated Targets: $TARGETS"
-        ssh loadbalancer "echo $TARGETS > ${REMOTE_DIR}targets"
+        ssh loadbalancer "echo $TARGETS > ${REMOTE_DIR}targets && chmod 0666 ${REMOTE_DIR}targets"
 
         ssh loadbalancer "mkdir -p $REMOTE_DIR"
         scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
