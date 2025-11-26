@@ -145,7 +145,7 @@ jobs:
 
     - name: Security Evaluation of Loadbalancer
       env:
-        SCRIPT_NAME: evaluate_loadbalancer_firewall.sh
+        SCRIPT_NAME: evaluate_loadbalancer_egress.sh
         SCRIPT_PATH: security/hcloud/
         NETWORK_YML: terraform/hetzner-cloud/config/network.private.ips.yml
         REMOTE_DIR: /root/security/
