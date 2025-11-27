@@ -134,7 +134,13 @@ data "cloudinit_config" "nat_gateway" {
     content_type = "text/cloud-config"
     content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.nat-gateway.yml",
       {
-          install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+        nftables_lockdown_nat_gateway_b64 = local.nftables_lockdown_nat_gateway_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+        DEMO_SUBNET_ISOLATED_CIDR = local.network_config.networks.demo.subnets.isolated
+        DEMO_SUBNET_EXPOSED_CIDR = local.network_config.networks.demo.subnets.exposed
+        PRODUCTION_SUBNET_ISOLATED_CIDR = local.network_config.networks.production.subnets.isolated
+        PRODUCTION_SUBNET_EXPOSED_CIDR = local.network_config.networks.production.subnets.exposed
+        BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
       }
     )
   }

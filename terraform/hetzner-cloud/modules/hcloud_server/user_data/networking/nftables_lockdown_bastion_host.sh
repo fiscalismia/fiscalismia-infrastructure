@@ -61,6 +61,9 @@ table ip $TABLE_NAME {
 
         # Allow SSH Ingress from All Locations
         tcp dport 22 ct state new accept
+
+        # Allow ICMP Ingress from private networks
+        ip saddr \$PRIVATE_SUBNETS icmp type echo-request accept
     }
 
     # Allow outbound http, https, dns, icmp
@@ -74,7 +77,7 @@ table ip $TABLE_NAME {
         # Allow established and related connections
         ct state established,related accept
 
-        # Allow SSH Egress from All Locations
+        # Allow SSH Egress to all Private Network Endpoints
         ip daddr \$PRIVATE_SUBNETS tcp dport 22 ct state new accept
 
         # Allow DNS queries to Hetzner DNS Servers and the Fallback DNS Server

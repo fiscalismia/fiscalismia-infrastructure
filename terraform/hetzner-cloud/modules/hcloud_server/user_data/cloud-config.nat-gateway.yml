@@ -20,6 +20,12 @@ write_files:
     content: ${install_network_hardening_tools_b64}
     permissions: "0755"
 
+  ### Adds nftables installation and configuration to lockdown private IPv4 access ###
+  - path: /root/scripts/nftables_lockdown_nat_gateway.sh
+    encoding: b64
+    content: ${nftables_lockdown_nat_gateway_b64}
+    permissions: "0755"
+
   # NetworkManager provides a way to run custom user scripts.
   # It runs scripts in /etc/NetworkManager/dispatcher.d/ in alphabetical order.
   # Each script must be an executable file owned by root and must have write permission only for the file owner.
@@ -61,6 +67,15 @@ runcmd:
   - cat /etc/NetworkManager/dispatcher.d/ifup-local >> $logfile
   # install network hardening tools for security evaluation of firewall rules
   - /root/scripts/install-network-hardening-tools.sh $logfile
+  # Lockdown private network interface access to minimal required config
+  - |
+    /root/scripts/nftables_lockdown_nat_gateway.sh \
+      ${DEMO_SUBNET_ISOLATED_CIDR} \
+      ${DEMO_SUBNET_EXPOSED_CIDR} \
+      ${PRODUCTION_SUBNET_ISOLATED_CIDR} \
+      ${PRODUCTION_SUBNET_EXPOSED_CIDR} \
+      ${BASTION_HOST_PRIVATE_IP} \
+      >> $logfile 2>&1
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile
   - date >> $logfile

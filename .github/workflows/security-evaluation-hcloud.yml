@@ -184,6 +184,25 @@ jobs:
         scp loadbalancer:$REMOTE_LOG ./$LOG_NAME
         cat ./$LOG_NAME
 
+    - name: Security Evaluation of Bastion-Host
+      env:
+        SCRIPT_NAME: evaluate_bastion_host_egress.sh
+        SCRIPT_PATH: security/hcloud/
+        REMOTE_DIR: /root/security/
+        REMOTE_LOG: /root/security_evaluation.log
+        LOG_NAME: security_evaluation.log
+      run: |
+
+        ssh bastion-host "mkdir -p $REMOTE_DIR"
+        ssh bastion-host "echo $TARGETS > ${REMOTE_DIR}targets"
+
+        scp ${SCRIPT_PATH}${SCRIPT_NAME} bastion-host:$REMOTE_DIR
+        ssh bastion-host "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
+        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1"
+        ssh bastion-host "$REMOTE_COMMAND"
+        scp bastion-host:$REMOTE_LOG ./$LOG_NAME
+        cat ./$LOG_NAME
+
     - name: Private Ingress Security Evaluation via Network Sentinel
       env:
         SCRIPT_NAME: portscan_private_ingress.sh
@@ -191,6 +210,7 @@ jobs:
         REMOTE_DIR: /root/security/
         REMOTE_LOG: /root/portscan_private_ingress.log
         LOG_NAME: portscan_private_ingress.log
+        MAX_PORT: 1024 # range between 1-65536
       run: |
 
         ssh network-sentinel "mkdir -p $REMOTE_DIR"
@@ -198,9 +218,9 @@ jobs:
 
         scp ${SCRIPT_PATH}${SCRIPT_NAME} network-sentinel:$REMOTE_DIR
         ssh network-sentinel "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1 &"
+        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' $MAX_PORT > $REMOTE_LOG 2>&1 &"
         ssh network-sentinel "$REMOTE_COMMAND"
 
-        echo "Portscan takes about an hour. Find the log at network-sentinel:$REMOTE_COMMAND"
+        echo "Full Portscan takes about an hour. Find the log at network-sentinel:$REMOTE_LOG"
         # scp network-sentinel:$REMOTE_LOG ./$LOG_NAME
         # cat ./$LOG_NAME

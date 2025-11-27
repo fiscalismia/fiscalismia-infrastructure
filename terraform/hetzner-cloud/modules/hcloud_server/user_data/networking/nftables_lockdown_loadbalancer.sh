@@ -3,14 +3,14 @@
 ################################ INFO ########################################################################################
 # This file is intended for the loadbalancer, which does not have its private ipv4 traffic restricted in any way by hetzner
 # We manually install and configure nftables, the best practice tools for firewall rules used as backend for other frameworks
-# PARAM $1 is the bastion-host private ipv4 for ssh ingress allowance
+# PARAM $1 is the bastion-host private ipv4 for ssh ingress allowance via production network
 # e.g. ./scripts/nftables_lockdown_loadbalancer.sh 172.24.1.2
 ##############################################################################################################################
 
 # wait for the private network interface to initialize.
 sleep 60
 
-export BASTION_HOST_PRIVATE_IP="$1"
+export BASTION_HOST_PRIVATE_IP="$1" # use production network private ip
 export TABLE_NAME='lockdown_loadbalancer_private_net'
 export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
@@ -52,9 +52,11 @@ table ip $TABLE_NAME {
         # Allow SSH Ingress from Bastion Host
         ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
 
-        # Allow HTTPS & ICMP Ingress from all addresses
+        # Allow HTTPS Ingress from all addresses
         # TODO remove port 80 in production
         tcp dport {80,443} ct state new accept
+
+        # Allow ICMP Ingress from all addresses
         icmp type echo-request accept
     }
 

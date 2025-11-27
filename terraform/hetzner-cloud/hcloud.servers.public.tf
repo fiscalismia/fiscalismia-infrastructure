@@ -14,7 +14,6 @@ module "fiscalismia_bastion_host" {
   firewall_ids        = [
     hcloud_firewall.egress_DENY_ALL_public.id,
     hcloud_firewall.public_ssh_ingress.id,
-    hcloud_firewall.public_icmp_ping_ingress.id,
   ]
   ssh_key_name        = hcloud_ssh_key.infrastructure_orchestration.name
   cloud_config        = data.cloudinit_config.bastion_host.rendered

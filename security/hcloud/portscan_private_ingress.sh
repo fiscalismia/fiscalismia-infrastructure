@@ -3,8 +3,9 @@
 # example list extracted from terraform/hetzner-cloud/config/network.private.ips.yml with yq
 # virtual_network_gateway_demo_net:172.20.0.1 virtual_network_gateway_production_net:172.24.0.1 fiscalismia_demo_private_ipv4:172.20.0.2 fiscalismia_monitoring_private_ipv4:172.24.0.2 fiscalismia_frontend_private_ipv4:172.24.0.3 fiscalismia_backend_private_ipv4:172.24.0.4 fiscalismia_bastion_host_private_ipv4_demo_net:172.20.1.2 fiscalismia_bastion_host_private_ipv4_production_net:172.24.1.2 fiscalismia_loadbalancer_private_ipv4_demo_net:172.20.1.3 fiscalismia_loadbalancer_private_ipv4_production_net:172.24.1.3 fiscalismia_nat_gateway_private_ipv4_demo_net:172.20.1.4 fiscalismia_nat_gateway_private_ipv4_production_net:172.24.1.4
 
-if [ -z "$1" ]; then
-  echo "ERROR: Instance list parameter not provided." >&2
+if [[ -z "$1" ]] || [[ -z "$2" ]]; then
+  echo "Error: Missing required parameters." >&2
+  echo "Usage: $0 <TARGETS> <MAX_PORT>" >&2
   exit 1
 fi
 
@@ -19,7 +20,7 @@ ncat_timeout=0.25
 sleep_timer=0.0005
 nth_port=100
 min_port=1
-max_port=65536
+max_port=$2
 
 printf "\n"
 echo "Evaluating Network-Sentinel Connectivity to Private Network Targets"
