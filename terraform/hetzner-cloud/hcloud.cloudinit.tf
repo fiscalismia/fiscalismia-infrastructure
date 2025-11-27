@@ -48,11 +48,16 @@ data "cloudinit_config" "bastion_host" {
     content      = templatefile(
       "${path.module}/modules/hcloud_server/user_data/cloud-config.bastion-host.yml",
       {
+        nftables_lockdown_bastion_host_b64 = local.nftables_lockdown_bastion_host_b64
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         PRIVATE_IP_TO_NAT = local.fiscalismia_bastion_host_private_ipv4_production_net
+        DEMO_SUBNET_ISOLATED_CIDR = local.network_config.networks.demo.subnets.isolated
+        DEMO_SUBNET_EXPOSED_CIDR = local.network_config.networks.demo.subnets.exposed
+        PRODUCTION_SUBNET_ISOLATED_CIDR = local.network_config.networks.production.subnets.isolated
+        PRODUCTION_SUBNET_EXPOSED_CIDR = local.network_config.networks.production.subnets.exposed
       }
-      )
+    )
   }
 }
 
@@ -73,7 +78,7 @@ data "cloudinit_config" "loadbalancer" {
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
         PRIVATE_IP_TO_NAT = local.fiscalismia_loadbalancer_private_ipv4_production_net
       }
-      )
+    )
   }
 }
 
@@ -95,7 +100,7 @@ data "cloudinit_config" "demo_instance" {
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_demo_net
         NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_demo_net
       }
-      )
+    )
   }
 }
 
@@ -116,7 +121,7 @@ data "cloudinit_config" "production_instances" {
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
         NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_production_net
       }
-      )
+    )
   }
 }
 
@@ -128,9 +133,10 @@ data "cloudinit_config" "nat_gateway" {
     filename     = "cloud-config.nat-gateway.yml"
     content_type = "text/cloud-config"
     content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.nat-gateway.yml",
-    {
-        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
-    })
+      {
+          install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+      }
+    )
   }
 }
 
@@ -146,6 +152,6 @@ data "cloudinit_config" "network_sentinel" {
       {
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
       }
-      )
+    )
   }
 }

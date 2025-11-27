@@ -10,6 +10,9 @@ locals {
   nftables_lockdown_loadbalancer_b64 = base64encode(
     file("${path.module}/modules/hcloud_server/user_data/networking/nftables_lockdown_loadbalancer.sh")
   )
+  nftables_lockdown_bastion_host_b64 = base64encode(
+    file("${path.module}/modules/hcloud_server/user_data/networking/nftables_lockdown_bastion_host.sh")
+  )
 
   ### TOOLS ###
   install_podman_docker-compose_b64 = base64encode(

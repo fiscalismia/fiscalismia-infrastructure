@@ -19,6 +19,12 @@ write_files:
     content: ${install_network_hardening_tools_b64}
     permissions: "0755"
 
+  ### Adds nftables installation and configuration to lockdown private IPv4 access ###
+  - path: /root/scripts/nftables_lockdown_bastion_host.sh
+    encoding: b64
+    content: ${nftables_lockdown_bastion_host_b64}
+    permissions: "0755"
+
 runcmd:
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
@@ -42,6 +48,14 @@ runcmd:
     systemctl is-active fail2ban >> $logfile 2>&1
   # install network hardening tools for security evaluation of firewall rules
   - /root/scripts/install-network-hardening-tools.sh $logfile
+  # Lockdown private network interface access to minimal required config
+  - |
+    /root/scripts/nftables_lockdown_bastion_host.sh \
+      ${DEMO_SUBNET_ISOLATED_CIDR} \
+      ${DEMO_SUBNET_EXPOSED_CIDR} \
+      ${PRODUCTION_SUBNET_ISOLATED_CIDR} \
+      ${PRODUCTION_SUBNET_EXPOSED_CIDR} \
+      >> $logfile 2>&1
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile
   - date >> $logfile

@@ -1,22 +1,28 @@
 #!/usr/bin/env bash
 
 ################################ INFO ########################################################################################
-# This file is intended for the loadbalancer, which does not have its private ipv4 traffic restricted in any way by hetzner
+# This file is intended for the bastion-host, which does not have its private ipv4 traffic restricted in any way by hetzner
 # We manually install and configure nftables, the best practice tools for firewall rules used as backend for other frameworks
-# PARAM $1 is the bastion-host private ipv4 for ssh ingress allowance
-# e.g. ./scripts/nftables_lockdown_loadbalancer.sh 172.24.1.2
+# PARAM $1 is the CIDR Range of the Demo subnet for private instances
+# PARAM $2 is the CIDR Range of the Demo subnet to give public instances their private IP
+# PARAM $3 is the CIDR Range of the Production subnet for private instances
+# PARAM $4 is the CIDR Range of the Production subnet to give public instances their private IP
+# e.g. ./scripts/nftables_lockdown_bastion_host.sh 172.20.0.0/30 172.20.1.0/29 172.24.0.0/28 172.24.1.0/29
 ##############################################################################################################################
 
 # wait for the private network interface to initialize.
 sleep 60
 
-export BASTION_HOST_PRIVATE_IP="$1"
-export TABLE_NAME='lockdown_loadbalancer_private_net'
+export DEMO_SUBNET_ISOLATED_CIDR="$1"
+export DEMO_SUBNET_EXPOSED_CIDR="$2"
+export PRODUCTION_SUBNET_ISOLATED_CIDR="$3"
+export PRODUCTION_SUBNET_EXPOSED_CIDR="$4"
+export TABLE_NAME='lockdown_bastion_host_private_net'
 export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
-if [[ -z "$1" ]]; then
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     echo "Error: Missing required parameters."
-    echo "Usage: $0 <BASTION_HOST_PRIVATE_IP>"
+    echo "Usage: $0 <DEMO_SUBNET_ISOLATED_CIDR> <DEMO_SUBNET_EXPOSED_CIDR> <PRODUCTION_SUBNET_ISOLATED_CIDR> <PRODUCTION_SUBNET_EXPOSED_CIDR>"
     exit 1
 fi
 
@@ -37,6 +43,10 @@ delete table ip $TABLE_NAME
 # Create new IPv4 table
 table ip $TABLE_NAME {
 
+    define PRIVATE_SUBNETS = {
+        $DEMO_SUBNET_ISOLATED_CIDR, $DEMO_SUBNET_EXPOSED_CIDR, $PRODUCTION_SUBNET_ISOLATED_CIDR, $PRODUCTION_SUBNET_EXPOSED_CIDR
+    }
+
     # Filter ingress traffic
     chain input {
 
@@ -49,13 +59,8 @@ table ip $TABLE_NAME {
         # Allow established and related connections
         ct state established,related accept
 
-        # Allow SSH Ingress from Bastion Host
-        ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
-
-        # Allow HTTPS & ICMP Ingress from all addresses
-        # TODO remove port 80 in production
-        tcp dport {80,443} ct state new accept
-        icmp type echo-request accept
+        # Allow SSH Ingress from All Locations
+        tcp dport 22 ct state new accept
     }
 
     # Allow outbound http, https, dns, icmp
@@ -69,13 +74,16 @@ table ip $TABLE_NAME {
         # Allow established and related connections
         ct state established,related accept
 
+        # Allow SSH Egress from All Locations
+        ip daddr \$PRIVATE_SUBNETS tcp dport 22 ct state new accept
+
         # Allow DNS queries to Hetzner DNS Servers and the Fallback DNS Server
         ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} udp dport 53 ct state new accept
 
-        # Allow ICMP to internet and private networks
+        # Allow ICMP to internet
         icmp type echo-request accept
 
-        # Allow HTTP, HTTPS to internet sand private networks
+        # Allow HTTP, HTTPS to internet
         tcp dport {80,443} ct state new accept
     }
 
