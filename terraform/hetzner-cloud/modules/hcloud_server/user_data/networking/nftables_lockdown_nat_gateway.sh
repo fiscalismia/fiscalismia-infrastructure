@@ -22,16 +22,18 @@ export BASTION_HOST_PRIVATE_IP="$5" # use production network private ip
 export TABLE_NAME='lockdown_nat_gateway_private_net'
 export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
-if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5" ]];; then
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5" ]]; then
     echo "Error: Missing required parameters."
     echo "Usage: $0 <DEMO_SUBNET_ISOLATED_CIDR> <DEMO_SUBNET_EXPOSED_CIDR> <PRODUCTION_SUBNET_ISOLATED_CIDR> <PRODUCTION_SUBNET_EXPOSED_CIDR> <BASTION_HOST_PRIVATE_IP>"
     exit 1
 fi
 
-### INSTALLATION ###
-sudo dnf install --quiet -y nftables
-printf "\n# network filter tables installed binary path:\n"
-which nft
+nft_location=$(which nft)
+if ! [[ -z "$nft_location" ]]; then
+    echo "nft install path: $nft_location" && echo "$(nft --version)"
+else
+    echo "Error: nftables not found." && exit 1
+fi
 
 ### CONFIGURATION ###
 
@@ -95,10 +97,32 @@ table ip $TABLE_NAME {
         # Allow HTTP, HTTPS to internet and private networks
         tcp dport {80,443} ct state new accept
     }
+}
 
-    # Drop all packages to be forwarded (we're not a gateway!)
-    chain forward {
-        type filter hook forward priority 0; policy drop;
+# perform Network Address Translation for public internet access via private inbound routes
+table ip nat {
+    chain POSTROUTING {
+
+        # Add default source NAT policy
+        type nat hook postrouting priority srcnat; policy accept;
+
+		ip saddr 172.20.0.0/30 ct state new counter packets 0 bytes 0 log prefix "NAT-GW-NEW DEMO_ISOLATED: "
+		ip saddr 172.20.0.0/30 counter packets 0 bytes 0 log prefix "NAT-GW DEMO_ISOLATED: "
+
+		ip saddr 172.24.0.0/28 ct state new counter packets 0 bytes 0 log prefix "NAT-GW-NEW PROD_ISOLATED: "
+		ip saddr 172.24.0.0/28 counter packets 0 bytes 0 log prefix "NAT-GW PROD_ISOLATED: "
+
+		ip saddr 172.24.1.0/29 ct state new counter packets 0 bytes 0 log prefix "NAT-GW-NEW PROD_EXPOSED : "
+		ip saddr 172.24.1.0/29 counter packets 0 bytes 0 log prefix "NAT-GW PROD_EXPOSED : "
+
+        # subnet_private_class_b_demo_isolated
+		oifname "eth0" ip saddr 172.20.0.0/30 counter packets 0 bytes 0 masquerade
+
+        # subnet-translate_private_class_b_production_isolated
+		oifname "eth0" ip saddr 172.24.0.0/28 counter packets 0 bytes 0 masquerade
+
+        # subnet-translate_private_class_b_production_exposed
+		oifname "eth0" ip saddr 172.24.1.0/29 counter packets 0 bytes 0 masquerade
     }
 }
 EOF
@@ -119,3 +143,5 @@ sudo systemctl status nftables
 
 ### DEBUG ###
 # ls -l /etc/nftables/ # example nft configs not activated
+# nft list tables
+# to check logs, run "journalctl -kf"

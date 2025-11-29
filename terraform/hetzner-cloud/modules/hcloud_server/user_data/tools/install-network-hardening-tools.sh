@@ -7,7 +7,7 @@
 ###################################################################################################################################
 
 export LOG_FILE="$1"
-export TOOL_SUITE='nmap nmap-ncat dig net-tools'
+export TOOL_SUITE='nmap nmap-ncat dig net-tools traceroute'
 
 if [[ -z "$1" ]]; then
     echo "Error: Missing required parameters."
@@ -25,3 +25,5 @@ printf "\n# Installed [dig] dns resolver version:\n" >> $LOG_FILE
 dig -v >> $LOG_FILE 2>&1
 printf "\n# Installed [netstat] port analyzer version:\n" >> $LOG_FILE
 netstat --version >> $LOG_FILE 2>&1
+printf "\n# Installed [traceroute] network analyzer version:\n" >> $LOG_FILE
+traceroute --version >> $LOG_FILE 2>&1

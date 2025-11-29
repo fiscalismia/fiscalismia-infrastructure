@@ -9,8 +9,7 @@ users:
 package_update: true
 package_upgrade: true
 packages:
-  - iptables
-  - iptables-services
+  - nftables
 
 write_files:
 
@@ -31,27 +30,11 @@ write_files:
   # Each script must be an executable file owned by root and must have write permission only for the file owner.
   - path: /etc/NetworkManager/dispatcher.d/ifup-local
     content: |
-      #!/bin/sh
+      #!/usr/bin/env bash
 
       # enable ip forwarding
       echo 1 > /proc/sys/net/ipv4/ip_forward
 
-      # subnet_private_class_b_demo_isolated
-      iptables -t nat -A POSTROUTING -s '172.20.0.0/30' -o eth0 -j MASQUERADE
-      iptables -t nat -I POSTROUTING -s '172.20.0.0/30' -j LOG --log-prefix "NAT-GW DEMO_ISOLATED: "
-      iptables -t nat -I POSTROUTING -s '172.20.0.0/30' -m conntrack --ctstate NEW -j LOG --log-prefix "NAT-GW-NEW DEMO_ISOLATED: "
-
-      # subnet_private_class_b_production_isolated
-      iptables -t nat -A POSTROUTING -s '172.24.0.0/28' -o eth0 -j MASQUERADE
-      iptables -t nat -I POSTROUTING -s '172.24.0.0/28' -j LOG --log-prefix "NAT-GW PROD_ISOLATED: "
-      iptables -t nat -I POSTROUTING -s '172.24.0.0/28' -m conntrack --ctstate NEW -j LOG --log-prefix "NAT-GW-NEW PROD_ISOLATED: "
-
-      # subnet_private_class_b_production_exposed
-      iptables -t nat -A POSTROUTING -s '172.24.1.0/29' -o eth0 -j MASQUERADE
-      iptables -t nat -I POSTROUTING -s '172.24.1.0/29' -j LOG --log-prefix "NAT-GW PROD_EXPOSED : "
-      iptables -t nat -I POSTROUTING -s '172.24.1.0/29' -m conntrack --ctstate NEW -j LOG --log-prefix "NAT-GW-NEW PROD_EXPOSED : "
-
-      # to check logs, run "journalctl -kf"
     permissions: '0755'
 
 runcmd:
@@ -59,23 +42,20 @@ runcmd:
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.nat-gateway.yml!" > $logfile
   - date >> $logfile
-  # Tests iptables installation
-  - printf "\n# iptables location is:\n" >> $logfile
-  - which iptables >> $logfile 2>&1
   # list NetworkManager Config
   - printf "\n# NetworkManager Dispatcher Config is:\n" >> $logfile
   - cat /etc/NetworkManager/dispatcher.d/ifup-local >> $logfile
   # install network hardening tools for security evaluation of firewall rules
   - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
-  # - |
-  #   /root/scripts/nftables_lockdown_nat_gateway.sh \
-  #     ${DEMO_SUBNET_ISOLATED_CIDR} \
-  #     ${DEMO_SUBNET_EXPOSED_CIDR} \
-  #     ${PRODUCTION_SUBNET_ISOLATED_CIDR} \
-  #     ${PRODUCTION_SUBNET_EXPOSED_CIDR} \
-  #     ${BASTION_HOST_PRIVATE_IP} \
-  #     >> $logfile 2>&1
+  - |
+    /root/scripts/nftables_lockdown_nat_gateway.sh \
+      ${DEMO_SUBNET_ISOLATED_CIDR} \
+      ${DEMO_SUBNET_EXPOSED_CIDR} \
+      ${PRODUCTION_SUBNET_ISOLATED_CIDR} \
+      ${PRODUCTION_SUBNET_EXPOSED_CIDR} \
+      ${BASTION_HOST_PRIVATE_IP} \
+      >> $logfile 2>&1
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile
   - date >> $logfile
