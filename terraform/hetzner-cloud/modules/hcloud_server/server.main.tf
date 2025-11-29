@@ -2,7 +2,7 @@ resource "hcloud_server" "unix_vps" {
   labels                     = var.labels
   count                      = var.instance_count
   name                       = "${var.server_name}" # -${count.index +1}
-  image                      = data.hcloud_image.unix_img.id
+  image                      = var.image_id
   server_type                = var.server_type
   location                   = var.location
   ssh_keys                   = [var.ssh_key_name]
