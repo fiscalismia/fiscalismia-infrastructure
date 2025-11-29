@@ -34,3 +34,11 @@ locals {
     ENV_VAR2 = "second value"
   }
 }
+
+data "hcloud_image" "fedora_image" {
+  name               = "fedora-42"
+  with_architecture  = "x86"
+  most_recent        = true
+  with_status        = ["available"]
+  include_deprecated = false
+}

@@ -22,12 +22,6 @@ variable "protect_resource" {
   default       = false
 }
 
-variable "image_architecture" {
-  description   = "x86 or arm"
-  type          = string
-  default       = "x86"
-}
-
 variable "is_private" {
   description    = "Whether or not the server exposes a public IPV4"
   type           = bool
@@ -48,8 +42,8 @@ variable "server_name" {
   type          = string
 }
 
-variable "unix_distro" {
-  description   = "The Unix Distribution Base Image Name to Fetch to latest Image ID from"
+variable "image_id" {
+  description   = "ID of the unix image from dynamic data block"
   type          = string
 }
 

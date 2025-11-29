@@ -8,7 +8,7 @@ module "fiscalismia_demo" {
 
   server_name       = "Fiscalismia-Demo"
   is_private        = true
-  unix_distro       = var.unix_distro
+  image_id          = data.hcloud_image.fedora_image.id
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
@@ -36,7 +36,7 @@ module "fiscalismia_monitoring" {
 
   server_name       = "Fiscalismia-Monitoring"
   is_private        = true
-  unix_distro       = var.unix_distro
+  image_id          = data.hcloud_image.fedora_image.id
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
@@ -63,7 +63,7 @@ module "fiscalismia_backend" {
 
   server_name       = "Fiscalismia-Backend"
   is_private        = true
-  unix_distro       = var.unix_distro
+  image_id          = data.hcloud_image.fedora_image.id
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
@@ -90,7 +90,7 @@ module "fiscalismia_frontend" {
 
   server_name       = "Fiscalismia-Frontend"
   is_private        = true
-  unix_distro       = var.unix_distro
+  image_id          = data.hcloud_image.fedora_image.id
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
