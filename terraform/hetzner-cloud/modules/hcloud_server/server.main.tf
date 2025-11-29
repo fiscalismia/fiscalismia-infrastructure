@@ -15,6 +15,12 @@ resource "hcloud_server" "unix_vps" {
   keep_disk                  = true
   user_data                  = var.cloud_config
 
+  # multiple new images per day. Annoying.
+  lifecycle {
+    ignore_changes = [
+        image
+    ]
+  }
   # public network with static ip
   dynamic "public_net" {
     for_each = var.static_public_ip_id != null ? [1] : []
