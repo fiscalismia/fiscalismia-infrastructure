@@ -74,14 +74,14 @@ jobs:
       run : |
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${S3_KEY} .
 
-        bastion_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_bastion_host_ipv4.value )
-        demo_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_demo_private_ipv4.value )
-        lb_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_loadbalancer_private_ipv4.value )
-        nat_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_nat_gateway_private_ipv4.value )
-        monitor_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_monitoring_private_ipv4.value )
-        front_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_frontend_private_ipv4.value )
-        back_ip=$(cat state.tfstate | jq .outputs -r .fiscalismia_backend_private_ipv4.value )
-        sentinel_ip=$(cat state.tfstate | jq .outputs -r .network_sentinel_private_ipv4.value )
+        bastion_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_bastion_host_ipv4.value )
+        demo_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_demo_private_ipv4.value )
+        lb_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_loadbalancer_private_ipv4.value )
+        nat_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_nat_gateway_private_ipv4.value )
+        monitor_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_monitoring_private_ipv4.value )
+        front_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_frontend_private_ipv4.value )
+        back_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_backend_private_ipv4.value )
+        sentinel_ip=$(cat state.tfstate | jq -r .outputs.network_sentinel_private_ipv4.value )
 
         echo "BASTION_HOST_PUBLIC_IP=$bastion_ip" >> $GITHUB_ENV
         echo "DEMO_INSTANCE_PRIVATE_IP=$demo_ip" >> $GITHUB_ENV
