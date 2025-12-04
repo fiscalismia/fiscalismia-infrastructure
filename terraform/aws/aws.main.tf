@@ -8,6 +8,12 @@ module "route_53_dns" {
   loadbalancer_instance_ipv4            = local.hcloud_fiscalismia_loadbalancer_ipv4
 }
 
+# Gives Hcloud Servers AWS Access via User Access Keys for e.g. DNS TXT Record verification for TLS Cert Renewal
+module "hcloud_iam_access" {
+  source                                = "./modules/hcloud_iam_access"
+  domain_name                           = var.domain_name
+}
+
 # Defines downscoped roles for github actions pipelines running with short-lived STS credentials
 module "oidc_sts_pipeline_access" {
   source                                = "./modules/openid_connect"

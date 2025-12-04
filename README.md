@@ -56,6 +56,7 @@ terraform apply \
   -target=module.s3_image_storage \
   -target=module.s3_raw_data_etl_storage \
   -target=module.s3_infrastructure_storage \
+  -target=module.hcloud_iam_access \
   -auto-approve
 ```
 
