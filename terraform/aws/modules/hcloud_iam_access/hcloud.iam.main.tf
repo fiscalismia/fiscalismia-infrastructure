@@ -42,3 +42,11 @@ resource "aws_iam_access_key" "hcloud_certbot_dns_tls_cert_renewal" {
     prevent_destroy = true
   }
 }
+
+output "secret_key" {
+  value = aws_iam_access_key.hcloud_certbot_dns_tls_cert_renewal.secret
+}
+
+output "access_key_id" {
+  value = aws_iam_access_key.hcloud_certbot_dns_tls_cert_renewal.id
+}

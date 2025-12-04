@@ -1,4 +1,4 @@
-name: Security-Evaluation HCLOUD
+name: Deploy HCLOUD IAM Access
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - pipeline_testing
 
 jobs:
-  security-evaluate-hcloud:
+  deploy-hcloud-iam-access:
     environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
     timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v5.1.0
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
-        role-session-name: HcloudSecurityEvaluation_STSSession
+        role-session-name: DeployHcloudIAMAccess_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Query SSH private keys for Hcloud servers from AWS Secrets Manager
@@ -153,74 +153,34 @@ jobs:
 
         chmod 600 ~/.ssh/config
 
-    - name: Generating Private IPV4 Targets for Port Scanning
+    - name: Copy AWS Credentials to Target Instances
       env:
-        NETWORK_CONFIG: terraform/hetzner-cloud/config/network.private.ips.yml
+        CREDENTIALS: /tmp/.aws/credentials
+        REMOTE_DIR: /root/.aws
+        S3_BUCKET: hangrybear-tf-backend-state-bucket
+        S3_PREFIX: fiscalismia-infrastructure/aws
+        S3_KEY: state.tfstate
       run: |
-        echo "Parsing Network addresses..."
-        PRIVATE_NETWORK_TARGETS=$(yq '
-          .ips.gateways | to_entries | .[] | "virtual_network_gateway_" + .key + "_net:" + .value,
-          .ips.private_instances | to_entries | .[] | .key + "_private_ipv4:" + .value,
-          (.ips.exposed_instances | to_entries | .[] | .key as $parent | .value | to_entries | .[] | $parent + "_private_ipv4_" + .key + "_net:" + .value)
-        ' $NETWORK_CONFIG | tr '\n' ' ')
-        echo "TARGETS=$PRIVATE_NETWORK_TARGETS" >> $GITHUB_ENV
+        aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${S3_KEY} .
 
-    - name: Security Evaluation of Loadbalancer
-      env:
-        SCRIPT_NAME: evaluate_loadbalancer_egress.sh
-        SCRIPT_PATH: security/hcloud/
-        REMOTE_DIR: /root/security/
-        REMOTE_LOG: /root/security_evaluation.log
-        LOG_NAME: security_evaluation.log
-      run: |
+        cat << EOF > ${CREDENTIALS}
+        [default]
+        aws_access_key_id = $(cat state.tfstate | jq -r .outputs.hcloud_dns_renewal_access_key.value)
+        aws_secret_access_key = $(cat state.tfstate | jq -r .outputs.hcloud_dns_renewal_secret_key.value)
+        region = eu-central-1
+        EOF
 
-        ssh loadbalancer "mkdir -p $REMOTE_DIR"
-        ssh loadbalancer "echo $TARGETS > ${REMOTE_DIR}targets"
+        chmod 600 ${CREDENTIALS}
 
-        scp ${SCRIPT_PATH}${SCRIPT_NAME} loadbalancer:$REMOTE_DIR
-        ssh loadbalancer "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1"
-        ssh loadbalancer "$REMOTE_COMMAND"
-        scp loadbalancer:$REMOTE_LOG ./$LOG_NAME
-        cat ./$LOG_NAME
+        ssh demo "mkdir -p $REMOTE_DIR"
+        ssh frontend "mkdir -p $REMOTE_DIR"
+        ssh backend "mkdir -p $REMOTE_DIR"
+        ssh monitoring "mkdir -p $REMOTE_DIR"
 
-    - name: Security Evaluation of Bastion-Host
-      env:
-        SCRIPT_NAME: evaluate_bastion_host_egress.sh
-        SCRIPT_PATH: security/hcloud/
-        REMOTE_DIR: /root/security/
-        REMOTE_LOG: /root/security_evaluation.log
-        LOG_NAME: security_evaluation.log
-      run: |
+        scp ${CREDENTIALS} demo:${REMOTE_DIR}/credentials
+        scp ${CREDENTIALS} frontend:${REMOTE_DIR}/credentials
+        scp ${CREDENTIALS} backend:${REMOTE_DIR}/credentials
+        scp ${CREDENTIALS} monitoring:${REMOTE_DIR}/credentials
 
-        ssh bastion-host "mkdir -p $REMOTE_DIR"
-        ssh bastion-host "echo $TARGETS > ${REMOTE_DIR}targets"
-
-        scp ${SCRIPT_PATH}${SCRIPT_NAME} bastion-host:$REMOTE_DIR
-        ssh bastion-host "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' > $REMOTE_LOG 2>&1"
-        ssh bastion-host "$REMOTE_COMMAND"
-        scp bastion-host:$REMOTE_LOG ./$LOG_NAME
-        cat ./$LOG_NAME
-
-    - name: Private Ingress Security Evaluation via Network Sentinel
-      env:
-        SCRIPT_NAME: portscan_private_ingress.sh
-        SCRIPT_PATH: security/hcloud/
-        REMOTE_DIR: /root/security/
-        REMOTE_LOG: /root/portscan_private_ingress.log
-        LOG_NAME: portscan_private_ingress.log
-        MAX_PORT: 1024 # range between 1-65536
-      run: |
-
-        ssh network-sentinel "mkdir -p $REMOTE_DIR"
-        ssh network-sentinel "echo $TARGETS > ${REMOTE_DIR}targets"
-
-        scp ${SCRIPT_PATH}${SCRIPT_NAME} network-sentinel:$REMOTE_DIR
-        ssh network-sentinel "chmod u+x ${REMOTE_DIR}${SCRIPT_NAME}"
-        REMOTE_COMMAND="nohup ${REMOTE_DIR}${SCRIPT_NAME} '$TARGETS' $MAX_PORT > $REMOTE_LOG 2>&1 &"
-        ssh network-sentinel "$REMOTE_COMMAND"
-
-        echo "Full Portscan takes about an hour. Find the log at network-sentinel:$REMOTE_LOG"
-        # scp network-sentinel:$REMOTE_LOG ./$LOG_NAME
-        # cat ./$LOG_NAME
+        rm -f ${S3_KEY}
+        rm -f ${CREDENTIALS}

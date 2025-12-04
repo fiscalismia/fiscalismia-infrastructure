@@ -45,6 +45,16 @@ bash modules/application_lambda/scripts/curl-api-img-upload.sh ${module.api_gate
 bash modules/application_lambda/scripts/curl-api-sheet-url.sh [tfvars.secret_api_key] ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} [tfvars.test_sheet_url]
 EOT
 }
+output "hcloud_dns_renewal_access_key" {
+  description  = "Access Key ID for HCLOUD Instances for DNS TXT Record Verification"
+  value        =  module.hcloud_iam_access.access_key_id
+  sensitive    = true
+}
+output "hcloud_dns_renewal_secret_key" {
+  description  = "Secret Access Key for HCLOUD Instances for DNS TXT Record Verification"
+  value        =  module.hcloud_iam_access.secret_key
+  sensitive    = true
+}
 
 output "hcloud_serverlist" {
   value = join("\n", [
