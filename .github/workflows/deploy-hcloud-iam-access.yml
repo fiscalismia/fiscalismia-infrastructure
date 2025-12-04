@@ -163,6 +163,7 @@ jobs:
       run: |
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${S3_KEY} .
 
+        mkdir -p /tmp/.aws/
         cat << EOF > ${CREDENTIALS}
         [default]
         aws_access_key_id = $(cat state.tfstate | jq -r .outputs.hcloud_dns_renewal_access_key.value)

@@ -53,18 +53,29 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_s3" {
         Resource = [
           "arn:aws:s3:::${var.terraform_state_bucket}",
           "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/hcloud/*",
+          "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/aws/*",
         ]
       },
       {
-        Sid    = "S3ReadWriteTerraformBackendState"
+        Sid    = "S3ReadTerraformBackendState"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/aws/*",
+          "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/hcloud/*",
+        ]
+      },
+      {
+        Sid    = "S3WriteTerraformBackendState"
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:DeleteObject",
         ]
         Resource = [
-          "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/hcloud/*"
+          "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/hcloud/*",
         ]
       },
     ]
