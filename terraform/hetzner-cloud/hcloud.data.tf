@@ -24,6 +24,9 @@ locals {
   install_network_hardening_tools_b64 = base64encode(
     file("${path.module}/modules/hcloud_server/user_data/tools/install-network-hardening-tools.sh")
   )
+  fetch_and_validate_tls_certificates_b64 = base64encode(
+    file("${path.module}/modules/hcloud_server/user_data/tools/fetch-and-validate-tls-certificates.sh")
+  )
 
   ### TESTS ###
   sandbox_injected_b64 = base64encode(

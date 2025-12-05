@@ -38,6 +38,12 @@ write_files:
     content: ${install_network_hardening_tools_b64}
     permissions: "0755"
 
+  ### Copy certbot tls fetch and validation script for later pipeline execution ###
+  - path: /root/scripts/fetch-and-validate-tls-certificates.sh
+    encoding: b64
+    content: ${fetch_and_validate_tls_certificates_b64}
+    permissions: "0755"
+
   ### Adds nftables installation and configuration to lockdown private IPv4 access ###
   - path: /root/scripts/nftables_lockdown_private_instances.sh
     encoding: b64
@@ -64,6 +70,10 @@ runcmd:
   - sudo /etc/NetworkManager/dispatcher.d/ifup-local
   - ip route flush cache
   - sudo systemctl restart systemd-resolved
+  # Install AWS CLIv2 for certbot route53 plugin
+  - sudo dnf install -y --quiet awscli2
+  - echo "Installed AWS Cli Version:" >> $logfile
+  - aws --version >> $logfile
   # Install podman and docker-compose v2 plugin
   - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
   - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1

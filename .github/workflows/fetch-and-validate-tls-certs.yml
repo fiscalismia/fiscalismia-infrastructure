@@ -1,4 +1,4 @@
-name: Deploy HCLOUD IAM Access
+name: HCLOUD TLS Certificate Validation
 
 on:
   push:
@@ -173,6 +173,8 @@ jobs:
 
         chmod 600 ${CREDENTIALS}
 
+        aws_cmd="aws sts get-caller-identity"
+
         ssh demo "mkdir -p $REMOTE_DIR"
         ssh frontend "mkdir -p $REMOTE_DIR"
         ssh backend "mkdir -p $REMOTE_DIR"
@@ -183,5 +185,24 @@ jobs:
         scp ${CREDENTIALS} backend:${REMOTE_DIR}/credentials
         scp ${CREDENTIALS} monitoring:${REMOTE_DIR}/credentials
 
+        ssh demo $aws_cmd
+        ssh frontend $aws_cmd
+        ssh backend $aws_cmd
+        ssh monitoring $aws_cmd
+
         rm -f ${S3_KEY}
         rm -f ${CREDENTIALS}
+
+    - name: Run certbot certificate request and validation script
+      env:
+        DEMO_DOMAIN: demo.fiscalismia.com
+        DEMO_BACKEND_DOMAIN: backend.demo.fiscalismia.com
+        FRONTEND_DOMAIN: fiscalismia.com
+        BACKEND_DOMAIN: backend.fiscalismia.com
+        MONITORING_DOMAIN: monitoring.fiscalismia.com
+      run: |
+        check_script_path_cmd="ls -l /root/scripts/fetch-and-validate-tls-certificates.sh"
+        ssh demo $check_script_path_cmd
+        ssh monitoring $check_script_path_cmd
+        ssh frontend $check_script_path_cmd
+        ssh backend $check_script_path_cmd
