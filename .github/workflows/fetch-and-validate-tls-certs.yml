@@ -200,9 +200,9 @@ jobs:
         FRONTEND_DOMAIN: fiscalismia.com
         BACKEND_DOMAIN: backend.fiscalismia.com
         MONITORING_DOMAIN: monitoring.fiscalismia.com
+        SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
       run: |
-        check_script_path_cmd="ls -l /root/scripts/fetch-and-validate-tls-certificates.sh"
-        ssh demo $check_script_path_cmd
-        ssh monitoring $check_script_path_cmd
-        ssh frontend $check_script_path_cmd
-        ssh backend $check_script_path_cmd
+        ssh demo "$SCRIPT_PATH $DEMO_DOMAIN $DEMO_BACKEND_DOMAIN)"
+        # ssh monitoring $check_script_path_cmd
+        # ssh frontend $check_script_path_cmd
+        # ssh backend $check_script_path_cmd
