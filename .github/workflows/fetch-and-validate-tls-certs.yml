@@ -1,4 +1,4 @@
-name: HCLOUD TLS Certificate Validation
+name: DNS TLS Certificate Validation
 
 on:
   push:
@@ -200,10 +200,10 @@ jobs:
         FRONTEND_DOMAIN: fiscalismia.com
         BACKEND_DOMAIN: backend.fiscalismia.com
         MONITORING_DOMAIN: monitoring.fiscalismia.com
+        REMOTE_LOG: /root/certbot_dns_validation.log
         SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
       run: |
-        ssh demo "$SCRIPT_PATH $DEMO_DOMAIN $DEMO_BACKEND_DOMAIN"
-        # ssh monitoring "$SCRIPT_PATH $FRONTEND_DOMAIN"
-        # ssh frontend "$SCRIPT_PATH $MONITORING_DOMAIN"
-        # ssh backend "$SCRIPT_PATH $BACKEND_DOMAIN"
-        
+        ssh demo "nohup $SCRIPT_PATH $DEMO_DOMAIN $DEMO_BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
+        # ssh monitoring "nohup $SCRIPT_PATH $FRONTEND_DOMAIN > $REMOTE_LOG 2>&1 &"
+        # ssh frontend "nohup $SCRIPT_PATH $MONITORING_DOMAIN > $REMOTE_LOG 2>&1 &"
+        # ssh backend "nohup $SCRIPT_PATH $BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
