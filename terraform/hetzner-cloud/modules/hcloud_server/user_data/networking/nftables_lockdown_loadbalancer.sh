@@ -40,7 +40,7 @@ table ip $TABLE_NAME {
     # Filter ingress traffic
     chain input {
 
-        # Drop all ingress by default unless explicitly allowed
+        # Drop all ingress for all protocols by default unless explicitly allowed
         type filter hook input priority 0; policy drop;
 
         # Allow loopback to localhost for internal services
