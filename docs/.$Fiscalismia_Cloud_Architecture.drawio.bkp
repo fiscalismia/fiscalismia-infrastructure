@@ -1919,18 +1919,18 @@
           <mxGeometry x="1380" y="2239" width="85" height="30" as="geometry" />
         </mxCell>
         <mxCell id="0LTqX92W0SrwLmbtw7zn-2" value="TCP" style="whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#00CCCC;fontFamily=Helvetica;" vertex="1" parent="0LTqX92W0SrwLmbtw7zn-1">
-          <mxGeometry x="26" width="30" height="30" as="geometry" />
+          <mxGeometry x="24" width="30" height="30" as="geometry" />
         </mxCell>
         <mxCell id="0LTqX92W0SrwLmbtw7zn-3" value="443" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="1406" y="2269" width="25" height="30" as="geometry" />
         </mxCell>
         <mxCell id="0LTqX92W0SrwLmbtw7zn-4" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#00CCCC;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1416.5" y="2199" width="10" height="10" as="geometry" />
+          <mxGeometry x="1414.5" y="2199" width="10" height="10" as="geometry" />
         </mxCell>
-        <mxCell id="0LTqX92W0SrwLmbtw7zn-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#00CCCC;fontFamily=Helvetica;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="0LTqX92W0SrwLmbtw7zn-2" target="0LTqX92W0SrwLmbtw7zn-4">
+        <mxCell id="0LTqX92W0SrwLmbtw7zn-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#00CCCC;fontFamily=Helvetica;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" target="0LTqX92W0SrwLmbtw7zn-4">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1566" y="2240" as="sourcePoint" />
-            <mxPoint x="1585" y="2240" as="targetPoint" />
+            <mxPoint x="1419" y="2239" as="sourcePoint" />
+            <mxPoint x="1583" y="2240" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
