@@ -77,6 +77,11 @@ runcmd:
   # Install podman and docker-compose v2 plugin
   - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
   - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
+  # Allow unpriviledged user running the nginx container to bind to ports below 1024
+  - echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
+  - sudo sysctl --system >> $logfile 2>&1
+  - printf "\nVerifying sysctl config file content:\n" >> $logfile
+  - sudo cat /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf >> $logfile 2>&1
   # install network hardening tools for security evaluation of firewall rules
   - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
