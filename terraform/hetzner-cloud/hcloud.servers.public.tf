@@ -123,6 +123,11 @@ module "fiscalismia_nat_gateway" {
 module "network_sentinel" {
   source            = "./modules/hcloud_server/"
 
+  # disabled by default - launch by executing these commands:
+  # terraform plan -var='deploy_network_sentinel=true'
+  # terraform apply -var='deploy_network_sentinel=true'
+  count = var.deploy_network_sentinel ? 1 : 0
+
   server_name       = "Network-Sentinel"
   image_id          = data.hcloud_image.fedora_image.id
   location          = var.default_location
