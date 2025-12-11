@@ -43,3 +43,7 @@ sudo certbot certificates
 # simulate certificate renewal
 echo "Simulating certificate renewal"
 sudo certbot renew --dry-run
+
+### DEBUG ###
+# Show decoded certificate content
+# openssl x509 -in /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem -text -noout

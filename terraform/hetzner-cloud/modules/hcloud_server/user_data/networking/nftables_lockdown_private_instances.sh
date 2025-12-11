@@ -128,8 +128,9 @@ sudo systemctl status nftables
 
 ### DEBUG ###
 # ls -l /etc/nftables/ # example nft configs not activated
-# add udp ingress rule from specific ip
+# nft list ruleset
 # nft add rule ip lockdown_private_instances input ip saddr 172.20.1.5 udp dport 500 ct state new accept
-# add udp ingress rule from all ips
 # nft add rule ip lockdown_private_instances input udp dport 501 ct state new accept
 
+# nft add rule ip lockdown_private_instances input ip saddr 172.24.1.3 tcp dport {80,443} ct state new accept
+# nft add rule ip lockdown_private_instances input ip saddr 172.24.1.3 icmp type echo-request accept
