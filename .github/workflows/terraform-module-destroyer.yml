@@ -31,12 +31,15 @@ jobs:
     steps:
     - name: Checkout SCM
       uses: actions/checkout@v5
+      # https://github.com/actions/checkout
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
+      # https://github.com/hashicorp/setup-terraform
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Terraform Pipeline Role
-      uses: aws-actions/configure-aws-credentials@v5.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.1
+      # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformPipeline
         role-session-name: TerraformModuleDestroyer_STSSession

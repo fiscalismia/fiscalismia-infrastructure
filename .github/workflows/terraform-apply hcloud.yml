@@ -23,12 +23,15 @@ jobs:
     steps:
     - name: Checkout SCM
       uses: actions/checkout@v5
+      # https://github.com/actions/checkout
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
+      # https://github.com/hashicorp/setup-terraform
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.1
+      # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
         role-session-name: TerraformPlanHcloud_STSSession
@@ -104,6 +107,7 @@ jobs:
 
     - name: Upload Planfile Artifacts
       uses: actions/upload-artifact@v5.0.0
+      # https://github.com/actions/upload-artifact
       with:
         name: hcloud-planfile
         retention-days: 1
@@ -112,51 +116,12 @@ jobs:
 
     - name: Upload Hcloud Public Keys for Apply Step
       uses: actions/upload-artifact@v5.0.0
+      # https://github.com/actions/upload-artifact
       with:
         name: public-hcloud-keys
         retention-days: 1
         path: |
           ssh_public_keys/*hcloud.pub
-
-  # terraform-review-hcloud:
-  #   needs:
-  #     - terraform-plan-hcloud
-
-  #   runs-on: ubuntu-latest
-
-  #   permissions:
-  #     id-token: write # for aws OIDC STS tokens to work
-  #     contents: read
-  #     actions: read
-
-  #   steps:
-  #   - name: Checkout SCM
-  #     uses: actions/checkout@v5
-
-  #   - name: Set up Terraform
-  #     uses: hashicorp/setup-terraform@v3.1.2
-
-  #   - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-  #     uses: aws-actions/configure-aws-credentials@v5.1.0
-  #     with:
-  #       role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
-  #       role-session-name: TerraformReviewHcloud_STSSession
-  #       aws-region: ${{ vars.AWS_REGION }}
-
-  #   - name: Download Planfile Artifacts
-  #     uses: actions/download-artifact@v4
-  #     with:
-  #       name: hcloud-planfile
-  #       path: planfiles/
-
-  #   - name: Review Hcloud planfile
-  #     env:
-  #       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-  #     run: |
-  #       aws sts get-caller-identity
-  #       cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud
-  #       terraform init
-  #       terraform show ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
 
   terraform-apply-hcloud:
     environment: prod # requires manual approval before running
@@ -174,25 +139,30 @@ jobs:
     steps:
     - name: Checkout SCM
       uses: actions/checkout@v5
+      # https://github.com/actions/checkout
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3.1.2
+      # https://github.com/hashicorp/setup-terraform
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.1
+      # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
         role-session-name: TerraformApplyHcloud_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Download Hcloud Planfile Artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7.0.0
+      # https://github.com/actions/download-artifact
       with:
         name: hcloud-planfile
         path: planfiles/
 
     - name: Download Hcloud Public SSH Key Artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7.0.0
+      # https://github.com/actions/download-artifact
       with:
         name: public-hcloud-keys
         path: ~/.ssh/
