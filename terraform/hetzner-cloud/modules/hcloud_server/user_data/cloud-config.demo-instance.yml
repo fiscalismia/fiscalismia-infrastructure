@@ -86,11 +86,13 @@ runcmd:
   - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
   - |
+    export OPTIONAL_BACKEND_DEMO_INGRESS_PORT=8443
     /root/scripts/nftables_lockdown_private_instances.sh \
       ${LOADBALANCER_PRIVATE_IP} \
       ${BASTION_HOST_PRIVATE_IP} \
       ${NAT_GATEWAY_PRIVATE_IP} \
       ${VIRTUAL_NETWORK_GATEWAY} \
+      $OPTIONAL_BACKEND_DEMO_INGRESS_PORT \
       >> $logfile 2>&1
   ######################################################################################
   # reboots server for persistent network config to take effect

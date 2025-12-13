@@ -7,6 +7,7 @@
 # PARAM $2 is the bastion-host private ipv4 for ssh ingress allowance
 # PARAM $3 is the nat-gateway private ipv4 for https and http egress allowance
 # PARAM $4 is the virtual network gateway used as the next-hop target for private egress to NAT-Gateway
+# PARAM $5 OPTIONAL Parameter to allow an additional port for ingress on the demo instance running frontend + backend
 # e.g. ./scripts/nftables_lockdown_private_instances.sh 172.20.1.3 172.20.1.2 172.20.1.4 172.20.0.1
 ##############################################################################################################################
 
@@ -24,6 +25,15 @@ if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     echo "Error: Missing required parameters."
     echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <VIRTUAL_NETWORK_GATEWAY>"
     exit 1
+fi
+
+if [[ "$5" ]]; then
+    echo "Allowing additional port for demo instance: $5"
+    # TODO remove port 80 in production
+    export LB_INGRESS_PORTS="{80,443,$5}"
+else
+    # TODO remove port 80 in production
+    export LB_INGRESS_PORTS="{80,443}"
 fi
 
 ### INSTALLATION ###
@@ -59,8 +69,7 @@ table ip $TABLE_NAME {
         ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
 
         # Allow HTTPS Ingress from Loadbalancer
-        # TODO remove port 80 in production
-        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport {80,443} ct state new accept
+        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport $LB_INGRESS_PORTS ct state new accept
 
         # Allow ICMP Ping Ingress from Loadbalancer
         ip saddr $LOADBALANCER_PRIVATE_IP icmp type echo-request accept

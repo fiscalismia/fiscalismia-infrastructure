@@ -77,6 +77,7 @@ data "cloudinit_config" "loadbalancer" {
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
         PRIVATE_IP_TO_NAT = local.fiscalismia_loadbalancer_private_ipv4_production_net
+        DEMO_INSTANCE_PRIVATE_IP = local.fiscalismia_demo_private_ipv4
       }
     )
   }
