@@ -1,26 +1,26 @@
-name: Webservice Deployment Pipeline
+name: Infrastructure Deployment Pipeline
 
 on:
   workflow_dispatch:
     inputs:
-      deploy_demo:
-        description: 'Deploy DEMO Backend & Frontend & local DB'
+      deploy_haproxy:
+        description: 'Deploy HAProxy Loadbalancer'
         required: true
         default: true
         type: boolean
-      deploy_backend:
-        description: 'Deploy BACKEND on Production Instance?'
+      deploy_prometheus:
+        description: 'Deploy Prometheus on Monitoring Instance'
         required: false
         default: false
         type: boolean
-      deploy_frontend:
-        description: 'Deploy FRONTEND on Production Instance?'
+      deploy_grafana:
+        description: 'Deploy GRAFANA on Monitoring Instance'
         required: false
         default: false
         type: boolean
 
 jobs:
-  webservice-deployment:
+  infrastructure-deployment:
     runs-on: ubuntu-latest
 
     permissions:
@@ -37,7 +37,7 @@ jobs:
       # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
-        role-session-name: HcloudWebserviceDeployment_STSSession
+        role-session-name: HcloudInfrastructureDeployment_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Query SSH private keys for Hcloud servers from AWS Secrets Manager
@@ -46,8 +46,6 @@ jobs:
         LOADBALANCER_PRIVATE_KEY: fiscalismia-loadbalancer-instance-key-hcloud
         NAT_GATEWAY_PRIVATE_KEY: fiscalismia-nat-gateway-instance-key-hcloud
         MONITORING_PRIVATE_KEY: fiscalismia-monitoring-instance-key-hcloud
-        DEMO_PRIVATE_KEY: fiscalismia-demo-instance-key-hcloud
-        PRODUCTION_PRIVATE_KEY: fiscalismia-production-instances-key-hcloud
       run: |
         set -eou pipefail
         mkdir -p ~/.ssh/
@@ -67,8 +65,9 @@ jobs:
         }
 
         query_aws_plaintext_secret ${MASTER_PRIVATE_KEY}
-        query_aws_plaintext_secret ${DEMO_PRIVATE_KEY}
-        query_aws_plaintext_secret ${PRODUCTION_PRIVATE_KEY}
+        query_aws_plaintext_secret ${LOADBALANCER_PRIVATE_KEY}
+        query_aws_plaintext_secret ${NAT_GATEWAY_PRIVATE_KEY}
+        query_aws_plaintext_secret ${MONITORING_PRIVATE_KEY}
 
     - name: Extract Hcloud Server IP Adresses from Remote State
       env:
@@ -79,14 +78,12 @@ jobs:
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${S3_KEY} .
 
         bastion_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_bastion_host_ipv4.value )
-        demo_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_demo_private_ipv4.value )
-        front_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_frontend_private_ipv4.value )
-        back_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_backend_private_ipv4.value )
+        lb_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_loadbalancer_private_ipv4.value )
+        monitor_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_monitoring_private_ipv4.value )
 
         echo "BASTION_HOST_PUBLIC_IP=$bastion_ip" >> $GITHUB_ENV
-        echo "DEMO_INSTANCE_PRIVATE_IP=$demo_ip" >> $GITHUB_ENV
-        echo "FRONTEND_INSTANCE_PRIVATE_IP=$front_ip" >> $GITHUB_ENV
-        echo "BACKEND_INSTANCE_PRIVATE_IP=$back_ip" >> $GITHUB_ENV
+        echo "LOADBALANCER_PRIVATE_IP=$lb_ip" >> $GITHUB_ENV
+        echo "MONITORING_INSTANCE_PRIVATE_IP=$monitor_ip" >> $GITHUB_ENV
 
     - name: Create SSH Config for Bastion-Host ProxyJump
       run: |
@@ -97,22 +94,15 @@ jobs:
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
 
-        Host demo
-            HostName $DEMO_INSTANCE_PRIVATE_IP
+        Host loadbalancer
+            HostName $LOADBALANCER_PRIVATE_IP
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
             ProxyJump bastion-host
 
-        Host frontend
-            HostName $FRONTEND_INSTANCE_PRIVATE_IP
-            User root
-            StrictHostKeyChecking no
-            UserKnownHostsFile /dev/null
-            ProxyJump bastion-host
-
-        Host backend
-            HostName $BACKEND_INSTANCE_PRIVATE_IP
+        Host monitoring
+            HostName $MONITORING_INSTANCE_PRIVATE_IP
             User root
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
@@ -121,16 +111,16 @@ jobs:
 
         chmod 600 ~/.ssh/config
 
-    - name: Deploy DEMO Instance Stack via OpenSSH
-      if: inputs.deploy_demo == true
+    - name: Deploy HAProxy LOADBALANCER via OpenSSH
+      if: inputs.deploy_haproxy == true
       run: |
 
-    - name: Deploy BACKEND Production Instance via OpenSSH
-      if: inputs.deploy_backend == true
+    - name: Deploy PROMETHEUS on Monitoring Instance via OpenSSH
+      if: inputs.deploy_prometheus == true
       run: |
-        echo "Deploying on Backend Instance"
+        echo "Deploying Prometheus on Monitoring Instance"
 
     - name: Deploy FRONTEND Production Instance via OpenSSH
-      if: inputs.deploy_frontend == true
+      if: inputs.deploy_grafana == true
       run: |
-        echo "Deploying on Frontend Instance"
+        echo "Deploying Grafana on Monitoring Instance"
