@@ -1,0 +1,48 @@
+name: Webservice Deployment Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_demo:
+        description: 'Deploy Demo Backend & Frontend & local DB?'
+        required: true
+        default: true
+        type: boolean
+      deploy_backend:
+        description: 'Deploy Backend on Production Instance?'
+        required: false
+        default: false
+        type: boolean
+      deploy_frontend:
+        description: 'Deploy Frontend on Production Instance?'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  webservice-deployment:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+    - name: Checkout SCM
+      uses: actions/checkout@v5
+      # https://github.com/actions/checkout
+
+    - name: Deploy Demo Instance Stack via OpenSSH
+      if: inputs.deploy_demo == true
+      run: |
+        echo "Deploying on Demo Instance"
+
+    - name: Deploy Backend Production Instance via OpenSSH
+      if: inputs.deploy_backend == true
+      run: |
+        echo "Deploying on Backend Instance"
+
+    - name: Deploy Frontend Production Instance via OpenSSH
+      if: inputs.deploy_frontend == true
+      run: |
+        echo "Deploying on Frontend Instance"

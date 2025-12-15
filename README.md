@@ -1,5 +1,5 @@
 ## fiscalismia-infrastructure
-Terraform configurations for provisioning AWS & Hetzner Cloud Infrastructure. Github Actions Bastion-Host ProxyJump Instance Deployment & Updating. DNS TLS Certificate request and renewal Github Actions Pipeline. Private Networks without Public IP for Application Servers with mTLS. NAT Gateway Instance for HTTPS and DNS Egress allowing internet access for provisioning and deployment on private instances. TerraformDestroyer Pipeline to teardown all the cloud infrastructure automatically after a predetermined cost threshold has been surpassed invoking the webhook.
+Terraform pipelines for AWS & Hetzner Cloud Infrastructure. Bastion-Host ProxyJump Deployment. DNS TLS Certificate request & renewal Pipeline. Security & Firewall Network Evaluation Pipeline. NAT Gateway Instance for HTTPS and DNS Egress. TerraformDestroyer Pipeline to teardown cloud infrastructure after cost threshold has been surpassed.
 
 ### Prerequisites
 
