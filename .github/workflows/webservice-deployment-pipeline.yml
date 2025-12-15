@@ -146,9 +146,9 @@ jobs:
         REMOTE_DEMO_DIR: /usr/local/etc/demo
       run: |
         echo "REMOTE_DEMO_DIR=$REMOTE_DEMO_DIR" >> $GITHUB_ENV
-        echo "FRONTEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-frontend"
-        echo "BACKEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-backend"
-        echo "INFRA_DIR=${GITHUB_WORKSPACE}/fiscalismia-infrastructure"
+        echo "FRONTEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-frontend" >> $GITHUB_ENV
+        echo "BACKEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-backend" >> $GITHUB_ENV
+        echo "INFRA_DIR=${GITHUB_WORKSPACE}/fiscalismia-infrastructure" >> $GITHUB_ENV
 
     - name: Initialize DEMO Instance
       if: inputs.deploy_demo == true
