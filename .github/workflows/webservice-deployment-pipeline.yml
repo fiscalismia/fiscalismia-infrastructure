@@ -122,6 +122,9 @@ jobs:
     - name: Deploy DEMO Instance Stack via OpenSSH
       if: inputs.deploy_demo == true
       run: |
+        ssh demo "hostname -I"
+        ssh frontend "hostname -I"
+        ssh backend "hostname -I"
 
     - name: Deploy BACKEND Production Instance via OpenSSH
       if: inputs.deploy_backend == true

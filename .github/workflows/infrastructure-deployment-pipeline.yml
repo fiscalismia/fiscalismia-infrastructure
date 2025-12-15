@@ -115,6 +115,8 @@ jobs:
     - name: Deploy HAProxy LOADBALANCER via OpenSSH
       if: inputs.deploy_haproxy == true
       run: |
+        ssh loadbalancer "hostname -I"
+        ssh monitoring "hostname -I"
 
     - name: Deploy PROMETHEUS on Monitoring Instance via OpenSSH
       if: inputs.deploy_prometheus == true
