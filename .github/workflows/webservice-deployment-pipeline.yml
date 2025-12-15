@@ -29,9 +29,20 @@ jobs:
       actions: read
 
     steps:
-    - name: Checkout SCM
+    - name: Checkout Fiscalismia-Frontend Repository
       uses: actions/checkout@v5
       # https://github.com/actions/checkout
+      with:
+        repository: fiscalismia/fiscalismia-frontend
+        path: fiscalismia-frontend
+
+    - name: Checkout Fiscalismia-Backend Repository
+      uses: actions/checkout@v5
+      # https://github.com/actions/checkout
+      with:
+        repository: fiscalismia/fiscalismia-backend
+        path: fiscalismia-backend
+
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
       uses: aws-actions/configure-aws-credentials@v5.1.1
@@ -119,17 +130,45 @@ jobs:
 
         chmod 600 ~/.ssh/config
 
-    - name: Deploy DEMO Instance Stack via OpenSSH
+    #     __   ___        __      __   ___  __        __             ___      ___
+    #    |  \ |__   |\/| /  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
+    #    |__/ |___  |  | \__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
+
+    - name: Prepare DEMO Workspace
+      if: inputs.deploy_demo == true
+      env:
+        DEMO_DIRECTORY: /usr/local/etc/demo
+      run: |
+        echo "DEMO_DIRECTORY=$DEMO_DIRECTORY" >> $GITHUB_ENV
+
+    - name: Initialize DEMO Instance
       if: inputs.deploy_demo == true
       run: |
-        ssh demo "hostname -I"
-        ssh frontend "hostname -I"
-        ssh backend "hostname -I"
+        ssh demo "mkdir -p ${DEMO_DIRECTORY}"
+
+    - name: Secure Copy Dependencies to DEMO Instance
+      if: inputs.deploy_demo == true
+      run: |
+        echo "hello" >> hello.txt
+        scp hello.txt demo:${DEMO_DIRECTORY}/
+
+    - name: Secure Copy Dependencies to DEMO Instance
+      if: inputs.deploy_demo == true
+      run: |
+        ssh demo "cat ${DEMO_DIRECTORY}/hello.txt"
+
+    #     __        __        ___       __      __   ___  __        __             ___      ___
+    #    |__)  /\  /  ` |__/ |__  |\ | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
+    #    |__) /~~\ \__, |  \ |___ | \| |__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
 
     - name: Deploy BACKEND Production Instance via OpenSSH
       if: inputs.deploy_backend == true
       run: |
         echo "Deploying on Backend Instance"
+
+    #     ___  __   __       ___  ___       __      __   ___  __        __             ___      ___
+    #    |__  |__) /  \ |\ |  |  |__  |\ | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
+    #    |    |  \ \__/ | \|  |  |___ | \| |__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
 
     - name: Deploy FRONTEND Production Instance via OpenSSH
       if: inputs.deploy_frontend == true
