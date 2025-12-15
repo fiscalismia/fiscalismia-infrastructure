@@ -43,9 +43,6 @@ jobs:
     - name: Query SSH private keys for Hcloud servers from AWS Secrets Manager
       env:
         MASTER_PRIVATE_KEY: fiscalismia-infrastructure-master-key-hcloud
-        LOADBALANCER_PRIVATE_KEY: fiscalismia-loadbalancer-instance-key-hcloud
-        NAT_GATEWAY_PRIVATE_KEY: fiscalismia-nat-gateway-instance-key-hcloud
-        MONITORING_PRIVATE_KEY: fiscalismia-monitoring-instance-key-hcloud
         DEMO_PRIVATE_KEY: fiscalismia-demo-instance-key-hcloud
         PRODUCTION_PRIVATE_KEY: fiscalismia-production-instances-key-hcloud
       run: |
