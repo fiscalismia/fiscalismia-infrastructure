@@ -1,5 +1,5 @@
 ## fiscalismia-infrastructure
-Terraform configurations for provisioning AWS & Hetzner Cloud Infrastructure. Ansible Roles for Bastion-Host ProxyJump Instance Deployment & Updating. HA-Proxy Loadbalancer Instance for HTTPS Ingress and Hostname Routing. Private Networks without Public IP for Application Servers with mTLS. NAT Gateway Instance for HTTPS and DNS Egress.
+Terraform configurations for provisioning AWS & Hetzner Cloud Infrastructure. Github Actions Bastion-Host ProxyJump Instance Deployment & Updating. DNS TLS Certificate request and renewal Github Actions Pipeline. Private Networks without Public IP for Application Servers with mTLS. NAT Gateway Instance for HTTPS and DNS Egress allowing internet access for provisioning and deployment on private instances. TerraformDestroyer Pipeline to teardown all the cloud infrastructure automatically after a predetermined cost threshold has been surpassed invoking the webhook.
 
 ### Prerequisites
 
@@ -112,69 +112,6 @@ cd ~/git/fiscalismia-infrastructure/terraform/hetzner-cloud/
 source ../.env
 terraform init
 terraform destroy --auto-approve
-```
-
-### Setup Ansible Control Node
-
-```bash
-yum install -y curl jq openssh-client zip
-ssh -V
-# debug python installation
-which python3 2>&1
-python3 --version
-python3 -m pip -V
-# to use password hash for newly creates service user
-python3 -m pip install passlib
-python3 -m pip install ansible
-echo "" && echo "##################################"
-echo "Ansible installed under $(which ansible)"
-echo "Ansible version:"
-ansible --version
-Fetch Service User Password that is running the Containers
-export DOCKER_RUNNER_PSWD=$(echo "GIT_ENV_SECRET")
-#Enforce Color in Console output for cleaner visual tracking
-export ANSIBLE_FORCE_COLOR=1
-# set ssh private key for connecting to deployment targets
-export PRIVATE_KEY_FILE=$(echo "secret_file_from_git.pem")
-echo "downloaded private key to $PRIVATE_KEY_FILE"
-chmod 400 ${PRIVATE_KEY_FILE}
-echo "set ${PRIVATE_KEY_FILE} to read-only"
-```
-
-### Ansible Deployment
-
-**Deploy Backend**
-```bash
-export BACKEND_DOMAIN_NAME="backend.fiscalismia.net"
-export DOCKER_BACKEND_CONTAINER_NAME="fiscalismia-backend:latest"
-export ANSIBLE_CONFIG="ansible/fiscalismia-backend/ansible.cfg"
-ansible-playbook ansible/fiscalismia-backend/deploy.yaml
-  -e "docker_container_name=${DOCKER_BACKEND_CONTAINER_NAME}"
-  -e "docker_username=${ENV_DOCKER_USERNAME}"
-  -e "docker_password=${ENV_DOCKER_PASSWORD}"
-  -e "docker_repository=${ENV_DOCKER_REPOSITORY}"
-  -e "ssh_key_override=${PRIVATE_KEY_FILE}"
-  -e "remote_domain=${BACKEND_DOMAIN_NAME}"
-```
-
-**Deploy Frontend**
-```bash
-export FRONTEND_DOMAIN_NAME="fiscalismia.net"
-export DOCKER_FRONTEND_CONTAINER_NAME="fiscalismia-frontend:latest"
-export ANSIBLE_CONFIG="ansible/fiscalismia-frontend/ansible.cfg"
-ansible-playbook ansible/fiscalismia-frontend/deploy.yaml
-  -e "docker_container_name=${DOCKER_FRONTEND_CONTAINER_NAME}"
-  -e "docker_username=${ENV_DOCKER_USERNAME}"
-  -e "docker_password=${ENV_DOCKER_PASSWORD}"
-  -e "docker_repository=${ENV_DOCKER_REPOSITORY}"
-  -e "ssh_key_override=${PRIVATE_KEY_FILE}"
-  -e "remote_domain=${FRONTEND_DOMAIN_NAME}"
-```
-
-### Ansible Updates
-
-```bash
-# TODO
 ```
 
 ### Network Firewall with nftables
