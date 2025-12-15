@@ -143,7 +143,7 @@ jobs:
     - name: Prepare DEMO Workspace
       if: inputs.deploy_demo == true
       env:
-        REMOTE_DEMO_DIR: /usr/local/etc/demo
+        REMOTE_DEMO_DIR: /usr/local/etc/fiscalismia-demo
       run: |
         echo "REMOTE_DEMO_DIR=$REMOTE_DEMO_DIR" >> $GITHUB_ENV
         echo "FRONTEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-frontend" >> $GITHUB_ENV
@@ -155,14 +155,24 @@ jobs:
       run: |
         ssh demo << EOF
         mkdir -p ${REMOTE_DEMO_DIR}
+        mkdir -p ${REMOTE_DEMO_DIR}/database
         EOF
 
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
       run: |
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/
+        scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/Dockerfile.Frontend
+        scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/Dockerfile.Backend
+        scp ${BACKEND_DIR}/database/Dockerfile-dev-db demo:${REMOTE_DEMO_DIR}/database/Dockerfile.Database
+        scp \
+          ${BACKEND_DIR}/database/pgsql-public-ddl.sql \
+          ${BACKEND_DIR}/database/pgsql-user-ddl.sql \
+          ${BACKEND_DIR}/database/pgsql-demo-dml.sql \
+          ${BACKEND_DIR}/database/pgsql-local-initdb.sh \
+          demo:${REMOTE_DEMO_DIR}/database/
 
-    - name: Secure Copy Dependencies to DEMO Instance
+    - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
       run: |
         ssh demo "cat ${REMOTE_DEMO_DIR}/hello.txt"
