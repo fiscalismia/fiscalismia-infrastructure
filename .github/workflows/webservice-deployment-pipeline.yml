@@ -155,21 +155,24 @@ jobs:
       run: |
         ssh demo << EOF
         mkdir -p ${REMOTE_DEMO_DIR}
+        mkdir -p ${REMOTE_DEMO_DIR}/database
+        mkdir -p ${REMOTE_DEMO_DIR}/frontend
+        mkdir -p ${REMOTE_DEMO_DIR}/backend
         EOF
 
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
       run: |
-        scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/
-        scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/Dockerfile.Frontend
-        scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/Dockerfile.Backend
+        scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
+        scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
+        scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/backend/Dockerfile
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/Dockerfile.Database
         scp \
           ${BACKEND_DIR}/database/pgsql-public-ddl.sql \
           ${BACKEND_DIR}/database/pgsql-user-ddl.sql \
           ${BACKEND_DIR}/database/pgsql-demo-dml.sql \
           ${BACKEND_DIR}/database/pgsql-local-initdb.sh \
-          demo:${REMOTE_DEMO_DIR}/
+          demo:${REMOTE_DEMO_DIR}/database/
 
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
