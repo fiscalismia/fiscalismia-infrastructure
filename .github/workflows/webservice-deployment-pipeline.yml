@@ -29,6 +29,13 @@ jobs:
       actions: read
 
     steps:
+
+    - name: Checkout Fiscalismia-Infrastructure Repository
+      uses: actions/checkout@v5
+      # https://github.com/actions/checkout
+      with:
+        path: fiscalismia-infrastructure
+
     - name: Checkout Fiscalismia-Frontend Repository
       uses: actions/checkout@v5
       # https://github.com/actions/checkout
@@ -42,7 +49,6 @@ jobs:
       with:
         repository: fiscalismia/fiscalismia-backend
         path: fiscalismia-backend
-
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
       uses: aws-actions/configure-aws-credentials@v5.1.1
@@ -137,25 +143,30 @@ jobs:
     - name: Prepare DEMO Workspace
       if: inputs.deploy_demo == true
       env:
-        DEMO_DIRECTORY: /usr/local/etc/demo
+        REMOTE_DEMO_DIR: /usr/local/etc/demo
       run: |
-        echo "DEMO_DIRECTORY=$DEMO_DIRECTORY" >> $GITHUB_ENV
+        echo "REMOTE_DEMO_DIR=$REMOTE_DEMO_DIR" >> $GITHUB_ENV
+        echo "FRONTEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-frontend"
+        echo "BACKEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-backend"
+        echo "INFRA_DIR=${GITHUB_WORKSPACE}/fiscalismia-infrastructure"
 
     - name: Initialize DEMO Instance
       if: inputs.deploy_demo == true
       run: |
-        ssh demo "mkdir -p ${DEMO_DIRECTORY}"
+        ssh demo << EOF
+        mkdir -p ${REMOTE_DEMO_DIR}
+        EOF
 
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
       run: |
-        echo "hello" >> hello.txt
-        scp hello.txt demo:${DEMO_DIRECTORY}/
+        scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/
 
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
       run: |
-        ssh demo "cat ${DEMO_DIRECTORY}/hello.txt"
+        ssh demo "cat ${REMOTE_DEMO_DIR}/hello.txt"
+        ssh demo "ls -hla ${REMOTE_DEMO_DIR}/"
 
     #     __        __        ___       __      __   ___  __        __             ___      ___
     #    |__)  /\  /  ` |__/ |__  |\ | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |

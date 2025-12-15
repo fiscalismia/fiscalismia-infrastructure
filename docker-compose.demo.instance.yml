@@ -1,0 +1,82 @@
+volumes:
+  database-v:
+    name: "database-v"
+
+services:
+  fiscalismia-postgres:
+    image: ${POSTGRES_HOST}:1.0.0
+    container_name: ${POSTGRES_HOST}
+    build:
+      context: .
+      dockerfile: database/Dockerfile.dev-db
+    env_file:
+      - .env
+    volumes:
+      - database-v:/var/lib/postgresql/data
+    networks:
+      - fiscalismia-network
+    ports:
+    - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    command: "-p ${POSTGRES_PORT}"
+    # to use healthcheck for backend server see https://wittcode.com/blogs/connect-a-node-server-to-postgres-with-docker-compose
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -p ${POSTGRES_PORT} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      start_period: 0s
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  fiscalismia-backend:
+    image: fiscalismia-backend-dev:latest
+    container_name: fiscalismia-backend-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      pull: true
+    environment:
+      - CLOUD_DB=${CLOUD_DB:-false} # default is false. Overwrite in CLI
+    env_file:
+      - .env
+    volumes:
+      # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
+      # to relabel the host directory. This allows the container to access the
+      # mounted volume by applying a shared SELinux label.
+      - ./src:/fiscalismia-backend/src:z
+      - ./public:/fiscalismia-backend/public:z
+    networks:
+      - fiscalismia-network
+    ports:
+    - ${BACKEND_PORT}:${BACKEND_PORT}
+    depends_on:
+      - fiscalismia-postgres
+
+  fiscalismia-frontend:
+    image: fiscalismia-frontend:latest
+    container_name: fiscalismia-frontend
+    build:
+      context: ../fiscalismia-frontend
+      dockerfile: Dockerfile.dev
+      pull: true
+    env_file:
+      - ../fiscalismia-frontend/.env
+    volumes:
+      # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
+      # to relabel the host directory. This allows the container to access the
+      # mounted volume by applying a shared SELinux label.
+      - ../fiscalismia-frontend/src:/fiscalismia-frontend/src:z
+    networks:
+      - fiscalismia-network
+    ports:
+    - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    depends_on:
+      - fiscalismia-backend
+
+networks:
+  fiscalismia-network:
+    name: fiscalismia-network
+    driver: bridge
+
+# to connect to db in attached docker shell, (RUN apk add --no-cache postgresql-client):
+# psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT
+# to connect from local machine, the host has to be localhost!
+# psql -U $POSTGRES_USER -d $POSTGRES_DB -h localhost -p $POSTGRES_PORT
