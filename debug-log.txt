@@ -1,5 +1,54 @@
-c7cc05202a02  ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest  nginx -g daemon o...  41 seconds ago  Up 41 seconds            443/tcp, 8080/tcp  fiscalismia-frontend
+## Debugging Port Mapping Issue
 
+If HAProxy is external and hitting `host-ip:443`, port mapping `443:443` should work. Let's diagnose:
 
-why is my frontend showing port 8080 open as a listener despite setting EXPOSE 443 in dockerfile and network_mode: host in docker compose
-to receive ingrress on the instance via an external loadbalancer on port 443 is network mode host recommended or would another approach be preferable?
+**Step 1: Verify port is listening on host**
+
+```bash
+# On the demo instance
+ss -tlnp | grep 443
+# or
+netstat -tlnp | grep 443
+```
+
+**Step 2: Check Docker port mapping**
+
+```bash
+docker ps --format "table {{.Names}}\t{{.Ports}}"
+# Should show: 0.0.0.0:443->443/tcp
+```
+
+**Step 3: Test locally on the instance**
+
+```bash
+# From the demo instance itself
+curl -k https://localhost:443 -v
+```
+
+**Step 4: Check firewall**
+
+```bash
+# Check if firewall allows 443
+sudo iptables -L -n | grep 443
+# or on firewalld systems
+sudo firewall-cmd --list-ports
+```
+
+## Common Causes
+
+| Issue | Check | Fix |
+|-------|-------|-----|
+| Port bound to 127.0.0.1 only | `ss -tlnp` shows `127.0.0.1:443` | Use `ports: "0.0.0.0:443:443"` |
+| Firewall blocking | `iptables -L` | `sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT` |
+| Docker iptables disabled | `dockerd` config | Enable iptables in Docker daemon |
+| SELinux blocking | `ausearch -m avc` | Check SELinux denials |
+| Container not actually listening | `docker logs` | Check nginx started correctly |
+
+**Step 5: Check if nginx is actually listening inside container**
+
+```bash
+docker exec fiscalismia-frontend ss -tlnp
+# Should show nginx listening on 443
+```
+
+What does `ss -tlnp | grep 443` show on your demo instance when using port mapping?
