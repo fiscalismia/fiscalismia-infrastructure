@@ -162,6 +162,8 @@ jobs:
 
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
+      env:
+        ENV_FILE_SECRET_ID: fiscalismia-backend/.env
       run: |
         ### INFRA SETUP
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
@@ -170,7 +172,15 @@ jobs:
         scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
 
         ### BACKEND SETUP
+        aws secretsmanager get-secret-value \
+            --secret-id $ENV_FILE_SECRET_ID \
+            --region eu-central-1 \
+            --output text \
+            --query SecretString \
+            >> ${BACKEND_DIR}/.env
         scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/backend/Dockerfile
+        scp ${BACKEND_DIR}/.env demo:${REMOTE_DEMO_DIR}/backend/.env
+        rm -f ${BACKEND_DIR}/.env
 
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
@@ -184,8 +194,12 @@ jobs:
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
       run: |
-        ssh demo "ls -hla ${REMOTE_DEMO_DIR}/"
+        ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
+        ssh demo << EOF
+          cd ${REMOTE_DEMO_DIR}
+          docker compose up --build --detach --no-deps fiscalismia-postgres
 
+        EOF
     #     __        __        ___       __      __   ___  __        __             ___      ___
     #    |__)  /\  /  ` |__/ |__  |\ | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
     #    |__) /~~\ \__, |  \ |___ | \| |__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
