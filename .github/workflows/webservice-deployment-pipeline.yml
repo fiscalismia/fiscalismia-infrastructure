@@ -160,8 +160,10 @@ jobs:
         mkdir -p ${REMOTE_DEMO_DIR}/backend
         mkdir -p ${REMOTE_DEMO_DIR}/certs
 
+        # copy ssl certificates to deployment directory
         cp /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem ${REMOTE_DEMO_DIR}/certs/
         cp /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem ${REMOTE_DEMO_DIR}/certs/
+        # change cert ownership to read only by unpriviledged nginx userid and groupid
         chown -R 101:101 ${REMOTE_DEMO_DIR}/certs/
         chmod -R 400 ${REMOTE_DEMO_DIR}/certs/*.pem
         EOF
@@ -203,7 +205,7 @@ jobs:
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
-          docker compose up --build --detach --no-deps fiscalismia-postgres
+          docker compose up --build --detach --no-deps fiscalismia-postgres fiscalismia-frontend
 
         EOF
     #     __        __        ___       __      __   ___  __        __             ___      ___

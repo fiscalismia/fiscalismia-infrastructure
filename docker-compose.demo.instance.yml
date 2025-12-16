@@ -114,8 +114,7 @@ services:
           cpus: '0.2'
     ### SECURITY HARDENING (minimal required permissions)
     tmpfs:
-      - /tmp:noexec,nosuid,size=256m
-      - /var/cache/nginx:noexec,nosuid,size=128m
+      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
       - /var/run:noexec,nosuid,size=64m
     cap_drop:
       - ALL
@@ -123,7 +122,7 @@ services:
       # if binding to ports < 1024 also requires the following setting on the host:
       # echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
       - NET_BIND_SERVICE
-      # - CAP_DAC_OVERRIDE # Bypass file read, write, and execute permission checks.
+      # - CAP_DAC_OVERRIDE # HACK: Bypass all file read, write, and execute permission checks.
     security_opt:
       - no-new-privileges:true
 
