@@ -184,7 +184,6 @@ jobs:
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
       run: |
-        ssh demo "cat ${REMOTE_DEMO_DIR}/hello.txt"
         ssh demo "ls -hla ${REMOTE_DEMO_DIR}/"
 
     #     __        __        ___       __      __   ___  __        __             ___      ___
