@@ -163,10 +163,17 @@ jobs:
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
       run: |
+        ### INFRA SETUP
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
+
+        ### FRONTEND SETUP
         scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
+
+        ### BACKEND SETUP
         scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/backend/Dockerfile
-        scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/Dockerfile.Database
+
+        ### DATABASE SETUP
+        scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
         scp \
           ${BACKEND_DIR}/database/pgsql-public-ddl.sql \
           ${BACKEND_DIR}/database/pgsql-user-ddl.sql \
