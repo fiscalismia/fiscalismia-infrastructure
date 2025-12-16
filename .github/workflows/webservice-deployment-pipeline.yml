@@ -158,6 +158,12 @@ jobs:
         mkdir -p ${REMOTE_DEMO_DIR}/database
         mkdir -p ${REMOTE_DEMO_DIR}/frontend
         mkdir -p ${REMOTE_DEMO_DIR}/backend
+        mkdir -p ${REMOTE_DEMO_DIR}/certs
+
+        cp /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem ${REMOTE_DEMO_DIR}/certs/
+        cp /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem ${REMOTE_DEMO_DIR}/certs/
+        chown -R 101:101 ${REMOTE_DEMO_DIR}/certs/
+        chmod -R 400 ${REMOTE_DEMO_DIR}/certs/*.pem
         EOF
 
     - name: Secure Copy Dependencies to DEMO Instance

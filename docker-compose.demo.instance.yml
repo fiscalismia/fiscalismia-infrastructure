@@ -64,8 +64,8 @@ services:
       # to relabel the host directory. This allows the container to access the
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/backend/public:/fiscalismia-backend/public:z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
+      - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
+      - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     networks:
       - fiscalismia-network
     ports:
@@ -99,8 +99,8 @@ services:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
       # mounted volume by applying a shared SELinux label.
-      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:z
+      - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
+      - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     ports:
       - 443:443
     # Container Resource Usage
