@@ -101,8 +101,9 @@ services:
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
-    ports:
-      - 443:443
+    network_mode: host # TODO fix nftables config to allow podman inter bridge network communication and switch to port mapping
+    # ports:
+    #   - "0.0.0.0:443:443/tcp"
     # Container Resource Usage
     deploy:
       resources:

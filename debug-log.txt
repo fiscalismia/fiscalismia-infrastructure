@@ -137,8 +137,238 @@ Ncat: 0 bytes sent, 0 bytes received in 0.03 seconds.
 > Host: 172.20.0.2:443
 > User-Agent: curl/8.11.1
 > Accept: */*
-> 
+>
 * Request completely sent off
 * Recv failure: Connection reset by peer
 * closing connection #0
 curl: (56) Recv failure: Connection reset by peer
+
+######################################
+######################################
+######################################
+######################################
+######################################
+
+## Solution: Allow Podman Bridge Traffic in nftables
+
+You need to allow forwarding for the Podman network interface while keeping your security posture tight.
+
+### Step 1: Find Podman Network Interface Name
+
+```bash
+# On the demo instance
+podman network inspect fiscalismia-network | grep -i bridge
+# Or
+ip link show | grep -E "podman|cni"
+```
+
+Podman typically creates interfaces like `podman0`, `podman1`, or `cni-podman0`.
+
+### Step 2: Update nftables Script
+
+````bash
+#!/usr/bin/env bash
+
+################################ INFO ########################################################################################
+# This file is intended for private instances without a public ip assigned, to which hcloud does not allow attaching firewalls
+# We manually install and configure nftables, the best practice tools for firewall rules used as backend for other frameworks
+# PARAM $1 is the loadbalancer private ipv4 for https ingress allowance
+# PARAM $2 is the bastion-host private ipv4 for ssh ingress allowance
+# PARAM $3 is the nat-gateway private ipv4 for https and http egress allowance
+# PARAM $4 is the virtual network gateway used as the next-hop target for private egress to NAT-Gateway
+# PARAM $5 OPTIONAL Parameter to allow an additional port for ingress on the demo instance running frontend + backend
+# e.g. ./scripts/nftables_lockdown_private_instances.sh 172.20.1.3 172.20.1.2 172.20.1.4 172.20.0.1
+##############################################################################################################################
+
+# wait for the private network interface to initialize.
+sleep 60
+
+export LOADBALANCER_PRIVATE_IP="$1"
+export BASTION_HOST_PRIVATE_IP="$2"
+export NAT_GATEWAY_PRIVATE_IP="$3"
+export VIRTUAL_NETWORK_GATEWAY="$4"
+export TABLE_NAME='lockdown_private_instances'
+export CONFIG_PATH='/etc/sysconfig/nftables.conf'
+
+# Podman default network subnet (check with: podman network inspect podman)
+export PODMAN_NETWORK_SUBNET="10.89.0.0/16"
+
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
+    echo "Error: Missing required parameters."
+    echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <VIRTUAL_NETWORK_GATEWAY>"
+    exit 1
+fi
+
+if [[ "$5" ]]; then
+    echo "Allowing additional port for demo instance: $5"
+    export LB_INGRESS_PORTS="{80,443,$5}"
+else
+    export LB_INGRESS_PORTS="{80,443}"
+fi
+
+### INSTALLATION ###
+sudo dnf install --quiet -y nftables
+printf "\n# network filter tables installed binary path:\n"
+which nft
+
+### CONFIGURATION ###
+
+cat << EOF > $CONFIG_PATH
+#!/usr/sbin/nft -f
+
+# Delete previous table
+table ip $TABLE_NAME
+delete table ip $TABLE_NAME
+
+# Create new IPv4 table
+table ip $TABLE_NAME {
+
+    # Filter ingress traffic
+    chain input {
+
+        # Drop all ingress for all protocols by default unless explicitly allowed
+        type filter hook input priority 0; policy drop;
+
+        # Allow loopback to localhost for internal services
+        iif lo accept
+
+        # Allow established and related connections
+        ct state established,related accept
+
+        # Allow SSH Ingress from Bastion Host
+        ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
+
+        # Allow HTTPS Ingress from Loadbalancer
+        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport $LB_INGRESS_PORTS ct state new accept
+
+        # Allow ICMP Ping Ingress from Loadbalancer
+        ip saddr $LOADBALANCER_PRIVATE_IP icmp type echo-request accept
+
+        # Allow Podman container traffic to host (for port-mapped services)
+        ip saddr $PODMAN_NETWORK_SUBNET accept
+    }
+
+    # Allow outbound http, https, dns, icmp
+    chain output {
+        # Drop all egress by default unless explicitly allowed
+        type filter hook output priority 0; policy drop;
+
+        # Allow Loopback
+        oif lo accept
+
+        # Allow established and related connections
+        ct state established,related accept
+
+        # Allow DNS queries to Hetzner DNS Servers and the Fallback DNS Server
+        ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} udp dport 53 ct state new accept
+
+        # Allow ICMP to internet
+        icmp type echo-request accept
+
+        # Allow HTTP, HTTPS to internet
+        tcp dport {80,443} ct state new accept
+
+        # Allow traffic to Podman containers
+        ip daddr $PODMAN_NETWORK_SUBNET accept
+    }
+
+    # Allow Podman container-to-container and port-forwarding traffic
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+
+        # Allow established and related connections
+        ct state established,related accept
+
+        # Allow traffic between Podman containers (same network)
+        ip saddr $PODMAN_NETWORK_SUBNET ip daddr $PODMAN_NETWORK_SUBNET accept
+
+        # Allow incoming traffic to be forwarded to containers (port mapping)
+        ip daddr $PODMAN_NETWORK_SUBNET ct state new accept
+
+        # Allow container responses back out
+        ip saddr $PODMAN_NETWORK_SUBNET ct state new accept
+    }
+}
+EOF
+
+# ...existing code...
+````
+
+### More Restrictive Alternative (Interface-Based)
+
+If you want tighter control using interface names instead of subnets:
+
+````bash
+# ...existing code...
+
+cat << EOF > $CONFIG_PATH
+#!/usr/sbin/nft -f
+
+table ip $TABLE_NAME
+delete table ip $TABLE_NAME
+
+table ip $TABLE_NAME {
+
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        iif lo accept
+        ct state established,related accept
+
+        ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
+        ip saddr $LOADBALANCER_PRIVATE_IP tcp dport $LB_INGRESS_PORTS ct state new accept
+        ip saddr $LOADBALANCER_PRIVATE_IP icmp type echo-request accept
+
+        # Allow traffic from any podman interface
+        iifname "podman*" accept
+    }
+
+    chain output {
+        type filter hook output priority 0; policy drop;
+
+        oif lo accept
+        ct state established,related accept
+
+        ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} udp dport 53 ct state new accept
+        icmp type echo-request accept
+        tcp dport {80,443} ct state new accept
+
+        # Allow traffic to any podman interface
+        oifname "podman*" accept
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+
+        ct state established,related accept
+
+        # Allow forwarding between podman interfaces (container-to-container)
+        iifname "podman*" oifname "podman*" accept
+
+        # Allow external traffic to be forwarded to containers (port mapping ingress)
+        oifname "podman*" ct state new accept
+
+        # Allow container traffic to be forwarded out (container responses)
+        iifname "podman*" ct state new accept
+    }
+}
+EOF
+
+# ...existing code...
+````
+
+## Summary of Changes
+
+| Chain | Rule Added | Purpose |
+|-------|------------|---------|
+| `input` | `iifname "podman*" accept` | Allow container → host traffic |
+| `output` | `oifname "podman*" accept` | Allow host → container traffic |
+| `forward` | `iifname "podman*" oifname "podman*" accept` | Container-to-container (backend ↔ postgres) |
+| `forward` | `oifname "podman*" ct state new accept` | External ingress via port mapping |
+| `forward` | `iifname "podman*" ct state new accept` | Container response traffic |
+
+This allows:
+- ✅ Backend → PostgreSQL communication via `fiscalismia-network`
+- ✅ External loadbalancer → Frontend via port mapping (if you switch from `network_mode: host`)
+- ✅ External loadbalancer → Backend:8443 via port mapping
+- ❌ Containers cannot reach arbitrary external hosts (still locked down)
