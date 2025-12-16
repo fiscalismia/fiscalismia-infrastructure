@@ -48,14 +48,15 @@ services:
       - SETUID
       - SETGID
       - FOWNER
-      - DAC_READ_SEARCH
+      - DAC_READ_SEARCH # allows reading files regardless of permissions set
     security_opt:
       - no-new-privileges:true
 
   fiscalismia-backend:
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
     container_name: fiscalismia-backend
-    user: 0:0 # TODO switch to docker service user
+    pull_policy: always
+    restart: unless-stopped
     env_file:
       - .env
     volumes:
@@ -72,7 +73,6 @@ services:
     depends_on:
       fiscalismia-postgres:
         condition: service_healthy
-    restart: unless-stopped
     # Container Resource Usage
     deploy:
       resources:
@@ -85,21 +85,24 @@ services:
     # Capabilities (minimal required permissions)
     cap_drop:
       - ALL
+    # cap_add:
+      # - CAP_DAC_READ_SEARCH # Bypass file read permission checks and directory read and execute permission checks
     security_opt:
       - no-new-privileges:true
 
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
     container_name: fiscalismia-frontend
+    pull_policy: always
+    restart: unless-stopped
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
       # mounted volume by applying a shared SELinux label.
-      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
+      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:z
+      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:z
     ports:
       - 443:443
-    restart: unless-stopped
     # Container Resource Usage
     deploy:
       resources:
@@ -110,7 +113,6 @@ services:
           memory: 256M
           cpus: '0.2'
     ### SECURITY HARDENING (minimal required permissions)
-    read_only: true
     tmpfs:
       - /tmp:noexec,nosuid,size=256m
       - /var/cache/nginx:noexec,nosuid,size=128m
@@ -121,6 +123,7 @@ services:
       # if binding to ports < 1024 also requires the following setting on the host:
       # echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
       - NET_BIND_SERVICE
+      # - CAP_DAC_OVERRIDE # Bypass file read, write, and execute permission checks.
     security_opt:
       - no-new-privileges:true
 
