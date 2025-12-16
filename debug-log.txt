@@ -1,141 +1,624 @@
-i am running frontend backend and postgres on a demo instance via docker compose
-having cap_drop all is giving me permission denied in nginx frontend but i wanna retain the security best practices
-Adding user 0:0 was a quick fix to permission issues but cap add is still giving me these for /var/cache/nginx/client_temp 
-
-also recommend additional docker compose best practices for my postgresql database that is currently barebones
-it is just a test database with test data but it will be exposed to users via frontend masks using backend routes
-
-
-
-
-
-```
-volumes:
-  database-v:
-    name: "database-v"
-
-services:
-  fiscalismia-postgres:
-    image: ${POSTGRES_HOST}:1.0.0
-    container_name: ${POSTGRES_HOST}
-    build:
-      context: ./database/
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    volumes:
-      - database-v:/var/lib/postgresql/data
-    networks:
-      - fiscalismia-network
-    # REMOVED: ports exposure - DB only accessible via internal network
-    # ports:
-    #   - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    command: "-p ${POSTGRES_PORT}"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -p ${POSTGRES_PORT} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      start_period: 10s
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    # Security hardening
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETUID
-      - SETGID
-      - FOWNER
-      - DAC_READ_SEARCH
-    security_opt:
-      - no-new-privileges:true
-    # Resource limits - adjust based on your instance size
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '1.0'
-        reservations:
-          memory: 256M
-    restart: unless-stopped
-    # Logging limits
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    # tmpfs for temporary files
-    tmpfs:
-      - /tmp:noexec,nosuid,size=64m
-      - /run:noexec,nosuid,size=64m
-
-  fiscalismia-backend:
-    image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
-    container_name: fiscalismia-backend
-    # Remove user: 0:0 if possible - check what user your backend image uses
-    env_file:
-      - .env
-    volumes:
-      - /usr/local/etc/fiscalismia-demo/backend/public:/fiscalismia-backend/public:z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
-    networks:
-      - fiscalismia-network
-    ports:
-      - 8443:8443
-    depends_on:
-      fiscalismia-postgres:
-        condition: service_healthy
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE  # Only if binding to ports < 1024
-    security_opt:
-      - no-new-privileges:true
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.5'
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  fiscalismia-frontend:
-    image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
-    container_name: fiscalismia-frontend
-    read_only: true
-    tmpfs:
-      - /tmp:noexec,nosuid,size=10m
-      - /var/cache/nginx:noexec,nosuid,size=50m
-      - /var/run:noexec,nosuid,size=1m
-    volumes:
-      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
-      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
-    ports:
-      - 443:8443
-    networks:
-      - fiscalismia-network
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-          cpus: '0.5'
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-networks:
-  fiscalismia-network:
-    name: fiscalismia-network
-    driver: bridge
-```
+Attaching to fiscalismia-frontend
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:25 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:26 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:26 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:26 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:27 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:28 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:29 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:29 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:29 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:29 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:29 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.shable Watch   d Detach
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:30 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:30 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:30 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:30 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:30 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:31 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:32 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1 (restarting)
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | 2025/12/16 17:24:33 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | 10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:33 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:33 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:33 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | /docker-entrypoint.sh: Configuration complete; ready for start up
+fiscalismia-frontend  | 2025/12/16 17:24:33 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | 2025/12/16 17:24:33 [emerg] 1#1: cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend  | nginx: [emerg] cannot load certificate key "/etc/nginx/certs/privkey.pem": BIO_new_file() failed (SSL: error:8000000D:system library::Permission denied:calling fopen(/etc/nginx/certs/privkey.pem, r) error:10080002:BIO routines::system lib)
+fiscalismia-frontend exited with code 1
+Get "http://%2Frun%2Fuser%2F0%2Fdocker.sock/v1.41/containers/a5219369f07805c8cf91006826c1a90f133993a497afad142491b17d1922c0cd/json": context canceled
+Error: executing /usr/libexec/docker/cli-plugins/docker-compose up --build --no-deps fiscalismia-frontend: exit status 1

@@ -19,8 +19,6 @@ services:
       - database-v:/var/lib/postgresql/data
     networks:
       - fiscalismia-network
-    ports:
-    - ${POSTGRES_PORT}:${POSTGRES_PORT}
     command: "-p ${POSTGRES_PORT}"
     # to use healthcheck for backend server see https://wittcode.com/blogs/connect-a-node-server-to-postgres-with-docker-compose
     healthcheck:
@@ -29,6 +27,30 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    # Container Resource Usage
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    # tmpfs for temporary files
+    tmpfs:
+      - /tmp:noexec,nosuid,size=512m
+      - /run:noexec,nosuid,size=512m
+    # Security hardening
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_READ_SEARCH
+    security_opt:
+      - no-new-privileges:true
 
   fiscalismia-backend:
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
@@ -48,15 +70,27 @@ services:
     ports:
       - 8443:8443
     depends_on:
-      - fiscalismia-postgres
+      fiscalismia-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    # Container Resource Usage
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+          cpus: '0.6'
+        reservations:
+          memory: 512M
+          cpus: '0.4'
     # Capabilities (minimal required permissions)
     cap_drop:
       - ALL
+    security_opt:
+      - no-new-privileges:true
 
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
     container_name: fiscalismia-frontend
-    user: 0:0 # TODO switch to docker service user
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
@@ -65,13 +99,30 @@ services:
       - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     ports:
       - 443:443
-    # Capabilities (minimal required permissions)
+    restart: unless-stopped
+    # Container Resource Usage
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.4'
+        reservations:
+          memory: 256M
+          cpus: '0.2'
+    ### SECURITY HARDENING (minimal required permissions)
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=256m
+      - /var/cache/nginx:noexec,nosuid,size=128m
+      - /var/run:noexec,nosuid,size=64m
     cap_drop:
       - ALL
     cap_add:
-      - SETUID            # Required for Nginx master process to switch user
-      - SETGID            # Required for Nginx master process to switch group
-      - NET_BIND_SERVICE  # Required to bind to ports < 1024
+      # if binding to ports < 1024 also requires the following setting on the host:
+      # echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee /etc/sysctl.d/nonroot_can_bind_to_low_ports.conf
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   fiscalismia-network:
