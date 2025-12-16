@@ -1,395 +1,141 @@
+i am running frontend backend and postgres on a demo instance via docker compose
 having cap_drop all is giving me permission denied in nginx frontend but i wanna retain the security best practices
+Adding user 0:0 was a quick fix to permission issues but cap add is still giving me these for /var/cache/nginx/client_temp 
 
 also recommend additional docker compose best practices for my postgresql database that is currently barebones
 it is just a test database with test data but it will be exposed to users via frontend masks using backend routes
 
 
-```
 
-worker_processes auto; # Auto-detect CPU cores for optimal performance
-
-pid /tmp/nginx.pid; # Process ID file location
-
-error_log /var/log/nginx/error.log warn; # Log errors at 'warn' level or higher
-
-
-events {
-
-    worker_connections 4096; # Max simultaneous connections per worker (tune based on traffic)
-
-}
-
-
-http {
-
-    include /etc/nginx/mime.types; # Load MIME type mappings (critical for serving JS/CSS correctly)
-
-    default_type application/octet-stream; # Fallback MIME type for unknown files
-
-
-    server_tokens off; # Hide nginx version in headers (prevents version-specific attacks)
-
-
-    # Performance optimizations for static file serving
-
-    sendfile on; # Efficient file transfer using kernel space (bypass user space)
-
-    tcp_nopush on; # Send headers in one packet with sendfile (reduces network overhead)
-
-    tcp_nodelay on; # Disable Nagle's algorithm for low-latency responses
-
-    keepalive_timeout 65; # Keep connections alive for 65s to reuse TCP connections
-
-
-    # Gzip compression for text-based assets (reduces bandwidth by 60-80%)
-
-    gzip on; # Enable gzip compression
-
-    gzip_vary on; # Add Vary: Accept-Encoding header for proper caching
-
-    gzip_proxied any; # Compress responses for proxied requests
-
-    gzip_comp_level 6; # Compression level 1-9 (6 is optimal balance of speed/size)
-
-    gzip_buffers 16 8k; # Memory buffers for compression (16 buffers of 8KB each)
-
-    gzip_http_version 1.1; # Only compress HTTP/1.1+ requests
-
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript; # Compress these MIME types
-
-
-    access_log /var/log/nginx/access.log; # Log all requests
-
-
-    server {
-
-        listen 443; # Listen on standard HTTP port
-
-        server_name localhost; # Accept requests for 'localhost' hostname
-
-
-        root /usr/share/nginx/html; # Document root directory
-
-        index index.html; # Default file to serve
-
-
-        # Security headers applied to ALL responses
-
-        add_header X-Content-Type-Options "nosniff" always; # Prevent MIME type sniffing attacks
-
-        add_header X-Frame-Options "DENY" always; # Prevent clickjacking (disallow iframes)
-
-        add_header X-XSS-Protection "1; mode=block" always; # Enable browser XSS filter
-
-        add_header Referrer-Policy "strict-origin-when-cross-origin" always; # Control referrer info sent to other sites
-
-        # CSP: restricts which resources can be loaded (prevents XSS/injection attacks)
-
-        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://your-api-domain.com;" always;
-
-
-        # SPA routing: serve index.html for all non-file requests
-
-        location / {
-
-            try_files $uri $uri/ /index.html; # Check file → directory → fallback to index.html
-
-            add_header Cache-Control "no-cache, must-revalidate" always; # Force revalidation of index.html so updates are retrieved immediately
-
-        }
-
-
-        # Aggressive caching for static assets (vite adds content hash to filenames)
-
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf|eot)$ {
-
-            access_log off; # Don't log static asset requests (reduces I/O)
-
-            add_header Cache-Control "public, max-age=31536000, immutable" always; # Cache for 1 year (files are immutable due to hash)
-
-        }
-
-
-        # Block access to hidden files (.git, .env, etc.)
-
-        location ~ /\. {
-
-            deny all; # Return 403 Forbidden
-
-        }
-
-
-        # Block access to config files that shouldn't be public
-
-        location ~* (package\.json|package-lock\.json|tsconfig\.json|vite\.config\.ts)$ {
-
-            deny all; # Return 403 Forbidden
-
-        }
-
-    }
-
-}
-
-```
 
 
 ```
-
 volumes:
-
   database-v:
-
     name: "database-v"
 
-
 services:
-
-  # to connect to db in attached docker shell, (RUN apk add --no-cache postgresql-client):
-
-  # psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT
-
-  # to connect from local machine, the host has to be localhost!
-
-  # psql -U $POSTGRES_USER -d $POSTGRES_DB -h localhost -p $POSTGRES_PORT
-
   fiscalismia-postgres:
-
     image: ${POSTGRES_HOST}:1.0.0
-
     container_name: ${POSTGRES_HOST}
-
     build:
-
       context: ./database/
-
       dockerfile: Dockerfile
-
     env_file:
-
       - .env
-
     volumes:
-
       - database-v:/var/lib/postgresql/data
-
     networks:
-
       - fiscalismia-network
-
-    ports:
-
-    - ${POSTGRES_PORT}:${POSTGRES_PORT}
-
+    # REMOVED: ports exposure - DB only accessible via internal network
+    # ports:
+    #   - ${POSTGRES_PORT}:${POSTGRES_PORT}
     command: "-p ${POSTGRES_PORT}"
-
-    # to use healthcheck for backend server see https://wittcode.com/blogs/connect-a-node-server-to-postgres-with-docker-compose
-
     healthcheck:
-
       test: ["CMD-SHELL", "pg_isready -p ${POSTGRES_PORT} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-
-      start_period: 0s
-
-      interval: 5s
-
+      start_period: 10s
+      interval: 10s
       timeout: 5s
-
       retries: 5
-
+    # Security hardening
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_READ_SEARCH
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits - adjust based on your instance size
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+    restart: unless-stopped
+    # Logging limits
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # tmpfs for temporary files
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+      - /run:noexec,nosuid,size=64m
 
   fiscalismia-backend:
-
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
-
     container_name: fiscalismia-backend
-
-    user: 0:0 # TODO switch to docker service user
-
+    # Remove user: 0:0 if possible - check what user your backend image uses
     env_file:
-
       - .env
-
     volumes:
-
-      # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
-
-      # to relabel the host directory. This allows the container to access the
-
-      # mounted volume by applying a shared SELinux label.
-
       - /usr/local/etc/fiscalismia-demo/backend/public:/fiscalismia-backend/public:z
-
       - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
-
       - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
-
     networks:
-
       - fiscalismia-network
-
     ports:
-
       - 8443:8443
-
     depends_on:
-
-      - fiscalismia-postgres
-
-    # Capabilities (minimal required permissions)
-
+      fiscalismia-postgres:
+        condition: service_healthy
     cap_drop:
-
       - ALL
-
+    cap_add:
+      - NET_BIND_SERVICE  # Only if binding to ports < 1024
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   fiscalismia-frontend:
-
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
-
     container_name: fiscalismia-frontend
-
-    user: 0:0 # TODO switch to docker service user
-
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=10m
+      - /var/cache/nginx:noexec,nosuid,size=50m
+      - /var/run:noexec,nosuid,size=1m
     volumes:
-
-      # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
-
-      # to relabel the host directory. This allows the container to access the
-
-      # mounted volume by applying a shared SELinux label.
-
       - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
-
       - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
-
     ports:
-
-      - 443:443
-
-    # Capabilities (minimal required permissions)
-
+      - 443:8443
+    networks:
+      - fiscalismia-network
     cap_drop:
-
       - ALL
-
-    cap_add:
-
-      - NET_BIND_SERVICE  # Required to bind to ports < 1024
-
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
-
   fiscalismia-network:
-
     name: fiscalismia-network
-
     driver: bridge
-
-```
-
-
-```
-
-FROM node:20-alpine as build
-
-
-# initialize/override global scope build args by supplying --build-arg flag in podman build
-
-ARG FRONTEND_VERSION
-
-ARG BACKEND_PORT
-
-ARG BACKEND_PROTOCOL
-
-ARG BACKEND_DOMAIN
-
-ARG ENVIRONMENT
-
-ARG NGINX_CONF
-
-
-### INITIAL SETUP ###
-
-WORKDIR /build-dir/
-
-COPY package-lock.json package.json ./
-
-COPY tsconfig.json ./
-
-COPY vite.config.ts ./
-
-COPY public/ ./public/
-
-COPY index.html ./
-
-COPY .eslintrc.js ./
-
-COPY src/ ./src
-
-
-### NPM INSTALL & BUILD ###
-
-# Consume the ARGS to make them available in subsequent stages
-
-ARG FRONTEND_VERSION
-
-ARG BACKEND_PORT
-
-ARG BACKEND_PROTOCOL
-
-ARG BACKEND_DOMAIN
-
-ARG ENVIRONMENT
-
-ARG NGINX_CONF
-
-# bakes env vars into compiled js files
-
-ENV VITE_BUILD_VERSION=$FRONTEND_VERSION
-
-ENV VITE_BACKEND_PORT=$BACKEND_PORT
-
-ENV VITE_BACKEND_PROTOCOL=$BACKEND_PROTOCOL
-
-ENV VITE_BACKEND_DOMAIN=$BACKEND_DOMAIN
-
-ENV VITE_ENVIRONMENT=$ENVIRONMENT
-
-RUN npm ci --only=production
-
-RUN npm run build
-
-
-#   __   ___  __        ___           ___               __
-
-#  /__` |__  |__) \  / |__     |  | |  |  |__|    |\ | / _` | |\ | \_/
-
-#  .__/ |___ |  \  \/  |___    |/\| |  |  |  |    | \| \__> | | \| / \
-
-# Use the official unprivileged nginx image (runs as nginx user by default)
-
-FROM docker.io/nginxinc/nginx-unprivileged:1.29.3-alpine
-
-WORKDIR /etc/nginx
-
-
-# construct minimum viable final container from build stage
-
-COPY --from=build /build-dir/dist /usr/share/nginx/html
-
-# redeclare arg to expose in stage
-
-ARG NGINX_CONF
-
-COPY $NGINX_CONF /etc/nginx/nginx.conf
-
-
-# HTTP/S Ingress
-
-EXPOSE 443
-
-
-CMD ["nginx", "-g", "daemon off;"]
-
 ```
