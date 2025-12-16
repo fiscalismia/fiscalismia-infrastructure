@@ -12,9 +12,9 @@ services:
     container_name: ${POSTGRES_HOST}
     build:
       context: ./database/
-      dockerfile: database/Dockerfile
+      dockerfile: Dockerfile
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
       - database-v:/var/lib/postgresql/data
     networks:
@@ -33,17 +33,20 @@ services:
   fiscalismia-backend:
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
     container_name: fiscalismia-backend
+    user: 0:0 # TODO switch to docker service user
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/backend/public:/fiscalismia-backend/public:z
+      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
+      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     networks:
       - fiscalismia-network
     ports:
-    - ${BACKEND_PORT}:${BACKEND_PORT}
+      - 8443:8443
     depends_on:
       - fiscalismia-postgres
     # Capabilities (minimal required permissions)
@@ -53,24 +56,21 @@ services:
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
     container_name: fiscalismia-frontend
-    env_file:
-      - ../fiscalismia-frontend/.env
+    user: 0:0 # TODO switch to docker service user
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
       # mounted volume by applying a shared SELinux label.
-      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z \
-      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z \
-    networks:
-      - host
+      - /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
+      - /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     ports:
-    - ${FRONTEND_PORT}:${FRONTEND_PORT}
-    depends_on:
-      - fiscalismia-backend
+      - 443:443
     # Capabilities (minimal required permissions)
     cap_drop:
       - ALL
     cap_add:
+      - SETUID            # Required for Nginx master process to switch user
+      - SETGID            # Required for Nginx master process to switch group
       - NET_BIND_SERVICE  # Required to bind to ports < 1024
 
 networks:
