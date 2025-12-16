@@ -175,20 +175,20 @@ jobs:
       run: |
         ### INFRA SETUP
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
-
-        ### FRONTEND SETUP
-        scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
-
-        ### BACKEND SETUP
         aws secretsmanager get-secret-value \
             --secret-id $ENV_FILE_SECRET_ID \
             --region eu-central-1 \
             --output text \
             --query SecretString \
-            >> ${BACKEND_DIR}/.env
+            >> ${INFRA_DIR}/.env
+        scp ${INFRA_DIR}/.env demo:${REMOTE_DEMO_DIR}/.env
+        rm -f ${INFRA_DIR}/.env
+
+        ### FRONTEND SETUP
+        scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
+
+        ### BACKEND SETUP
         scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/backend/Dockerfile
-        scp ${BACKEND_DIR}/.env demo:${REMOTE_DEMO_DIR}/backend/.env
-        rm -f ${BACKEND_DIR}/.env
 
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
