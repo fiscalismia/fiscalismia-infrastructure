@@ -94,7 +94,7 @@ runcmd:
       ${NAT_GATEWAY_PRIVATE_IP} \
       ${VIRTUAL_NETWORK_GATEWAY} \
       "$PODMAN_LISTENER_PORT_LIST" \
-      "$OPTIONAL_BACKEND_DEMO_INGRESS_PORT" \
+      $OPTIONAL_BACKEND_DEMO_INGRESS_PORT \
       >> $logfile 2>&1
   ######################################################################################
   # reboots server for persistent network config to take effect

@@ -18,7 +18,7 @@ services:
     volumes:
       - database-v:/var/lib/postgresql/data
     networks:
-      - fiscalismia-network
+      - demo-network
     command: "-p ${POSTGRES_PORT}"
     # to use healthcheck for backend server see https://wittcode.com/blogs/connect-a-node-server-to-postgres-with-docker-compose
     healthcheck:
@@ -67,7 +67,7 @@ services:
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     networks:
-      - fiscalismia-network
+      - demo-network
     ports:
       - "0.0.0.0:8443:8443/tcp"
     depends_on:
@@ -101,6 +101,8 @@ services:
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
+    networks:
+      - demo-frontend-only
     ports:
       - "0.0.0.0:443:443/tcp"
     # Container Resource Usage
@@ -125,6 +127,19 @@ services:
       - no-new-privileges:true
 
 networks:
-  fiscalismia-network:
-    name: fiscalismia-network
+  demo-network:
+    name: demo-network
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.89.0.0/24
+          gateway: 10.89.0.1
+  demo-frontend-only:
+    name: demo-frontend-only
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.89.1.0/24
+          gateway: 10.89.1.1
