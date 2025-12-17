@@ -69,7 +69,7 @@ services:
     networks:
       - fiscalismia-network
     ports:
-      - 8443:8443
+      - "0.0.0.0:8443:8443/tcp"
     depends_on:
       fiscalismia-postgres:
         condition: service_healthy
@@ -101,9 +101,8 @@ services:
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
-    network_mode: host # TODO fix nftables config to allow podman inter bridge network communication and switch to port mapping
-    # ports:
-    #   - "0.0.0.0:443:443/tcp"
+    ports:
+      - "0.0.0.0:443:443/tcp"
     # Container Resource Usage
     deploy:
       resources:

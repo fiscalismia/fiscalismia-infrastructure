@@ -121,10 +121,12 @@ To secure our private instances which cannot have a hetzner cloud firewall attac
 It limits the private instances in both the demo and production network to:
 - Ingress on Port 22 TCP from the Private IPv4 of the Bastion-Host
 - Ingress on Port 443 TCP from the Private IPv4 of the LoadBalancer
+- For the Demo Instance only: Ingress on Port 8443 TCP from the Private IPv4 of the LoadBalancer
 - Ingress on ICMP Protocol for Pings from the Private IPv4 of the LoadBalancer
 - Egress on Port {80,443} TCP to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
 - Egress on Port 53 UDP for DNS Queries to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
 - Egress for ICMP for pings to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
+- Forwarding for the podman rootless container network CIDR ranges, can be hardcoded if networks are created explicitly
 
 #### Basic Concepts
 
