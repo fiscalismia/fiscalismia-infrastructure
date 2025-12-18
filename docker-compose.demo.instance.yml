@@ -82,11 +82,14 @@ services:
         reservations:
           memory: 512M
           cpus: '0.4'
-    # Capabilities (minimal required permissions)
+    ### SECURITY HARDENING (minimal required permissions)
+    tmpfs:
+      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
     cap_drop:
       - ALL
-    # cap_add:
-      # - CAP_DAC_READ_SEARCH # Bypass file read permission checks and directory read and execute permission checks
+    cap_add:
+      - SETUID
+      - SETGID
     security_opt:
       - no-new-privileges:true
 
@@ -115,6 +118,7 @@ services:
           memory: 256M
           cpus: '0.2'
     ### SECURITY HARDENING (minimal required permissions)
+    read_only: true
     tmpfs:
       - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
     cap_drop:
