@@ -158,6 +158,7 @@ jobs:
         mkdir -p ${REMOTE_DEMO_DIR}/database
         mkdir -p ${REMOTE_DEMO_DIR}/frontend
         mkdir -p ${REMOTE_DEMO_DIR}/backend
+        mkdir -p ${REMOTE_DEMO_DIR}/backend/public
         mkdir -p ${REMOTE_DEMO_DIR}/certs
 
         # copy ssl certificates to deployment directory
@@ -189,6 +190,9 @@ jobs:
 
         ### BACKEND SETUP
         scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/backend/Dockerfile
+        scp ${BACKEND_DIR}/public/favicon.ico demo:${REMOTE_DEMO_DIR}/backend/favicon.ico
+        # copy favicon and make nodejs owner of public dir
+        ssh demo "chown -R 1001:1001 ${REMOTE_DEMO_DIR}/backend/public/"
 
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
