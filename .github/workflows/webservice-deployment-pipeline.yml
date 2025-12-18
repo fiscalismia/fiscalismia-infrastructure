@@ -190,7 +190,7 @@ jobs:
 
         ### BACKEND SETUP
         scp ${BACKEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/backend/Dockerfile
-        scp ${BACKEND_DIR}/public/favicon.ico demo:${REMOTE_DEMO_DIR}/backend/favicon.ico
+        scp ${BACKEND_DIR}/public/favicon.ico demo:${REMOTE_DEMO_DIR}/backend/public/favicon.ico
         # copy favicon and make nodejs owner of public dir
         ssh demo "chown -R 1001:1001 ${REMOTE_DEMO_DIR}/backend/public/"
 
