@@ -1,53 +1,121 @@
-[root@Fiscalismia-Demo fiscalismia-demo]# docker compose up --no-deps fiscalismia-backend
-Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
->>>> Executing external compose provider "/usr/libexec/docker/cli-plugins/docker-compose". Please see podman-compose(1) for how to disable this message. <<<<
-
-[+] up 7/7
- ✔ Image ghcr.io/fiscalismia/fiscalismia-backend-demo:latest Pulled                                 0.9s 
-Attaching to fiscalismia-backend
-fiscalismia-backend  | 2025-12-18 17:25:59,747 INFO Set uid to user 0 succeeded
-fiscalismia-backend  | 2025-12-18 17:25:59,753 INFO supervisord started with pid 1
-fiscalismia-backend  | 2025-12-18 17:26:00,761 INFO spawned: 'nginx' with pid 3
-fiscalismia-backend  | 2025-12-18 17:26:00,771 INFO spawned: 'node' with pid 4
-fiscalismia-backend  | nginx: [alert] could not open error log file: open() "/var/lib/nginx/logs/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025/12/18 17:26:00 [emerg] 3#3: open() "/var/log/nginx/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025-12-18 17:26:01,820 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-fiscalismia-backend  | 2025-12-18 17:26:01,822 INFO success: node entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-fiscalismia-backend  | 2025-12-18 17:26:01,822 WARN exited: nginx (exit status 1; not expected)
-fiscalismia-backend  | http: Docker Postgres DB running on fiscalismia-postgres:5432
-fiscalismia-backend  | Server is listening at address: 
-fiscalismia-backend  | http://localhost:3002/api/fiscalismia at 2025-12-18 18:26:02
-fiscalismia-backend  | 2025-12-18 17:26:02,132 INFO spawned: 'nginx' with pid 15
-fiscalismia-backend  | nginx: [alert] could not open error log file: open() "/var/lib/nginx/logs/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025/12/18 17:26:02 [emerg] 15#15: open() "/var/log/nginx/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025-12-18 17:26:02,239 WARN exited: nginx (exit status 1; not expected)
-fiscalismia-backend  | 2025-12-18 17:26:03,250 INFO spawned: 'nginx' with pid 16
-fiscalismia-backend  | nginx: [alert] could not open error log file: open() "/var/lib/nginx/logs/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025/12/18 17:26:03 [emerg] 16#16: open() "/var/log/nginx/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025-12-18 17:26:03,278 WARN exited: nginx (exit status 1; not expected)
-fiscalismia-backend  | 2025-12-18 17:26:05,287 INFO spawned: 'nginx' with pid 17
-fiscalismia-backend  | nginx: [alert] could not open error log file: open() "/var/lib/nginx/logs/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025/12/18 17:26:05 [emerg] 17#17: open() "/var/log/nginx/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025-12-18 17:26:06,321 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-fiscalismia-backend  | 2025-12-18 17:26:06,322 WARN exited: nginx (exit status 1; not expected)
-fiscalismia-backend  | 2025-12-18 17:26:07,328 INFO spawned: 'nginx' with pid 18
-fiscalismia-backend  | nginx: [alert] could not open error log file: open() "/var/lib/nginx/logs/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025/12/18 17:26:07 [emerg] 18#18: open() "/var/log/nginx/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025-12-18 17:26:07,354 WARN exited: nginx (exit status 1; not expected)
-fiscalismia-backend  | 2025-12-18 17:26:08,361 INFO spawned: 'nginx' with pid 19
-fiscalismia-backend  | nginx: [alert] could not open error log file: open() "/var/lib/nginx/logs/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025/12/18 17:26:08 [emerg] 19#19: open() "/var/log/nginx/error.log" failed (13: Permission denied)
-fiscalismia-backend  | 2025-12-18 17:26:08,394 WARN exited: nginx (exit status 1; not expected)
-Gracefully Stopping... press Ctrl+C again to force
-Container fiscalismia-backend Stopping 
-fiscalismia-backend  | 2025-12-18 17:26:09,398 WARN received SIGTERM indicating exit request
-fiscalismia-backend  | 2025-12-18 17:26:09,406 CRIT unknown problem killing node (4):Traceback (most recent call last):
-fiscalismia-backend  |   File "/usr/lib/python3.11/site-packages/supervisor/process.py", line 467, in kill
-fiscalismia-backend  |     options.kill(pid, sig)
-fiscalismia-backend  |   File "/usr/lib/python3.11/site-packages/supervisor/options.py", line 1320, in kill
-fiscalismia-backend  |     os.kill(pid, signal)
-fiscalismia-backend  | PermissionError: [Errno 1] Operation not permitted
-fiscalismia-backend  | 
-Container fiscalismia-backend Stopped 
-fiscalismia-backend exited with code 0
-[root@Fiscalismia-Demo fiscalismia-demo]# 
+[root@Fiscalismia-Demo fiscalismia-demo]# podman logs --follow fiscalismia-backend
+2025-12-18 17:50:33,394 INFO Set uid to user 0 succeeded
+2025-12-18 17:50:33,394 INFO Set uid to user 0 succeeded
+Traceback (most recent call last):
+  File "/usr/bin/supervisord", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 359, in main
+    go(options)
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 369, in go
+    d.main()
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 72, in main
+    self.options.make_logger()
+  File "/usr/lib/python3.11/site-packages/supervisor/options.py", line 1501, in make_logger
+    self.logger.info(msg)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 327, in info
+    self.log(LevelsByName.INFO, msg, **kw)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 345, in log
+    handler.emit(record)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 227, in emit
+    self.doRollover()
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 264, in doRollover
+    if not (self.stream.tell() >= self.maxBytes):
+            ^^^^^^^^^^^^^^^^^^
+OSError: [Errno 29] Invalid seek
+2025-12-18 17:50:34,332 INFO Set uid to user 0 succeeded
+2025-12-18 17:50:34,332 INFO Set uid to user 0 succeeded
+Traceback (most recent call last):
+  File "/usr/bin/supervisord", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 359, in main
+    go(options)
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 369, in go
+    d.main()
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 72, in main
+    self.options.make_logger()
+  File "/usr/lib/python3.11/site-packages/supervisor/options.py", line 1501, in make_logger
+    self.logger.info(msg)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 327, in info
+    self.log(LevelsByName.INFO, msg, **kw)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 345, in log
+    handler.emit(record)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 227, in emit
+    self.doRollover()
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 264, in doRollover
+    if not (self.stream.tell() >= self.maxBytes):
+            ^^^^^^^^^^^^^^^^^^
+OSError: [Errno 29] Invalid seek
+2025-12-18 17:50:35,289 INFO Set uid to user 0 succeeded
+2025-12-18 17:50:35,289 INFO Set uid to user 0 succeeded
+Traceback (most recent call last):
+  File "/usr/bin/supervisord", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 359, in main
+    go(options)
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 369, in go
+    d.main()
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 72, in main
+    self.options.make_logger()
+  File "/usr/lib/python3.11/site-packages/supervisor/options.py", line 1501, in make_logger
+    self.logger.info(msg)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 327, in info
+    self.log(LevelsByName.INFO, msg, **kw)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 345, in log
+    handler.emit(record)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 227, in emit
+    self.doRollover()
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 264, in doRollover
+    if not (self.stream.tell() >= self.maxBytes):
+            ^^^^^^^^^^^^^^^^^^
+OSError: [Errno 29] Invalid seek
+2025-12-18 17:50:36,236 INFO Set uid to user 0 succeeded
+2025-12-18 17:50:36,236 INFO Set uid to user 0 succeeded
+Traceback (most recent call last):
+  File "/usr/bin/supervisord", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 359, in main
+    go(options)
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 369, in go
+    d.main()
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 72, in main
+    self.options.make_logger()
+  File "/usr/lib/python3.11/site-packages/supervisor/options.py", line 1501, in make_logger
+    self.logger.info(msg)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 327, in info
+    self.log(LevelsByName.INFO, msg, **kw)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 345, in log
+    handler.emit(record)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 227, in emit
+    self.doRollover()
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 264, in doRollover
+    if not (self.stream.tell() >= self.maxBytes):
+            ^^^^^^^^^^^^^^^^^^
+OSError: [Errno 29] Invalid seek
+2025-12-18 17:50:37,157 INFO Set uid to user 0 succeeded
+2025-12-18 17:50:37,157 INFO Set uid to user 0 succeeded
+Traceback (most recent call last):
+  File "/usr/bin/supervisord", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 359, in main
+    go(options)
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 369, in go
+    d.main()
+  File "/usr/lib/python3.11/site-packages/supervisor/supervisord.py", line 72, in main
+    self.options.make_logger()
+  File "/usr/lib/python3.11/site-packages/supervisor/options.py", line 1501, in make_logger
+    self.logger.info(msg)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 327, in info
+    self.log(LevelsByName.INFO, msg, **kw)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 345, in log
+    handler.emit(record)
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 227, in emit
+    self.doRollover()
+  File "/usr/lib/python3.11/site-packages/supervisor/loggers.py", line 264, in doRollover
+    if not (self.stream.tell() >= self.maxBytes):
+            ^^^^^^^^^^^^^^^^^^
+OSError: [Errno 29] Invalid seek
