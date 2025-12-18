@@ -88,8 +88,9 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      - SETUID
-      - SETGID
+      - SETUID # required to set id of unpriviledged service user
+      - SETGID # required to set group of unpriviledged service user
+      - KILL  # Required for supervisor to signal child processes
     security_opt:
       - no-new-privileges:true
 
