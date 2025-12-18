@@ -88,6 +88,7 @@ services:
     cap_drop:
       - ALL
     cap_add:
+      - CHOWN # for changing owner to nginx of tmp directories
       - SETUID # required to set id of unpriviledged service user
       - SETGID # required to set group of unpriviledged service user
       - KILL  # Required for supervisor to signal child processes

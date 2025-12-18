@@ -163,9 +163,9 @@ jobs:
         # copy ssl certificates to deployment directory
         cp /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem ${REMOTE_DEMO_DIR}/certs/
         cp /etc/letsencrypt/live/demo.fiscalismia.com/privkey.pem ${REMOTE_DEMO_DIR}/certs/
-        # change cert ownership to read only by unpriviledged nginx userid and groupid
+        # change cert ownership to read only owned by unpriviledged nginx userid and groupid
         chown -R 101:101 ${REMOTE_DEMO_DIR}/certs/
-        chmod -R 400 ${REMOTE_DEMO_DIR}/certs/*.pem
+        chmod -R 444 ${REMOTE_DEMO_DIR}/certs/*.pem
         EOF
 
     - name: Secure Copy Dependencies to DEMO Instance
