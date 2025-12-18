@@ -132,6 +132,8 @@ services:
     security_opt:
       - no-new-privileges:true
 
+# since nftables firewall blocks all port forwarding except in specific podman network cidrs, all containers must live in a network
+# The configured CIDR allows these networks: 10.89.0.0/24 | 10.89.1.0/24 | 10.89.2.0/24 | 10.89.3.0/24
 networks:
   demo-network:
     name: demo-network
