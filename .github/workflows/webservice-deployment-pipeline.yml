@@ -205,8 +205,8 @@ jobs:
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
-          docker compose up --build --detach --no-deps fiscalismia-postgres fiscalismia-frontend
-
+          docker compose down --volumes || true
+          docker compose up --build --detach
         EOF
     #     __        __        ___       __      __   ___  __        __             ___      ___
     #    |__)  /\  /  ` |__/ |__  |\ | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
