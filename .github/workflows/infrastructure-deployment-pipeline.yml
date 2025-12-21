@@ -82,7 +82,7 @@ jobs:
 
     - name: Create SSH Config for Bastion-Host ProxyJump
       run: |
-        mkdir -p ~/.ssh/config
+        mkdir -p ~/.ssh/
         cat << EOF > ~/.ssh/config
         Host bastion-host
             HostName $BASTION_HOST_PUBLIC_IP
@@ -111,7 +111,6 @@ jobs:
       if: inputs.deploy_haproxy == true
       run: |
         ssh loadbalancer "hostname -I"
-        ssh monitoring "hostname -I"
 
     - name: Deploy PROMETHEUS & GRAFANA on Monitoring Instance via OpenSSH
       if: inputs.deploy_prometheus_grafana == true
