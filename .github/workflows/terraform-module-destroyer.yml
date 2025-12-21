@@ -2,7 +2,7 @@
 # See https://docs.github.com/en/webhooks/webhook-events-and-payloads#workflow_dispatch
 # The fine-grained token must have the following permission set: "Actions" repository permissions (write)
 
-name: Fiscalismia TerraformModuleDestroyer Pipeline
+name: TerraformModuleDestroyer Pipeline
 
 on:
   workflow_dispatch:

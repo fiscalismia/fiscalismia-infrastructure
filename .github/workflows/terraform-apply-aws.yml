@@ -1,20 +1,19 @@
-name: Fiscalismia AWS Terraform Pipeline
+name: AWS Terraform Pipeline
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      run_aws_deployment:
+        description: 'Terraform plan aws & manually approve plan'
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   #               __      __   ___  __        __             ___      ___
   #     /\  |  | /__`    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
   #    /~~\ |/\| .__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
   terraform-plan-aws:
-    environment: prod # requires manual approval before running, as remote state needs hcloud apply to run first
-    timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
 
     permissions:
