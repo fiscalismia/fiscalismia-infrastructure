@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       run_hclouzd_deployment:
-        description: 'Terraform plan aws & manually approve plan'
+        description: 'Terraform plan HCLOUD & manually approve apply step'
         required: true
         default: true
         type: boolean

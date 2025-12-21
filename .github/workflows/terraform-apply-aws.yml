@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       run_aws_deployment:
-        description: 'Terraform plan aws & manually approve plan'
+        description: 'Terraform plan AWS & manually approve apply step'
         required: true
         default: true
         type: boolean

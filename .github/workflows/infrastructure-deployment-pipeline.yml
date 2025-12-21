@@ -4,17 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       deploy_haproxy:
-        description: 'Deploy HAProxy Loadbalancer'
+        description: 'Deploy HAProxy on Loadbalancer Instance'
         required: true
         default: true
         type: boolean
-      deploy_prometheus:
-        description: 'Deploy Prometheus on Monitoring Instance'
-        required: true
-        default: false
-        type: boolean
-      deploy_grafana:
-        description: 'Deploy GRAFANA on Monitoring Instance'
+      deploy_prometheus_grafana:
+        description: 'Deploy PROMETHEUS & GRAFANA on Monitoring Instance'
         required: true
         default: false
         type: boolean
@@ -117,12 +112,7 @@ jobs:
         ssh loadbalancer "hostname -I"
         ssh monitoring "hostname -I"
 
-    - name: Deploy PROMETHEUS on Monitoring Instance via OpenSSH
-      if: inputs.deploy_prometheus == true
+    - name: Deploy PROMETHEUS & GRAFANA on Monitoring Instance via OpenSSH
+      if: inputs.deploy_prometheus_grafana == true
       run: |
-        echo "Deploying Prometheus on Monitoring Instance"
-
-    - name: Deploy GRAFAMA on Monitoring Instance via OpenSSH
-      if: inputs.deploy_grafana == true
-      run: |
-        echo "Deploying Grafana on Monitoring Instance"
+        echo "Deploying Prometheus & Grafana on Monitoring Instance"
