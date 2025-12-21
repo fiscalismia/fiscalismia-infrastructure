@@ -1,12 +1,13 @@
 name: HCLOUD Terraform Pipeline
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      run_hclouzd_deployment:
+        description: 'Terraform plan aws & manually approve plan'
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   #          __        __        __      __   ___  __        __             ___      ___
