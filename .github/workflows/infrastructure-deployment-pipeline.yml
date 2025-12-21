@@ -10,12 +10,12 @@ on:
         type: boolean
       deploy_prometheus:
         description: 'Deploy Prometheus on Monitoring Instance'
-        required: false
+        required: true
         default: false
         type: boolean
       deploy_grafana:
         description: 'Deploy GRAFANA on Monitoring Instance'
-        required: false
+        required: true
         default: false
         type: boolean
 

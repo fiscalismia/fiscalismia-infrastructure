@@ -1,19 +1,21 @@
 name: Security-Evaluation HCLOUD
 
 on:
-  push:
-    branches:
-      - main
-      - pipeline_testing
-  pull_request:
-    branches:
-      - main
-      - pipeline_testing
+  workflow_dispatch:
+    inputs:
+      internal_security_scan:
+        description: 'Internal Security evaluation of hcloud hosts'
+        required: true
+        default: true
+        type: boolean
+      external_network_sentinel:
+        description: 'Provision Network-Sentinel & launch external portscan'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   security-evaluate-hcloud:
-    environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
-    timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
 
     permissions:
@@ -168,6 +170,7 @@ jobs:
         echo "TARGETS=$PRIVATE_NETWORK_TARGETS" >> $GITHUB_ENV
 
     - name: Security Evaluation of Loadbalancer
+      if: inputs.internal_security_scan == true
       env:
         SCRIPT_NAME: evaluate_loadbalancer_egress.sh
         SCRIPT_PATH: security/hcloud/
@@ -187,6 +190,7 @@ jobs:
         cat ./$LOG_NAME
 
     - name: Security Evaluation of Bastion-Host
+      if: inputs.internal_security_scan == true
       env:
         SCRIPT_NAME: evaluate_bastion_host_egress.sh
         SCRIPT_PATH: security/hcloud/
@@ -205,7 +209,13 @@ jobs:
         scp bastion-host:$REMOTE_LOG ./$LOG_NAME
         cat ./$LOG_NAME
 
+    - name: Provision Network-Sentinel via Terraform
+      if: inputs.external_network_sentinel == true
+      run: |
+        echo IMPLEMENT ME
+
     - name: Private Ingress Security Evaluation via Network Sentinel
+      if: inputs.external_network_sentinel == true
       env:
         SCRIPT_NAME: portscan_private_ingress.sh
         SCRIPT_PATH: security/hcloud/
