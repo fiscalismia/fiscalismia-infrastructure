@@ -1,19 +1,31 @@
 name: DNS TLS Certificate Validation
 
 on:
-  push:
-    branches:
-      - main
-      - pipeline_testing
-  pull_request:
-    branches:
-      - main
-      - pipeline_testing
+  workflow_dispatch:
+    inputs:
+      letsencrypt_demo:
+        description: 'DEMO instance Letsencrypt TLS cert request'
+        required: true
+        default: true
+        type: boolean
+      letsencrypt_monitoring:
+        description: 'MONITORING instance Letsencrypt TLS cert request'
+        required: true
+        default: false
+        type: boolean
+      letsencrypt_frontend:
+        description: 'FRONTEND instance Letsencrypt TLS cert request'
+        required: true
+        default: false
+        type: boolean
+      letsencrypt_backend:
+        description: 'BACKEND instance Letsencrypt TLS cert request'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   fetch-and-validate-tls-certs:
-    environment: prod # requires manual approval before running, as it requires hcloud servers to be up and running
-    timeout-minutes: 240 # Cancels the job if it isn't approved within 4 hours
     runs-on: ubuntu-latest
 
     permissions:
@@ -195,17 +207,39 @@ jobs:
         rm -f ${S3_KEY}
         rm -f ${CREDENTIALS}
 
-    - name: Run certbot certificate request and validation script
+    - name: DEMO instance certbot TLS request & DNS validation script
+      if: inputs.letsencrypt_demo == true
       env:
         DEMO_DOMAIN: demo.fiscalismia.com
         DEMO_BACKEND_DOMAIN: backend.demo.fiscalismia.com
-        FRONTEND_DOMAIN: fiscalismia.com
-        BACKEND_DOMAIN: backend.fiscalismia.com
-        MONITORING_DOMAIN: monitoring.fiscalismia.com
         REMOTE_LOG: /root/certbot_dns_validation.log
         SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
       run: |
         ssh demo "nohup $SCRIPT_PATH $DEMO_DOMAIN $DEMO_BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
-        # ssh monitoring "nohup $SCRIPT_PATH $FRONTEND_DOMAIN > $REMOTE_LOG 2>&1 &"
-        # ssh frontend "nohup $SCRIPT_PATH $MONITORING_DOMAIN > $REMOTE_LOG 2>&1 &"
-        # ssh backend "nohup $SCRIPT_PATH $BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
+
+    - name: MONITORING instance certbot TLS request & DNS validation script
+      if: inputs.letsencrypt_monitoring == true
+      env:
+        MONITORING_DOMAIN: monitoring.fiscalismia.com
+        REMOTE_LOG: /root/certbot_dns_validation.log
+        SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
+      run: |
+        ssh monitoring "nohup $SCRIPT_PATH $MONITORING_DOMAIN > $REMOTE_LOG 2>&1 &"
+
+    - name: FRONTEND instance certbot TLS request & DNS validation script
+      if: inputs.letsencrypt_frontend == true
+      env:
+        FRONTEND_DOMAIN: fiscalismia.com
+        REMOTE_LOG: /root/certbot_dns_validation.log
+        SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
+      run: |
+        ssh frontend "nohup $SCRIPT_PATH $FRONTEND_DOMAIN > $REMOTE_LOG 2>&1 &"
+
+    - name: BACKEND instance certbot TLS request & DNS validation script
+      if: inputs.letsencrypt_backend == true
+      env:
+        BACKEND_DOMAIN: backend.fiscalismia.com
+        REMOTE_LOG: /root/certbot_dns_validation.log
+        SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
+      run: |
+        ssh backend "nohup $SCRIPT_PATH $BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
