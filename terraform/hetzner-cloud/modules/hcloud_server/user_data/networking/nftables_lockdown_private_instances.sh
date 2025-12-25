@@ -77,6 +77,9 @@ table ip $TABLE_NAME {
         # Allow established and related connections
         ct state established,related accept
 
+        # Allow DNS queries from podman network CIDR range to resolve container hostnames
+        ip saddr $PODMAN_NETWORK_CIDR udp dport 53 ct state new accept
+
         # Allow SSH Ingress from Bastion Host
         ip saddr $BASTION_HOST_PRIVATE_IP tcp dport 22 ct state new accept
 
