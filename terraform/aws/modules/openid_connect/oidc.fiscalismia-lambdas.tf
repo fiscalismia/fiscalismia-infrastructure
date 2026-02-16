@@ -94,6 +94,7 @@ resource "aws_iam_policy" "github_actions_lambda_pipeline_update" {
         Effect = "Allow"
         Action = [
           "lambda:PublishLayerVersion",
+          "lambda:GetLayerVersion",
         ]
         Resource = [
           "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:layer:Test_*PythonDependencies*",
