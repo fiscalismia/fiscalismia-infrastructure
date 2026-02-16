@@ -20,6 +20,33 @@ resource "aws_iam_role_policy_attachment" "lambda_role_app" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_role_app_secretsmgr_access" {
+  role       = aws_iam_role.lambda_execution_role_app.name
+  policy_arn = aws_iam_policy.lambda_query_secrets_manager_access.arn
+}
+
+resource "aws_iam_policy" "lambda_query_secrets_manager_access" {
+  name        = "ApplicationLambda_SecretsManagerAccess"
+  path        = "/"
+  description = "IAM policy for allowing Application Lambdas Access to scoped down Secrets"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:eu-central-1:010928217051:secret:/google/sheets/fiscalismia-datasource-url-k38OGm",
+          "arn:aws:secretsmanager:eu-central-1:010928217051:secret:/api/fiscalismia/API_GW_SECRET_KEY-4AjIFN"
+        ]
+      }
+    ]
+  })
+}
+
 # CloudWatch Logs policy
 resource "aws_iam_policy" "lambda_cloudwatch_logging_app" {
   name        = "CloudwatchLogging-ApplicationPolicy"
