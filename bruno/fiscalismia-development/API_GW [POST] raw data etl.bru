@@ -1,0 +1,15 @@
+meta {
+  name: API_GW  [POST] raw data etl
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{API_GW_ENDPOINT}}/api/fiscalismia/post/raw_data_etl/invoke_lambda/return_tsv_file_urls
+  body: json
+  auth: none
+}
+
+body:json {
+  {key:"value"}
+}
