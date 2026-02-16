@@ -64,8 +64,6 @@ terraform apply \
 
 Create `terraform/aws/terraform.tfvars` file and change any desired variables by overwriting the default values within `variables.tf`
 ```bash
-secret_api_key                        = "klmasfdjlkfaedf7z77DAw___020"
-test_sheet_url                        = "https://docs.google.com/spreadsheets/d/{YOUR_ID}/edit"
 forecasted_budget_notification_email  = "example@domain.com"
 ```
 
@@ -187,7 +185,7 @@ See [NFTables Setup Guide](https://www.centron.de/en/tutorial/install-and-config
 <u>Included Resources:</u>
 
 - Public API HTTP Gateway with POST Routes that can invoke Lambda functions
-- 2 Lambda Functions for Img Upload and Google Sheets Raw Data ETL protected via `secret_api_key`
+- 2 Lambda Functions for Img Upload and Google Sheets Raw Data ETL protected via `secret_api_key` saved in backend .env file and validated via Secrets Manager integration
 - 2 Lambda Layers containing the runtime dependencies not included in aws by default
 - 2 S3 Buckets accessed by Lambda for storing processed images and sheet output
 - Respective IAM Roles and Permissions to allow access between API GW - Lambda - S3

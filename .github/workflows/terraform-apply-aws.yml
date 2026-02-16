@@ -48,8 +48,6 @@ jobs:
         cd ${GITHUB_WORKSPACE}/terraform/aws
         terraform init
         terraform plan \
-          -var='secret_api_key=${{ secrets.API_GATEWAY_SECRET_KEY }}' \
-          -var='test_sheet_url=${{ secrets.GOOGLE_DOCS_TEST_URL }}' \
           -var='forecasted_budget_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
           -target=module.route_53_dns \
           -target=module.api_gateway \

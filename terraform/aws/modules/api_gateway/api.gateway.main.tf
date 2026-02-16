@@ -24,11 +24,11 @@ resource "aws_apigatewayv2_integration" "upload_img" {
   integration_uri           = var.lambda_invoke_arn_upload_img
 }
 
-resource "aws_apigatewayv2_integration" "post_sheet_url" {
+resource "aws_apigatewayv2_integration" "post_raw_data_etl" {
   api_id                    = aws_apigatewayv2_api.aws_api.id
   integration_type          = "AWS_PROXY"
   connection_type           = "INTERNET"
-  description               = "Lambda Post Sheet URL Integration"
+  description               = "Lambda Raw Data ETL Integration"
   integration_method        = "POST"
   integration_uri           = var.lambda_invoke_arn_raw_data_etl
 }
@@ -58,13 +58,13 @@ resource "aws_apigatewayv2_route" "upload_img" {
   depends_on = [aws_apigatewayv2_integration.upload_img]
 }
 
-resource "aws_apigatewayv2_route" "post_sheet_url" {
+resource "aws_apigatewayv2_route" "post_raw_data_etl" {
   api_id    = aws_apigatewayv2_api.aws_api.id
   route_key = "${var.post_raw_data_route}"
-  target    = "integrations/${aws_apigatewayv2_integration.post_sheet_url.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.post_raw_data_etl.id}"
   # authorization_type = "JWT"
   # authorizer_id      = aws_apigatewayv2_authorizer.example.id
-  depends_on = [aws_apigatewayv2_integration.post_sheet_url]
+  depends_on = [aws_apigatewayv2_integration.post_raw_data_etl]
 }
 
 resource "aws_apigatewayv2_stage" "main_stage_route_config" {
@@ -86,7 +86,7 @@ resource "aws_apigatewayv2_stage" "main_stage_route_config" {
     throttling_rate_limit  = 2.0
   }
   auto_deploy = true
-  depends_on = [aws_apigatewayv2_route.upload_img, aws_apigatewayv2_route.post_sheet_url]
+  depends_on = [aws_apigatewayv2_route.upload_img, aws_apigatewayv2_route.post_raw_data_etl]
 }
 
 # TODO https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html

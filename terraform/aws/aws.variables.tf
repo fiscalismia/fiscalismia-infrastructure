@@ -23,11 +23,6 @@ variable "forecasted_budget_notification_email" {
   type = string
   sensitive   = true
 }
-variable "test_sheet_url" {
-  default = ""  # Override ONLY IN terraform.tfvars to hide google sheets link from git repo
-  description = "sheet url for testing rest api raw etl endpoint"
-  type = string
-}
 ################### LAMBDA FUNCTIONS AND LAYERS #########################
 variable "lambda_handler_name" {
   default = "index.lambda_handler"
@@ -57,17 +52,10 @@ variable "post_img_route" {
   description = "http api route for aws. the default stage is prepended."
 }
 variable "post_raw_data_route" {
-  default = "/fiscalismia/post/sheet_url/invoke_lambda/return_tsv_file_urls"
+  default = "/fiscalismia/post/raw_data_etl/invoke_lambda/return_tsv_file_urls"
   type = string
-  description = "http api route for google sheets url post to trigger lambda etl and s3 storage. Returns S3 URLS to exported TSV files"
+  description = "http api route to invoke raw data etl lambda. Returns S3 URLS to exported TSV files"
 }
-variable "secret_api_key" {
-  default = ""  # Override ONLY IN terraform.tfvars to hide whitelist from git repository
-  description = "API KEY to allow lambda processing. Passed in lambda env vars."
-  type = string
-  sensitive   = true
-}
-
 ################ S3 BUCKETS #############################
 variable "s3_bucket_name_prefix" {
   description = "Bucket Name Prefix to use for all buckets"

@@ -17,7 +17,7 @@ output "http_aws_api_execution_arn" {
 output "route_upload_img" {
   value = "${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_img_route}"
 }
-output "route_post_sheet_url" {
+output "route_post_etl_raw_data" {
   value = "${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route}"
 }
 
@@ -35,16 +35,6 @@ aws lambda invoke --function-name ${module.lambda_raw_data_etl.function_name} \
 EOT
 }
 
-output "query_api_gateway_routes" {
-  description = "Curl API Gateway Endpoints with Secret Key."
-  value = <<EOT
-##### CURL ENDPOINT WITH BASE ENCODED IMAGE
-bash modules/application_lambda/scripts/curl-api-img-upload.sh ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_img_route}
-
-# WARNING: Replace with actual secret api key
-bash modules/application_lambda/scripts/curl-api-sheet-url.sh [tfvars.secret_api_key] ${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route} [tfvars.test_sheet_url]
-EOT
-}
 output "hcloud_dns_renewal_access_key" {
   description  = "Access Key ID for HCLOUD Instances for DNS TXT Record Verification"
   value        =  module.hcloud_iam_access.access_key_id

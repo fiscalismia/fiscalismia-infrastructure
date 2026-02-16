@@ -107,13 +107,12 @@ module "lambda_image_processing" {
   cloudwatch_log_retention_days         = 365
   s3_lambda_application_bucket          = module.s3_image_storage.bucket_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
-  secret_api_key                        = var.secret_api_key
 }
 
 module "lambda_raw_data_etl" {
   source                                = "./modules/application_lambda"
   function_name                         = "${var.application_prefix}_RawDataETL"
-  function_description                  = "Lambda for receiving google sheets/tsv files and transforming them into queries to fiscalismia rest api"
+  function_description                  = "Lambda for fetching google sheets, transforming it into TSV files with S3 persistence, returning s3 object URLs."
   layer_name                            = "${var.application_prefix}_RawDataETL_PythonDependencies"
   layer_description                     = "Python Dependencies for RAW Data ETL Lambda Function"
   lambda_execution_role_arn             = aws_iam_role.lambda_execution_role_app.arn
@@ -129,7 +128,6 @@ module "lambda_raw_data_etl" {
   cloudwatch_log_retention_days         = 365
   s3_lambda_application_bucket          = module.s3_raw_data_etl_storage.bucket_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
-  secret_api_key                        = var.secret_api_key
 }
 
 # Collection of multiple lambdas for infrastructure monitoring, alarms and automated teardown

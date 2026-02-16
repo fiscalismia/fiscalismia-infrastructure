@@ -18,7 +18,6 @@ resource "aws_lambda_function" "api_gw_func" {
   environment {
     variables = {
       IP_WHITELIST = "${var.ip_whitelist_lambda_processing}"
-      API_KEY = "${var.secret_api_key}"
     }
   }
   layers = [
