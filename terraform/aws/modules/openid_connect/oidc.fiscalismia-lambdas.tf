@@ -81,6 +81,7 @@ resource "aws_iam_policy" "github_actions_lambda_pipeline_update" {
         Effect = "Allow"
         Action = [
           "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
         ]
         Resource = [
           "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:Test_*",
