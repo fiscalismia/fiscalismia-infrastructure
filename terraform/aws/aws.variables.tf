@@ -30,12 +30,12 @@ variable "lambda_handler_name" {
   type = string
 }
 variable "lambda_function_application_log_level" {
-  default = "DEBUG"
+  default = "INFO"
   description = "Valid values: TRACE, DEBUG, INFO, WARN, ERROR, FATAL."
   type = string
 }
 variable "lambda_function_system_log_level" {
-  default = "DEBUG"
+  default = "INFO" # runtime information like START, END, REPORT including metrics such as billedDurationMs and maxMemoryUsedMB
   description = "Valid values: DEBUG, INFO, WARN."
   type = string
 }

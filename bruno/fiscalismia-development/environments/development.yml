@@ -2,3 +2,5 @@ name: development
 variables:
   - secret: true
     name: API_GW_ENDPOINT
+  - secret: true
+    name: API_GW_SECRET_KEY
