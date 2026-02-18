@@ -1,38 +1,30 @@
 output "tls_certificate" {
   description = "TLS Cert for root domain including all subdomains via *.domain.top_level_domain"
   value = module.route_53_dns.tls_certificate
+  sensitive    = true
 }
 output "http_aws_api_endpoint" {
   description = "The http api endpoint"
   value = module.api_gateway.aws_api.api_endpoint
+  sensitive    = true
 }
 output "http_aws_api_arn" {
   description = "The http api arn"
   value = module.api_gateway.aws_api.arn
+  sensitive    = true
 }
 output "http_aws_api_execution_arn" {
   description = "The http api execution arn"
   value = module.api_gateway.aws_api.execution_arn
+  sensitive    = true
 }
 output "route_upload_img" {
   value = "${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_img_route}"
+  sensitive    = true
 }
 output "route_post_etl_raw_data" {
   value = "${module.api_gateway.aws_api.api_endpoint}/${var.default_stage}${var.post_raw_data_route}"
-}
-
-output "invoke_application_lambdas" {
-  description = "aws cli invoke command to test the lambda function for uploading images"
-  value = <<EOT
-##### INVOKE UPLOAD IMG LAMBDA
-aws lambda invoke --function-name ${module.lambda_image_processing.function_name} /dev/stdout && echo "" && \
-  aws lambda invoke --function-name ${module.lambda_image_processing.function_name} --log-type Tail /dev/null | jq -r '.LogResult' | base64 --decode
-
-##### INVOKE RAW DATA ETL LAMBDA
-aws lambda invoke --function-name ${module.lambda_raw_data_etl.function_name} \
-  --payload '${jsonencode({key1 = "cli-test-value", sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSVcmgixKaP9LC-rrqS4D2rojIz48KwKA8QBmJloX1h7f8BkUloVuiw19eR2U5WvVT4InYgnPunUo49/pub?output=xlsx"})}' \
-  --cli-binary-format raw-in-base64-out /dev/stdout
-EOT
+  sensitive    = true
 }
 
 output "hcloud_dns_renewal_access_key" {

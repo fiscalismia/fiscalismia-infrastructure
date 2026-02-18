@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: "Fiscalismia"
+  type: workspace
+
+collections:
+  - name: "fiscalismia-development"
+    path: "fiscalismia-development"
+
+specs:
+
+docs: ''

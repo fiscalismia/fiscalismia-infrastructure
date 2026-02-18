@@ -1,0 +1,18 @@
+info:
+  name: raw_data_etl
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_GW_ENDPOINT}}/api/fiscalismia/post/raw_data_etl/invoke_lambda/return_tsv_file_urls"
+  body:
+    type: json
+    data: '{key:"value"}'
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

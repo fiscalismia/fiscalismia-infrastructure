@@ -23,4 +23,9 @@ resource "aws_lambda_function" "api_gw_func" {
   layers = [
     aws_lambda_layer_version.dependency_layer.arn
   ]
+
+  # Layer versions are managed outside of terraform state via fiscalismia-lambdas/.github/workflows/lambda-deployment.yml
+  lifecycle {
+    ignore_changes = [layers]
+  }
 }
