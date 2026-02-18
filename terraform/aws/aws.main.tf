@@ -124,7 +124,7 @@ module "lambda_raw_data_etl" {
   infrastructure_s3_prefix              = "lambdas/fiscalismia/python"
   runtime_env                           = "python3.13"
   timeout_seconds                       = 20
-  memory_size                           = 512
+  memory_size                           = 1024
   cloudwatch_log_retention_days         = 365
   s3_lambda_application_bucket          = module.s3_raw_data_etl_storage.bucket_name
   ip_whitelist_lambda_processing        = var.ip_whitelist_lambda_processing
