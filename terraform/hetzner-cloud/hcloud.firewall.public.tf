@@ -91,7 +91,7 @@ resource "hcloud_firewall" "egress_DENY_ALL_public" {
     name   = "egress-DENY-ALL-public"
 
     rule {
-        description     = "Allow all outbound TCP"
+        description     = "Deny all outbound TCP by whitelisting only localhost"
         direction       = "out"
         protocol        = "tcp"
         port            = "any"
