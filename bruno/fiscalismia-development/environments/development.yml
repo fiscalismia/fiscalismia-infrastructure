@@ -4,3 +4,7 @@ variables:
     name: API_GW_ENDPOINT
   - secret: true
     name: API_GW_SECRET_KEY
+  - name: FASTAPI_ENDPOINT
+    value: http://localhost:8000
+  - secret: true
+    name: JWT_SESSION_TOKEN
