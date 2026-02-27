@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{FASTAPI_ENDPOINT}}/hc"
+  url: http://{{FASTAPI_ENDPOINT}}/version
   auth: inherit
 
 settings:

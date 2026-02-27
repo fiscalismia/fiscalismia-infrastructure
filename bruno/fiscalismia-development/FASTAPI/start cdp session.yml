@@ -1,0 +1,29 @@
+info:
+  name: start cdp session
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://{{FASTAPI_ENDPOINT}}/api/fiscalismia/stream/start
+  body:
+    type: json
+    data: '{ "url": "https:example.com/" }'
+  auth:
+    type: bearer
+    token: "{{JWT_SESSION_TOKEN}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const sessionId = res.body?.session_id;
+            if (sessionId) {
+              bru.setVar("SESSION_ID", sessionId);
+            }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

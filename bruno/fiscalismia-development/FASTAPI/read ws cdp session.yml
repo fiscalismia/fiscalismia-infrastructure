@@ -1,0 +1,15 @@
+info:
+  name: read ws cdp session
+  type: websocket
+  seq: 4
+
+websocket:
+  url: ws://{{FASTAPI_ENDPOINT}}/api/fiscalismia/stream/{{SESSION_ID}}/ws?token={{JWT_SESSION_TOKEN}}
+  message:
+    type: json
+    data: "{}"
+  auth: inherit
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0
