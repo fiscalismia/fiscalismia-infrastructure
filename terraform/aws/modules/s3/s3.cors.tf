@@ -38,9 +38,10 @@ locals {
     allowed_methods = ["GET", "HEAD", "POST"]
     allowed_origins = concat([
       # DO NOT include trailing forward slashes in URLs
-      "http://localhost:3001",         # TODO local development frontend
-      "http://localhost:3002",         # TODO local development backend
-      "http://localhost:4173",         # TODO local development vite
+      "http://127.0.0.1:3001",         # TODO local development frontend
+      "http://127.0.0.1:3002",         # TODO local development backend
+      "http://127.0.0.1:3003",         # TODO local development fastapi
+      "http://127.0.0.1:4173",         # TODO local development vite
     ],
     var.fqdn != null ? [var.fqdn] : [] # adds fqdn if supplied as input
     )
