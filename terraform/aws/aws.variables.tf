@@ -113,6 +113,16 @@ variable "demo_backend_subdomains" {
   description = "Subdomain for backend service on demo server"
   type        = string
 }
+variable "fastapi_subdomain" {
+  default     = "fastapi"
+  description = "Subdomain for backend service"
+  type        = string
+}
+variable "demo_fastapi_subdomains" {
+  default     = "fastapi.demo"
+  description = "Subdomain for backend service on demo server"
+  type        = string
+}
 variable "monitoring_subdomain" {
   default     = "monitoring"
   description = "Subdomain for monitoring frontend"

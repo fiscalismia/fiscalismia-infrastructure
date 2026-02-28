@@ -7,10 +7,10 @@
 # PARAM $2 is the bastion-host private ipv4 for ssh ingress allowance
 # PARAM $3 is the nat-gateway private ipv4 for https and http egress allowance
 # PARAM $4 is the virtual network gateway used as the next-hop target for private egress to NAT-Gateway
-# PARAM $5 Comma-separated list of podman ports for local NAT port forwarding for ingress & egress, e.g. '443,8443,3002,5432'
-# PARAM $6 OPTIONAL Parameter to allow an additional port for ingress on the demo instance running frontend + backend
+# PARAM $5 Comma-separated list of podman ports for local NAT port forwarding for ingress & egress, e.g. '443,8443,8444,3002,5432'
+# PARAM $6 OPTIONAL Parameter to allow an additional ports for ingress on the demo instance running frontend + backend + fastapi
 # When a new network is created with a podman network create command, and no subnet is given with the --subnet option, Podman starts picking a free subnet from 10.89.0.0/24 to 10.255.255.0/24
-# e.g. ./scripts/nftables_lockdown_private_instances.sh 172.20.1.3 172.20.1.2 172.20.1.4 172.20.0.1 "443,8443,5432" 8443
+# e.g. ./scripts/nftables_lockdown_private_instances.sh 172.20.1.3 172.20.1.2 172.20.1.4 172.20.0.1 "443,8443,8444,5432" "8443,8444"
 ##############################################################################################################################
 
 ### PODMAN NETWORKING INFO ###
@@ -35,14 +35,15 @@ export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5" ]]; then
     echo "Error: Missing required parameters."
-    echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <VIRTUAL_NETWORK_GATEWAY> <PODMAN_LISTENER_PORT_LIST_RAW> <OPTIONAL_BACKEND_DEMO_INGRESS_PORT>"
+    echo "Usage: $0 <LOADBALANCER_PRIVATE_IP> <BASTION_HOST_PRIVATE_IP> <NAT_GATEWAY_PRIVATE_IP> <VIRTUAL_NETWORK_GATEWAY> <PODMAN_LISTENER_PORT_LIST_RAW> <OPTIONAL_BACKEND_DEMO_INGRESS_PORTS>"
     exit 1
 fi
 
 if [[ "$6" ]]; then
-    echo "Allowing additional port for demo instance: $6"
+    echo "Allowing additional port(s) for demo instance: $6"
     # TODO remove port 80 in production
-    export LB_INGRESS_PORTS="{80,443,$6}"
+    OPTIONAL_BACKEND_DEMO_INGRESS_PORTS_RAW="$6"
+    export LB_INGRESS_PORTS="{80,443,$OPTIONAL_BACKEND_DEMO_INGRESS_PORTS_RAW}"
 else
     # TODO remove port 80 in production
     export LB_INGRESS_PORTS="{80,443}"

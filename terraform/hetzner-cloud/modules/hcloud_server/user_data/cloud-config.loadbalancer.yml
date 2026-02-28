@@ -54,11 +54,11 @@ runcmd:
   - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
   - |
-    export BACKEND_DEMO_INGRESS_PORT=8443
+    export APIS_DEMO_INGRESS_PORTS="8443,8444"
     /root/scripts/nftables_lockdown_loadbalancer.sh \
       ${BASTION_HOST_PRIVATE_IP} \
       ${DEMO_INSTANCE_PRIVATE_IP} \
-      $BACKEND_DEMO_INGRESS_PORT \
+      $APIS_DEMO_INGRESS_PORTS \
       >> $logfile 2>&1
   # reboots server for network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile

@@ -212,10 +212,11 @@ jobs:
       env:
         DEMO_DOMAIN: demo.fiscalismia.com
         DEMO_BACKEND_DOMAIN: backend.demo.fiscalismia.com
+        DEMO_FASTAPI_DOMAIN: fastapi.demo.fiscalismia.com
         REMOTE_LOG: /root/certbot_dns_validation.log
         SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
       run: |
-        ssh demo "nohup $SCRIPT_PATH $DEMO_DOMAIN $DEMO_BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
+        ssh demo "nohup $SCRIPT_PATH $DEMO_DOMAIN $DEMO_BACKEND_DOMAIN $DEMO_FASTAPI_DOMAIN > $REMOTE_LOG 2>&1 &"
 
     - name: MONITORING instance certbot TLS request & DNS validation script
       if: inputs.letsencrypt_monitoring == true
@@ -239,7 +240,8 @@ jobs:
       if: inputs.letsencrypt_backend == true
       env:
         BACKEND_DOMAIN: backend.fiscalismia.com
+        FASTAPI_DOMAIN: fastapi.fiscalismia.com
         REMOTE_LOG: /root/certbot_dns_validation.log
         SCRIPT_PATH: /root/scripts/fetch-and-validate-tls-certificates.sh
       run: |
-        ssh backend "nohup $SCRIPT_PATH $BACKEND_DOMAIN > $REMOTE_LOG 2>&1 &"
+        ssh backend "nohup $SCRIPT_PATH $BACKEND_DOMAIN $FASTAPI_DOMAIN > $REMOTE_LOG 2>&1 &"

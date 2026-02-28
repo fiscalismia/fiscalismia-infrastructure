@@ -46,7 +46,7 @@ for instance in "${instance_ips[@]}"; do
     [[ "$variable_name" == *"frontend_private_ip"* ]] || \
     [[ "$variable_name" == *"backend_private_ip"* ]];then
     printf "\n##### Testing TCP ports for $variable_name at address $ip_address...\n"
-    for port in {80,443}; do
+    for port in {80,443,8443,8444}; do
       # EXECUTE NETCAT PORTSCAN COMMAND
       timeout $ncat_timeout nc -vz4 $ip_address $port > /dev/null 2>&1
       exit_code=$?
@@ -58,7 +58,7 @@ for instance in "${instance_ips[@]}"; do
         echo "OK: $variable_name port $port is reachable [but refuses connection]"
       elif (( exit_code > 1 )); then
         error_count=$((++error_count))
-        echo "ERROR: $variable_name port $port timeout [blocked by firewall]"
+        echo "ERROR: $variable_name port $port timeout [down or blocked by firewall]"
       fi
       sleep $sleep_timer
     done

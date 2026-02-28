@@ -2,8 +2,10 @@ module "route_53_dns" {
   source                                = "./modules/route_53"
   demo_subdomain                        = var.demo_subdomain            # demo frontend
   demo_backend_subdomains               = var.demo_backend_subdomains   # demo backend
+  demo_fastapi_subdomains               = var.demo_fastapi_subdomains   # demo fastapi
   domain_name                           = var.domain_name               # MAIN Frontend
   backend_subdomain                     = var.backend_subdomain         # MAIN Backend
+  fastapi_subdomain                     = var.fastapi_subdomain         # MAIN Fastapi
   monitoring_subdomain                  = var.monitoring_subdomain      # Prometheus & Grafana
   loadbalancer_instance_ipv4            = local.hcloud_fiscalismia_loadbalancer_ipv4
 }

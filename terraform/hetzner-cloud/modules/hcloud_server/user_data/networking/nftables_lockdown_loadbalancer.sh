@@ -5,7 +5,7 @@
 # We manually install and configure nftables, the best practice tools for firewall rules used as backend for other frameworks
 # PARAM $1 is the bastion-host private ipv4 for ssh ingress allowance via production network
 # PARAM $2 is the demo instance private ip in order to allow an additional port for the running backend
-# PARAM $3 Parameter to allow an additional port as egress to the demo instance running frontend + backend
+# PARAM $3 Parameter to allow additional port(s) as egress to the demo instance running frontend + backend + fastapi
 # e.g. ./scripts/nftables_lockdown_loadbalancer.sh 172.24.1.2
 ##############################################################################################################################
 
@@ -14,13 +14,13 @@ sleep 60
 
 export BASTION_HOST_PRIVATE_IP="$1" # use production network private ip
 export DEMO_INSTANCE_PRIVATE_IP="$2"
-export BACKEND_DEMO_INGRESS_PORT="$3"
+export APIS_DEMO_INGRESS_PORTS="$3"
 export TABLE_NAME='lockdown_loadbalancer_private_net'
 export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
     echo "Error: Missing required parameters."
-    echo "Usage: $0 <BASTION_HOST_PRIVATE_IP> <DEMO_INSTANCE_PRIVATE_IP> <BACKEND_DEMO_INGRESS_PORT>"
+    echo "Usage: $0 <BASTION_HOST_PRIVATE_IP> <DEMO_INSTANCE_PRIVATE_IP> <APIS_DEMO_INGRESS_PORTS>"
     exit 1
 fi
 
@@ -85,7 +85,7 @@ table ip $TABLE_NAME {
         tcp dport {80,443} ct state new accept
 
         # Allow HTTPS Egress to additional demo instance port
-        ip daddr $DEMO_INSTANCE_PRIVATE_IP tcp dport $BACKEND_DEMO_INGRESS_PORT ct state new accept
+        ip daddr $DEMO_INSTANCE_PRIVATE_IP tcp dport {$APIS_DEMO_INGRESS_PORTS} ct state new accept
     }
 
     # Drop all packages to be forwarded (we're not a gateway!)

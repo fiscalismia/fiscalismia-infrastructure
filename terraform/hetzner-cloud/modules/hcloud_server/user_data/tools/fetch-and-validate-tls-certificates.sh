@@ -15,25 +15,35 @@ fi
 
 echo "Installing certbot and route53 dns plugin"
 sudo dnf install --quiet -y certbot python3-certbot-dns-route53
-
-if [[ "$2" ]] then
-    echo "Requesting two tls certificates for"
-    echo $1 && echo $2
+if [[ -n "$2" && -n "$3" ]]; then
+    echo "Requesting three tls certificates for"
+    echo "$1" && echo "$2" && echo "$3"
     sudo certbot certonly \
-    --dns-route53 \
-    --non-interactive \
-    --agree-tos \
-    --key-type ecdsa \
-    -d $1 \
-    -d $2
+        --dns-route53 \
+        --non-interactive \
+        --agree-tos \
+        --key-type ecdsa \
+        -d "$1" \
+        -d "$2" \
+        -d "$3"
+elif [[ -n "$2" && -z "$3" ]]; then
+    echo "Requesting two tls certificates for"
+    echo "$1" && echo "$2"
+    sudo certbot certonly \
+        --dns-route53 \
+        --non-interactive \
+        --agree-tos \
+        --key-type ecdsa \
+        -d "$1" \
+        -d "$2"
 else
     echo "Requesting single tls certificate for $1"
     sudo certbot certonly \
-    --dns-route53 \
-    --non-interactive \
-    --agree-tos \
-    --key-type ecdsa \
-    -d $1
+        --dns-route53 \
+        --non-interactive \
+        --agree-tos \
+        --key-type ecdsa \
+        -d "$1"
 fi
 
 # list generated certificates

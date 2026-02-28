@@ -66,9 +66,25 @@ resource "aws_route53_record" "type_A_demo_backend_domain" {
   ttl     = 300
 }
 
+resource "aws_route53_record" "type_A_demo_fastapi_domain" {
+  zone_id = data.aws_route53_zone.selected_zone.zone_id
+  name    = "${var.demo_fastapi_subdomains}.${var.domain_name}"
+  type    = "A"
+  records = [var.loadbalancer_instance_ipv4]
+  ttl     = 300
+}
+
 resource "aws_route53_record" "type_A_backend_domain" {
   zone_id = data.aws_route53_zone.selected_zone.zone_id
   name    = "${var.backend_subdomain}.${var.domain_name}"
+  type    = "A"
+  records = [var.loadbalancer_instance_ipv4]
+  ttl     = 300
+}
+
+resource "aws_route53_record" "type_A_fastapi_domain" {
+  zone_id = data.aws_route53_zone.selected_zone.zone_id
+  name    = "${var.fastapi_subdomain}.${var.domain_name}"
   type    = "A"
   records = [var.loadbalancer_instance_ipv4]
   ttl     = 300
