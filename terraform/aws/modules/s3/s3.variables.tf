@@ -1,5 +1,6 @@
 variable "bucket_name" {}
 variable "fqdn" {}
+variable "demo_fqdn" {}
 variable "lambda_execution_role_arns" {}
 variable "data_infrequent_access" {
   default     = false

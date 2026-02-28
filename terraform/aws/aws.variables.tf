@@ -42,7 +42,7 @@ variable "lambda_function_system_log_level" {
 
 ################### API GATEWAY #########################
 variable "default_stage" {
-  default = "api"
+  default = "apigw"
   type = string
   description = "HTTP API can be separated into stages that change the endpoint routes to start with /stage/"
 }
@@ -85,6 +85,11 @@ variable "terraform_state_bucket" {
 ################### DNS NAMES ###########################
 variable "fqdn" {
   default = "https://fiscalismia.com"
+  description = "fully qualified domain name of source webservice for CORS access"
+  type = string
+}
+variable "demo_fqdn" {
+  default = "https://demo.fiscalismia.com"
   description = "fully qualified domain name of source webservice for CORS access"
   type = string
 }

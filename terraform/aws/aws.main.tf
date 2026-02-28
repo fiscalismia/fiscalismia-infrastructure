@@ -36,6 +36,7 @@ module "s3_image_storage" {
   source                                = "./modules/s3"
   bucket_name                           = "${var.s3_bucket_name_prefix}${var.image_processing_bucket_name}"
   fqdn                                  = var.fqdn
+  demo_fqdn                             = null  # demo instance doesn't use s3 img storage
   data_infrequent_access                = false # do NOT send to IA
   data_infrequent_access_days           = null
   data_archival                         = false # do NOT archive
@@ -50,6 +51,7 @@ module "s3_raw_data_etl_storage" {
   source                                = "./modules/s3"
   bucket_name                           = "${var.s3_bucket_name_prefix}${var.etl_bucket_name}"
   fqdn                                  = var.fqdn
+  demo_fqdn                             = var.demo_fqdn
   data_infrequent_access                = true  # data is sent to infrequent access
   data_infrequent_access_days           = 30    # after this many days
   data_archival                         = true  # data is sent to glacier
@@ -64,6 +66,7 @@ module "s3_infrastructure_storage" {
   source                                = "./modules/s3"
   bucket_name                           = "${var.s3_bucket_name_prefix}${var.infrastructure_bucket_name}"
   fqdn                                  = null
+  demo_fqdn                             = null
   data_infrequent_access                = true  # data is sent to infrequent access
   data_infrequent_access_days           = 30    # after this many days
   data_archival                         = false # do NOT archive

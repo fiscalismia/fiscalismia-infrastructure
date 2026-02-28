@@ -43,7 +43,8 @@ locals {
       "http://127.0.0.1:3003",         # TODO local development fastapi
       "http://127.0.0.1:4173",         # TODO local development vite
     ],
-    var.fqdn != null ? [var.fqdn] : [] # adds fqdn if supplied as input
+    var.fqdn != null ? [var.fqdn] : [], # adds fqdn if supplied as input
+    var.demo_fqdn != null ? [var.demo_fqdn] : [] # adds fqdn if supplied as input
     )
       # "${var.fqdn != null ? var.fqdn : ""}", # either FQDN or empty string)
     expose_headers  = [

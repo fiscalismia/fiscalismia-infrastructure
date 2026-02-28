@@ -4,7 +4,7 @@ info:
   seq: 4
 
 websocket:
-  url: ws://{{FASTAPI_ENDPOINT}}/api/fiscalismia/stream/{{SESSION_ID}}/ws?token={{JWT_SESSION_TOKEN}}
+  url: ws://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/stream/{{SESSION_ID}}/ws?token={{JWT_SESSION_TOKEN}}
   message:
     type: json
     data: "{}"

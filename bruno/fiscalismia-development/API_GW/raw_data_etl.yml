@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{API_GW_ENDPOINT}}/api/fiscalismia/post/raw_data_etl/invoke_lambda/return_tsv_file_urls"
+  url: "{{API_GW_ENDPOINT}}/apigw/fiscalismia/post/raw_data_etl/invoke_lambda/return_tsv_file_urls"
   headers:
     - name: Authorization
       value: "{{API_GW_SECRET_KEY}}"
