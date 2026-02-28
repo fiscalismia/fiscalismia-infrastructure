@@ -5,5 +5,5 @@ resource "hcloud_primary_ip" "static_ipv4" {
   assignee_type     = "server"
   auto_delete       = false
   labels            = var.labels
-  # delete_protection = true
+  delete_protection = true
 }
