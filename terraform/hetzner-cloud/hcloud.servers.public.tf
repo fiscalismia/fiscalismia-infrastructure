@@ -4,7 +4,8 @@
 #
 # Acts as bastion host for access to all instances in private subnet via private IPV4
 module "fiscalismia_bastion_host" {
-  source            = "./modules/hcloud_server/"
+  source              = "./modules/hcloud_server/"
+  instance_count      = 1
 
   server_name         = "Fiscalismia-Bastion-Host"
   image_id            = data.hcloud_image.fedora_image.id
@@ -46,6 +47,7 @@ module "fiscalismia_bastion_host" {
 # HAProxy and central ingress for all DNS routes, uses HTTPS pass-through to appropriate endpoints for mTLS
 module "fiscalismia_loadbalancer" {
   source              = "./modules/hcloud_server/"
+  instance_count      = 1
 
   server_name         = "Fiscalismia-LoadBalancer"
   image_id            = data.hcloud_image.fedora_image.id
@@ -88,6 +90,7 @@ module "fiscalismia_loadbalancer" {
 #    |    \__/ |__) |___ | \__,    | | \|  |  |___ |  \ | \| |___  |     /~~\ \__, \__, |___ .__/ .__/
 module "fiscalismia_nat_gateway" {
   source            = "./modules/hcloud_server/"
+  instance_count      = 1
 
   server_name       = "Fiscalismia-NAT-Gateway"
   image_id          = data.hcloud_image.fedora_image.id
@@ -122,11 +125,7 @@ module "fiscalismia_nat_gateway" {
 # Dedicated Security Hardening Evaluation Instance with no public ingress but all open Private Ports for network portscans
 module "network_sentinel" {
   source            = "./modules/hcloud_server/"
-
-  # disabled by default - launch by executing these commands:
-  # terraform plan -var='deploy_network_sentinel=true'
-  # terraform apply -var='deploy_network_sentinel=true'
-  count = var.deploy_network_sentinel ? 1 : 0
+  instance_count    = 1
 
   server_name       = "Network-Sentinel"
   image_id          = data.hcloud_image.fedora_image.id

@@ -19,8 +19,3 @@ variable "unix_distro" {
   type          = string
   default       = "fedora-43"
 }
-variable "deploy_network_sentinel" {
-  description = "To deploy on demand use ~terraform plan -var='deploy_network_sentinel=true'"
-  type        = bool
-  default     = false
-}

@@ -9,7 +9,7 @@ on:
         default: true
         type: boolean
       external_network_sentinel:
-        description: 'Provision Network-Sentinel & launch external portscan'
+        description: 'Ensure Network-Sentinel is available & launch external portscan'
         required: true
         default: false
         type: boolean
@@ -209,11 +209,6 @@ jobs:
         scp bastion-host:$REMOTE_LOG ./$LOG_NAME
         cat ./$LOG_NAME
 
-    - name: Provision Network-Sentinel via Terraform
-      if: inputs.external_network_sentinel == true
-      run: |
-        echo IMPLEMENT ME
-
     - name: Private Ingress Security Evaluation via Network Sentinel
       if: inputs.external_network_sentinel == true
       env:
@@ -222,7 +217,7 @@ jobs:
         REMOTE_DIR: /root/security/
         REMOTE_LOG: /root/portscan_private_ingress.log
         LOG_NAME: portscan_private_ingress.log
-        MAX_PORT: 1024 # range between 1-65536
+        MAX_PORT: 8500 # range between 1-65536
       run: |
 
         ssh network-sentinel "mkdir -p $REMOTE_DIR"
