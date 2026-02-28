@@ -5,7 +5,7 @@
 # Demo Server running a local database and local image storage for isolated multi-user tests
 module "fiscalismia_demo" {
   source            = "./modules/hcloud_server/"
-
+  count             = 1
   server_name       = "Fiscalismia-Demo"
   is_private        = true
   image_id          = data.hcloud_image.fedora_image.id
@@ -33,7 +33,7 @@ module "fiscalismia_demo" {
 # Prometheus and Graphana Monitoring Server for health and traffic metrics of the entire Infrastructure
 module "fiscalismia_monitoring" {
   source            = "./modules/hcloud_server/"
-
+  count             = 0
   server_name       = "Fiscalismia-Monitoring"
   is_private        = true
   image_id          = data.hcloud_image.fedora_image.id
@@ -60,7 +60,7 @@ module "fiscalismia_monitoring" {
 
 module "fiscalismia_backend" {
   source            = "./modules/hcloud_server/"
-
+  count             = 0
   server_name       = "Fiscalismia-Backend"
   is_private        = true
   image_id          = data.hcloud_image.fedora_image.id
@@ -87,7 +87,7 @@ module "fiscalismia_backend" {
 
 module "fiscalismia_frontend" {
   source            = "./modules/hcloud_server/"
-
+  count             = 0
   server_name       = "Fiscalismia-Frontend"
   is_private        = true
   image_id          = data.hcloud_image.fedora_image.id

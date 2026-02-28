@@ -9,10 +9,10 @@ output "server_ips_human_readable" {
     try(module.fiscalismia_nat_gateway.server_ipv4_ascii_list, []),
     [""],
     ["############ PRIVATE INFRASTRUCTURE ###########"],
-    [format(" > %-30s %s", "Fiscalismia-Demo:", module.fiscalismia_demo.main_private_ipv4)],
-    [format(" > %-30s %s", "Fiscalismia-Monitoring:", module.fiscalismia_monitoring.main_private_ipv4)],
-    [format(" > %-30s %s", "Fiscalismia-Frontend:", module.fiscalismia_frontend.main_private_ipv4)],
-    [format(" > %-30s %s", "Fiscalismia-Backend:", module.fiscalismia_backend.main_private_ipv4)],
+    [format(" > %-30s %s", "Fiscalismia-Demo:", try(module.fiscalismia_demo[0].main_private_ipv4, "None"))],
+    [format(" > %-30s %s", "Fiscalismia-Monitoring:", try(module.fiscalismia_monitoring[0].main_private_ipv4, "None"))],
+    [format(" > %-30s %s", "Fiscalismia-Frontend:", try(module.fiscalismia_frontend[0].main_private_ipv4, "None"))],
+    [format(" > %-30s %s", "Fiscalismia-Backend:", try(module.fiscalismia_backend[0].main_private_ipv4, "None"))],
     [""],
   ))
 }
