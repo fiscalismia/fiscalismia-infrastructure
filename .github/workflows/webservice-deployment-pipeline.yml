@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       deploy_demo:
-        description: 'Deploy DEMO Backend & Frontend & local DB'
+        description: 'Deploy DEMO Backend & FastAPI & Frontend & local DB'
         required: true
         default: true
         type: boolean
       deploy_backend:
-        description: 'Deploy BACKEND on Production Instance?'
+        description: 'Deploy BACKEND & FastAPI on Production Instance?'
         required: false
         default: false
         type: boolean
@@ -50,12 +50,12 @@ jobs:
         repository: fiscalismia/fiscalismia-backend
         path: fiscalismia-backend
 
-    - name: Checkout Fiscalismia-Webservice Repository
+    - name: Checkout Fiscalismia-Webscraper Repository
       uses: actions/checkout@v5
       # https://github.com/actions/checkout
       with:
-        repository: fiscalismia/fiscalismia-webservice
-        path: fiscalismia-webservice
+        repository: fiscalismia/fiscalismia-webscraper
+        path: fiscalismia-webscraper
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
       uses: aws-actions/configure-aws-credentials@v5.1.1
