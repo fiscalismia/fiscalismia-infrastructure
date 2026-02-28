@@ -50,6 +50,13 @@ jobs:
         repository: fiscalismia/fiscalismia-backend
         path: fiscalismia-backend
 
+    - name: Checkout Fiscalismia-Webservice Repository
+      uses: actions/checkout@v5
+      # https://github.com/actions/checkout
+      with:
+        repository: fiscalismia/fiscalismia-webservice
+        path: fiscalismia-webservice
+
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
       uses: aws-actions/configure-aws-credentials@v5.1.1
       # https://github.com/aws-actions/configure-aws-credentials
