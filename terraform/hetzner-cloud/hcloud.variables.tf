@@ -1,12 +1,12 @@
 variable "default_location" {
   description   = "The location for our hcloud servers"
   type          = string
-  default       = "fsn1"
+  default       = "nbg1" # "fsn1"
 }
 variable "default_datacenter" {
   description   = "The datacenter for our resources such as primary ips"
   type          = string
-  default       = "fsn1-dc14"
+  default       =  "nbg1-dc3" # "fsn1-dc14"
 }
 variable "default_region" {
   description   = "The region for our private server network"
@@ -17,7 +17,7 @@ variable "default_region" {
 variable "unix_distro" {
   description   = "The Linux image to use for all servers"
   type          = string
-  default       = "fedora-42"
+  default       = "fedora-43"
 }
 variable "deploy_network_sentinel" {
   description = "To deploy on demand use ~terraform plan -var='deploy_network_sentinel=true'"
