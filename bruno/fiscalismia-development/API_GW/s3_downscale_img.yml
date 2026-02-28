@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{API_GW_ENDPOINT}}/api/fiscalismia/post/img/invoke_lambda/return_s3_img_url"
+  url: "{{API_GW_ENDPOINT}}/apigw/fiscalismia/post/img/invoke_lambda/return_s3_img_url"
   headers:
     - name: Authorization
       value: "{{API_GW_SECRET_KEY}}"
