@@ -23,15 +23,15 @@ output "server_ips_human_readable" {
 ### Alternatively can parse directly from state backend s3 bucket with the following syntax:
 ### bastion_ip=$(cat state.tfstate | jq .outputs.fiscalismia_bastion_host_ipv4.value )
 output "fiscalismia_bastion_host_ipv4" {
-  value     = try(module.fiscalismia_bastion_host.server_ipv4_list, null)
+  value     = try(module.fiscalismia_bastion_host.server_ipv4_list[0], null)
   sensitive = true
 }
 output "fiscalismia_loadbalancer_ipv4" {
-  value     = try(module.fiscalismia_loadbalancer.server_ipv4_list, null)
+  value     = try(module.fiscalismia_loadbalancer.server_ipv4_list[0], null)
   sensitive = true
 }
 output "fiscalismia_nat_gateway_ipv4" {
-  value     = try(module.fiscalismia_nat_gateway.server_ipv4_list, null)
+  value     = try(module.fiscalismia_nat_gateway.server_ipv4_list[0], null)
   sensitive = true
 }
 output "fiscalismia_loadbalancer_private_ipv4" {
