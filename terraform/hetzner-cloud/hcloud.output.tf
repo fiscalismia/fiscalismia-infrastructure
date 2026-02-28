@@ -23,42 +23,42 @@ output "server_ips_human_readable" {
 ### Alternatively can parse directly from state backend s3 bucket with the following syntax:
 ### bastion_ip=$(cat state.tfstate | jq .outputs.fiscalismia_bastion_host_ipv4.value )
 output "fiscalismia_bastion_host_ipv4" {
-  value     = try(module.fiscalismia_bastion_host.server_ipv4_list, "")
+  value     = try(module.fiscalismia_bastion_host.server_ipv4_list, null)
   sensitive = true
 }
 output "fiscalismia_loadbalancer_ipv4" {
-  value     = try(module.fiscalismia_loadbalancer.server_ipv4_list, "")
+  value     = try(module.fiscalismia_loadbalancer.server_ipv4_list, null)
   sensitive = true
 }
 output "fiscalismia_nat_gateway_ipv4" {
-  value     = try(module.fiscalismia_nat_gateway.server_ipv4_list, "")
+  value     = try(module.fiscalismia_nat_gateway.server_ipv4_list, null)
   sensitive = true
 }
 output "fiscalismia_loadbalancer_private_ipv4" {
-  value     = try(module.fiscalismia_loadbalancer.main_private_ipv4, "")
+  value     = try(module.fiscalismia_loadbalancer.main_private_ipv4, null)
   sensitive = true
 }
 output "fiscalismia_nat_gateway_private_ipv4" {
-  value     = try(module.fiscalismia_nat_gateway.main_private_ipv4, "")
+  value     = try(module.fiscalismia_nat_gateway.main_private_ipv4, null)
   sensitive = true
 }
 output "fiscalismia_demo_private_ipv4" {
-  value     = try(module.fiscalismia_demo.main_private_ipv4, "")
+  value     = try(module.fiscalismia_demo.main_private_ipv4, null)
   sensitive = true
 }
 output "fiscalismia_monitoring_private_ipv4" {
-  value     = try(module.fiscalismia_monitoring.main_private_ipv4, "")
+  value     = try(module.fiscalismia_monitoring.main_private_ipv4, null)
   sensitive = true
 }
 output "fiscalismia_frontend_private_ipv4" {
-  value     = try(module.fiscalismia_frontend.main_private_ipv4, "")
+  value     = try(module.fiscalismia_frontend.main_private_ipv4, null)
   sensitive = true
 }
 output "fiscalismia_backend_private_ipv4" {
-  value     = try(module.fiscalismia_backend.main_private_ipv4, "")
+  value     = try(module.fiscalismia_backend.main_private_ipv4, null)
   sensitive = true
 }
 output "network_sentinel_private_ipv4" {
-  value     = try(module.network_sentinel.main_private_ipv4, "")
+  value     = try(module.network_sentinel.main_private_ipv4, null)
   sensitive = true
 }

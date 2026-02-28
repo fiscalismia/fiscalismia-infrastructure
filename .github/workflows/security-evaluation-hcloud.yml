@@ -87,6 +87,15 @@ jobs:
         back_ip=$(cat state.tfstate | jq -r .outputs.fiscalismia_backend_private_ipv4.value )
         sentinel_ip=$(cat state.tfstate | jq -r .outputs.network_sentinel_private_ipv4.value )
 
+        echo bastion_ip $bastion_ip
+        echo demo_ip $demo_ip
+        echo lb_ip $lb_ip
+        echo nat_ip $nat_ip
+        echo monitor_ip $monitor_ip
+        echo front_ip $front_ip
+        echo back_ip $back_ip
+        echo sentinel_ip $sentinel_ip
+
         echo "BASTION_HOST_PUBLIC_IP=$bastion_ip" >> $GITHUB_ENV
         echo "DEMO_INSTANCE_PRIVATE_IP=$demo_ip" >> $GITHUB_ENV
         echo "LOADBALANCER_PRIVATE_IP=$lb_ip" >> $GITHUB_ENV
