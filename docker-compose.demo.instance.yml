@@ -95,6 +95,45 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  fiscalismia-webscraper:
+    image: ghcr.io/fiscalismia/fiscalismia-webscraper-demo:latest
+    container_name: fiscalismia-webscraper
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
+      # to relabel the host directory. This allows the container to access the
+      # mounted volume by applying a shared SELinux label.
+      - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
+      - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
+    networks:
+      - demo-network
+    ports:
+      - "0.0.0.0:8444:8444/tcp"
+    # Container Resource Usage
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+          cpus: '0.6'
+        reservations:
+          memory: 512M
+          cpus: '0.4'
+    ### SECURITY HARDENING (minimal required permissions)
+    tmpfs:
+      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN # for changing owner to nginx of tmp directories
+      - SETUID # required to set id of unpriviledged service user
+      - SETGID # required to set group of unpriviledged service user
+      - KILL  # Required for supervisor to signal child processes
+    security_opt:
+      - no-new-privileges:true
+
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
     container_name: fiscalismia-frontend

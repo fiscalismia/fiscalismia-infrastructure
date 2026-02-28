@@ -148,6 +148,7 @@ jobs:
         echo "REMOTE_DEMO_DIR=$REMOTE_DEMO_DIR" >> $GITHUB_ENV
         echo "FRONTEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-frontend" >> $GITHUB_ENV
         echo "BACKEND_DIR=${GITHUB_WORKSPACE}/fiscalismia-backend" >> $GITHUB_ENV
+        echo "FASTAPI_DIR=${GITHUB_WORKSPACE}/fiscalismia-webscraper" >> $GITHUB_ENV
         echo "INFRA_DIR=${GITHUB_WORKSPACE}/fiscalismia-infrastructure" >> $GITHUB_ENV
 
     - name: Initialize DEMO Instance
@@ -159,6 +160,7 @@ jobs:
         mkdir -p ${REMOTE_DEMO_DIR}/frontend
         mkdir -p ${REMOTE_DEMO_DIR}/backend
         mkdir -p ${REMOTE_DEMO_DIR}/backend/public
+        mkdir -p ${REMOTE_DEMO_DIR}/fastapi
         mkdir -p ${REMOTE_DEMO_DIR}/certs
 
         # copy ssl certificates to deployment directory
@@ -193,6 +195,9 @@ jobs:
         scp ${BACKEND_DIR}/public/favicon.ico demo:${REMOTE_DEMO_DIR}/backend/public/favicon.ico
         # copy favicon and make nodejs owner of public dir
         ssh demo "chown -R 1001:1001 ${REMOTE_DEMO_DIR}/backend/public/"
+
+        ### FASTAPI SETUP
+        scp ${FASTAPI_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/fastapi/Dockerfile
 
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
