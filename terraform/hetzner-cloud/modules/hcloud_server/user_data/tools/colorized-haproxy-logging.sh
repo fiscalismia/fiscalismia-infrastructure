@@ -68,6 +68,7 @@ readonly TIMESTAMP="${DIM}${CYAN}"
 readonly SOURCE_IP_PORT="${DIM}${BRIGHT_BLACK}"
 readonly HTTP_INGRESS="${DIM}${YELLOW}"
 readonly HTTPS_INGRESS="${DIM}${GREEN}"
+readonly LINEBREAK='\n'
 
 # haproxy termination states https://wikitech.wikimedia.org/wiki/HAProxy/session_states
 readonly TS_INFO="${ITALIC}${BRIGHT_YELLOW}"
@@ -81,8 +82,8 @@ podman logs --follow "$@" "${CONTAINER}" 2>&1 | sed -u \
     -e "s/\(https_ingress\)/${HTTPS_INGRESS}\1${RESET}/" \
     -e "s/\(ACCEPT\)/${ACCEPT}\1${RESET}/g" \
     -e "s/\(TCP-REQ-CONT\)/${MAGENTA}\1${RESET}/g" \
-    -e "s/\(CONNECT Tw=\)/${CONNECT}CONNECT${RESET} Tw=/g" \
-    -e "s/\(CLOSE Tw=\)/${CLOSE}CLOSE${RESET} Tw=/g" \
+    -e "s/\(CONNECT Tw=\)/${CONNECT}CONNECT${RESET} ${LINEBREAK}Tw=/g" \
+    -e "s/\(CLOSE Tw=\)/${CLOSE}CLOSE${RESET} ${LINEBREAK}Tw=/g" \
     -e "s/\(ERROR Tw=\)/${ERROR}ERROR${RESET} Tw=/g" \
     -e "s/\(silent-drop\)/${ERROR}\1${RESET}/g" \
     \
