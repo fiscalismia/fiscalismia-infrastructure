@@ -93,6 +93,16 @@ variable "demo_fqdn" {
   description = "fully qualified domain name of source webservice for CORS access"
   type = string
 }
+variable "backend_fqdn" {
+  default = "https://backend.fiscalismia.com"
+  description = "fully qualified domain name of source webservice for CORS access"
+  type = string
+}
+variable "demo_backend_fqdn" {
+  default = "https://backend.demo.fiscalismia.com"
+  description = "fully qualified domain name of source webservice for CORS access"
+  type = string
+}
 variable "domain_name" {
   default     = "fiscalismia.com"
   description = "Primary domain name for Route 53 DNS"

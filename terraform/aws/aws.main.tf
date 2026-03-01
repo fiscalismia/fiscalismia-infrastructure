@@ -83,7 +83,7 @@ module "api_gateway" {
   source                                 = "./modules/api_gateway"
   api_name                               = "Fiscalismia-HTTP-Api-Gateway"
   api_description                        = "Fiscalismia HTTP v2 API Gateway"
-  fqdn                                   = var.fqdn
+  cors_allowlist                         = [var.fqdn, var.demo_fqdn, var.backend_fqdn, var.demo_backend_fqdn]
   lambda_function_name_upload_img        = module.lambda_image_processing.function_name
   lambda_invoke_arn_upload_img           = module.lambda_image_processing.invoke_arn
   lambda_function_name_raw_data_etl      = module.lambda_raw_data_etl.function_name

@@ -6,7 +6,7 @@ resource "aws_apigatewayv2_api" "aws_api" {
   cors_configuration {
     allow_headers     = ["content-type"] # other values "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"
     allow_methods     = ["POST"]
-    allow_origins     = [var.fqdn]
+    allow_origins     = var.cors_allowlist
     allow_credentials = false # For sending cookies or credentials
     expose_headers    = [] # Headers exposed to the browser. check allow_headers for values
     max_age           = 3600 # Cache CORS preflight response for 1 hour
@@ -75,6 +75,26 @@ resource "aws_apigatewayv2_stage" "main_stage_route_config" {
     throttling_burst_limit = 5    # Max burst of 5 requests
     throttling_rate_limit  = 2.0  # Sustained rate of 2 requests per second
   }
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gw_access_logs.arn
+    format = jsonencode({
+      requestId          = "$context.requestId"
+      requestTime        = "$context.requestTime"
+      httpMethod         = "$context.httpMethod"
+      routeKey           = "$context.routeKey"
+      path               = "$context.path"
+      status             = "$context.status"
+      responseLatency    = "$context.responseLatency"
+      responseLength     = "$context.responseLength"
+      integrationLatency = "$context.integrationLatency"
+      integrationStatus  = "$context.integration.status"
+      integrationError   = "$context.integration.error"
+      ip                 = "$context.identity.sourceIp"
+      userAgent          = "$context.identity.userAgent"
+      protocol           = "$context.protocol"
+      errorMessage       = "$context.error.message"
+    })
+  }
   route_settings {
     route_key             = "${var.post_img_route}"
     throttling_burst_limit = 5
@@ -87,6 +107,11 @@ resource "aws_apigatewayv2_stage" "main_stage_route_config" {
   }
   auto_deploy = true
   depends_on = [aws_apigatewayv2_route.upload_img, aws_apigatewayv2_route.post_raw_data_etl]
+}
+
+resource "aws_cloudwatch_log_group" "api_gw_access_logs" {
+  name              = "/aws/apigateway/${var.api_name}"
+  retention_in_days = 30
 }
 
 # TODO https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html

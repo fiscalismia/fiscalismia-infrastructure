@@ -1,4 +1,6 @@
-variable "fqdn" {}
+variable "cors_allowlist" {
+  type = list(string)
+}
 variable "lambda_function_name_upload_img" {}
 variable "lambda_invoke_arn_upload_img" {}
 variable "lambda_function_name_raw_data_etl" {}
