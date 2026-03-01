@@ -101,6 +101,7 @@ services:
     pull_policy: always
     restart: unless-stopped
     env_file:
+    # todo this uses the backend's .env file and exposes a lot of unnecessary data.
       - .env
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
@@ -123,7 +124,7 @@ services:
           cpus: '0.4'
     ### SECURITY HARDENING (minimal required permissions)
     tmpfs:
-      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
+      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.conf
     cap_drop:
       - ALL
     cap_add:

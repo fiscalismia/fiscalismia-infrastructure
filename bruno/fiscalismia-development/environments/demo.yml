@@ -6,3 +6,7 @@ variables:
     name: JWT_SESSION_TOKEN
   - name: PROTOCOL
     value: https
+  - name: WS_PROTOCOL
+    value: wss
+  - name: REST_API_ENDPOINT
+    value: backend.demo.fiscalismia.com:443

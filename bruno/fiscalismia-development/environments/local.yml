@@ -6,3 +6,7 @@ variables:
     name: JWT_SESSION_TOKEN
   - name: PROTOCOL
     value: http
+  - name: WS_PROTOCOL
+    value: ws
+  - name: REST_API_ENDPOINT
+    value: 127.0.0.1:3002

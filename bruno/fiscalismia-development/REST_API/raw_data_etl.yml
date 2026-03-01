@@ -1,0 +1,17 @@
+info:
+  name: raw_data_etl
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{PROTOCOL}}://{{REST_API_ENDPOINT}}/api/fiscalismia/admin/raw_data_etl"
+  auth:
+    type: bearer
+    token: "{{JWT_SESSION_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
