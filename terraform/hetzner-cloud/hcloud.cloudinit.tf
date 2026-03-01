@@ -74,6 +74,7 @@ data "cloudinit_config" "loadbalancer" {
         nftables_lockdown_loadbalancer_b64 = local.nftables_lockdown_loadbalancer_b64
         install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+        colorized_haproxy_logging_b64 = local.colorized_haproxy_logging_b64
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
         PRIVATE_IP_TO_NAT = local.fiscalismia_loadbalancer_private_ipv4_production_net

@@ -25,6 +25,12 @@ write_files:
     content: ${install_network_hardening_tools_b64}
     permissions: "0755"
 
+  ### COLORIZED HAPROXY PODMAN LOG FOLLOW ###
+  - path: /root/scripts/colorized-haproxy-logging.sh
+    encoding: b64
+    content: ${colorized_haproxy_logging_b64}
+    permissions: "0755"
+
   ### Adds nftables installation and configuration to lockdown private IPv4 access ###
   - path: /root/scripts/nftables_lockdown_loadbalancer.sh
     encoding: b64
