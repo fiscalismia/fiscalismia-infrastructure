@@ -12,59 +12,62 @@
 readonly CONTAINER="haproxy"
 
 # Text Colors
-readonly BLACK="\x1b[30m"
-readonly RED="\x1b[31m"
-readonly GREEN="\x1b[32m"
-readonly YELLOW="\x1b[33m"
-readonly BLUE="\x1b[34m"
-readonly MAGENTA="\x1b[35m"
-readonly CYAN="\x1b[36m"
-readonly WHITE="\x1b[37m"
+readonly BLACK=$'\033[30m'
+readonly RED=$'\033[31m'
+readonly GREEN=$'\033[32m'
+readonly YELLOW=$'\033[33m'
+readonly BLUE=$'\033[34m'
+readonly MAGENTA=$'\033[35m'
+readonly CYAN=$'\033[36m'
+readonly WHITE=$'\033[37m'
 # Bright Text Colors
-readonly BRIGHT_BLACK="\x1b[90m"
-readonly BRIGHT_RED="\x1b[91m"
-readonly BRIGHT_GREEN="\x1b[92m"
-readonly BRIGHT_YELLOW="\x1b[93m"
-readonly BRIGHT_BLUE="\x1b[94m"
-readonly BRIGHT_MAGENTA="\x1b[95m"
-readonly BRIGHT_CYAN="\x1b[96m"
-readonly BRIGHT_WHITE="\x1b[97m"
+readonly BRIGHT_BLACK=$'\033[90m'
+readonly BRIGHT_RED=$'\033[91m'
+readonly BRIGHT_GREEN=$'\033[92m'
+readonly BRIGHT_YELLOW=$'\033[93m'
+readonly BRIGHT_BLUE=$'\033[94m'
+readonly BRIGHT_MAGENTA=$'\033[95m'
+readonly BRIGHT_CYAN=$'\033[96m'
+readonly BRIGHT_WHITE=$'\033[97m'
 # Background Colors
-readonly BG_BLACK="\x1b[40m"
-readonly BG_RED="\x1b[41m"
-readonly BG_GREEN="\x1b[42m"
-readonly BG_YELLOW="\x1b[43m"
-readonly BG_BLUE="\x1b[44m"
-readonly BG_MAGENTA="\x1b[45m"
-readonly BG_CYAN="\x1b[46m"
-readonly BG_WHITE="\x1b[47m"
+readonly BG_BLACK=$'\033[40m'
+readonly BG_RED=$'\033[41m'
+readonly BG_GREEN=$'\033[42m'
+readonly BG_YELLOW=$'\033[43m'
+readonly BG_BLUE=$'\033[44m'
+readonly BG_MAGENTA=$'\033[45m'
+readonly BG_CYAN=$'\033[46m'
+readonly BG_WHITE=$'\033[47m'
 # Bright Background Colors
-readonly BG_BRIGHT_BLACK="\x1b[100m"
-readonly BG_BRIGHT_RED="\x1b[101m"
-readonly BG_BRIGHT_GREEN="\x1b[102m"
-readonly BG_BRIGHT_YELLOW="\x1b[103m"
-readonly BG_BRIGHT_BLUE="\x1b[104m"
-readonly BG_BRIGHT_MAGENTA="\x1b[105m"
-readonly BG_BRIGHT_CYAN="\x1b[106m"
-readonly BG_BRIGHT_WHITE="\x1b[107m"
+readonly BG_BRIGHT_BLACK=$'\033[100m'
+readonly BG_BRIGHT_RED=$'\033[101m'
+readonly BG_BRIGHT_GREEN=$'\033[102m'
+readonly BG_BRIGHT_YELLOW=$'\033[103m'
+readonly BG_BRIGHT_BLUE=$'\033[104m'
+readonly BG_BRIGHT_MAGENTA=$'\033[105m'
+readonly BG_BRIGHT_CYAN=$'\033[106m'
+readonly BG_BRIGHT_WHITE=$'\033[107m'
 # Text Styles
-readonly RESET="\x1b[0m"  # Reset all formatting
-readonly BOLD="\x1b[1m"  # Bold text
-readonly DIM="\x1b[2m"  # Dim text
-readonly ITALIC="\x1b[3m"  # Italic text
-readonly UNDERLINE="\x1b[4m"  # Underlined text
-readonly BLINK="\x1b[5m"  # Blinking text
-readonly REVERSE="\x1b[7m"  # Reverse colors (swap fg/bg)
-readonly STRIKETHROUGH="\x1b[9m"  # Strikethrough text
+readonly RESET=$'\033[0m'
+readonly BOLD=$'\033[1m'  # Bold text
+readonly DIM=$'\033[2m'  # Dim text
+readonly ITALIC=$'\033[3m'  # Italic text
+readonly UNDERLINE=$'\033[4m'  # Underlined text
+readonly BLINK=$'\033[5m'  # Blinking text
+readonly REVERSE=$'\033[7m'  # Reverse colors (swap fg/bg)
+readonly STRIKETHROUGH=$'\033[9m'  # Strikethrough text
 
 ######## FINAL LOGGING VARIABLES
-readonly RESET='\x1b[0m'
 readonly ACCEPT="${BRIGHT_CYAN}"
 readonly CONNECT="${BOLD}${BRIGHT_GREEN}"
 readonly CLOSE="${BRIGHT_YELLOW}"
 readonly MAGENTA="${BRIGHT_MAGENTA}"
 readonly DEBUG="${BRIGHT_BLACK}"
 readonly ERROR="${BOLD}${BG_RED}"
+readonly TIMESTAMP="${DIM}${CYAN}"
+readonly SOURCE_IP_PORT="${DIM}${BRIGHT_BLACK}"
+readonly HTTP_INGRESS="${DIM}${YELLOW}"
+readonly HTTPS_INGRESS="${DIM}${GREEN}"
 
 # haproxy termination states https://wikitech.wikimedia.org/wiki/HAProxy/session_states
 readonly TS_INFO="${ITALIC}${BRIGHT_YELLOW}"
@@ -72,6 +75,10 @@ readonly TS_WARN="${ITALIC}${BRIGHT_MAGENTA}"
 readonly TS_ERROR="${BOLD}${ITALIC}${BRIGHT_RED}"
 
 podman logs --follow "$@" "${CONTAINER}" 2>&1 | sed -u \
+    -e "s/\(\[[0-9][^]]*\]\)/${TIMESTAMP}\1${RESET}/g" \
+    -e "s/\(:[0-9]\{1,\}\)/${SOURCE_IP_PORT}\1${RESET}/" \
+    -e "s/\(http_ingress\)/${HTTP_INGRESS}\1${RESET}/" \
+    -e "s/\(https_ingress\)/${HTTPS_INGRESS}\1${RESET}/" \
     -e "s/\(ACCEPT\)/${ACCEPT}\1${RESET}/g" \
     -e "s/\(TCP-REQ-CONT\)/${MAGENTA}\1${RESET}/g" \
     -e "s/\(CONNECT Tw=\)/${CONNECT}CONNECT${RESET} Tw=/g" \
