@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_demo:
-        description: 'Deploy DEMO Backend & FastAPI & Frontend & local DB'
+        description: 'Deploy DEMO Backend & FastAPI & Frontend & local PostgreSQL?'
         required: true
         default: true
         type: boolean
