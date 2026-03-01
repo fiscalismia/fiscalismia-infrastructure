@@ -1,0 +1,8 @@
+name: demo
+variables:
+  - name: FASTAPI_ENDPOINT
+    value: fastapi.demo.fiscalismia.com:443
+  - secret: true
+    name: JWT_SESSION_TOKEN
+  - name: PROTOCOL
+    value: https

@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/stream/start
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/stream/start"
   body:
     type: json
     data: '{ "url": "https:example.com/" }'

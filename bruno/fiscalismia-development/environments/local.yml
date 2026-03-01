@@ -1,10 +1,8 @@
-name: development
+name: local
 variables:
-  - secret: true
-    name: API_GW_ENDPOINT
-  - secret: true
-    name: API_GW_SECRET_KEY
   - name: FASTAPI_ENDPOINT
     value: 127.0.0.1:3003
   - secret: true
     name: JWT_SESSION_TOKEN
+  - name: PROTOCOL
+    value: http
