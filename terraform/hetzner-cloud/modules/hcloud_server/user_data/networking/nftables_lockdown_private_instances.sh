@@ -66,7 +66,7 @@ delete table ip $TABLE_NAME
 # Create new IPv4 table
 table ip $TABLE_NAME {
 
-    # Filter ingress traffic
+    # Filter traffic destined for the VM itself
     chain input {
 
         # Drop all ingress for all protocols by default unless explicitly allowed
@@ -91,7 +91,7 @@ table ip $TABLE_NAME {
         ip saddr $LOADBALANCER_PRIVATE_IP icmp type echo-request accept
     }
 
-    # Allow outbound http, https, dns, icmp
+    # Filter traffic from the VM to the outisde, allowing e.g. http, https, dns, icmp
     chain output {
         # Drop all egress by default unless explicitly allowed
         type filter hook output priority 0; policy drop;
@@ -105,6 +105,9 @@ table ip $TABLE_NAME {
         # Allow DNS queries to Hetzner DNS Servers and the Fallback DNS Server
         ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} udp dport 53 ct state new accept
 
+        # DNS runs on UDP, TCP is used only for large DNS queries exceeding the UDP limit e.g. in DNSSEC
+        ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} tcp dport 53 ct state new accept
+
         # Allow ICMP to internet
         icmp type echo-request accept
 
@@ -112,7 +115,8 @@ table ip $TABLE_NAME {
         tcp dport {80,443} ct state new accept
     }
 
-    # Configure podman networking allowing port forwarding without having to use the hack network_mode: host
+    # Traffic routed through the VM, such as virtual bridge networks that Podman uses,
+    # Allows communication /wo having to use the hack network_mode: host
     chain forward {
         type filter hook forward priority 0; policy drop;
 
@@ -120,7 +124,11 @@ table ip $TABLE_NAME {
         ct state established,related accept
 
         # Allow podman interinter-container communication within the entire network subnet CIDR
+        # INFO: separating containers into distinct bridge networks still enables network isolation
         ip saddr $PODMAN_NETWORK_CIDR ip daddr $PODMAN_NETWORK_CIDR ip protocol tcp accept
+
+        # Allow egress from podman containers to the public network interface - allowing internet access
+        ip saddr $PODMAN_NETWORK_CIDR tcp dport {443} ct state new accept
 
         # Allow ingress from loadbalancer to podman network subnet CIDR on specified ports
         ip daddr $PODMAN_NETWORK_CIDR tcp dport $PODMAN_LISTENER_PORT_LIST ct state new accept
