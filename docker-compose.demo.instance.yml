@@ -165,8 +165,8 @@ services:
     ports:
       - "0.0.0.0:443:443/tcp"
     healthcheck:
-      # to avoid spamming the access logs only run a simple tcp healthcheck
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 443 || exit 1"]
+      # since frontend expects proxy_protocol we can't trivially healthcheck the nginx endpoint
+      test: ["CMD-SHELL", "pgrep nginx || exit 1"]
       start_period: 0s
       interval: 5s
       timeout: 5s
