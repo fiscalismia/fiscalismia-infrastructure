@@ -73,6 +73,13 @@ services:
     depends_on:
       fiscalismia-postgres:
         condition: service_healthy
+    healthcheck:
+      # to avoid spamming the access logs only run a simple tcp healthcheck
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 3002 || exit 1"]
+      start_period: 0s
+      interval: 5s
+      timeout: 5s
+      retries: 5
     # Container Resource Usage
     deploy:
       resources:
@@ -110,9 +117,16 @@ services:
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
     networks:
-      - demo-network
+      - demo-webscraper-only
     ports:
       - "0.0.0.0:8444:8444/tcp"
+    healthcheck:
+      # to avoid spamming the access logs only run a simple tcp healthcheck
+      test: ["CMD-SHELL", "python -c \"import socket; socket.create_connection(('127.0.0.1', 3003), timeout=3)\"" ]
+      start_period: 0s
+      interval: 5s
+      timeout: 5s
+      retries: 5
     # Container Resource Usage
     deploy:
       resources:
@@ -150,6 +164,13 @@ services:
       - demo-frontend-only
     ports:
       - "0.0.0.0:443:443/tcp"
+    healthcheck:
+      # to avoid spamming the access logs only run a simple tcp healthcheck
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 443 || exit 1"]
+      start_period: 0s
+      interval: 5s
+      timeout: 5s
+      retries: 5
     # Container Resource Usage
     deploy:
       resources:
@@ -191,3 +212,11 @@ networks:
       config:
         - subnet: 10.89.1.0/24
           gateway: 10.89.1.1
+  demo-webscraper-only:
+    name: demo-webscraper-only
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.89.2.0/24
+          gateway: 10.89.2.1
