@@ -451,6 +451,7 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_logging" {
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/Test_*",
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sns/delivery/lambda/success*",
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sns/delivery/lambda/failure*",
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/Fiscalismia-HTTP-Api-Gateway*",
         ]
       },
       {

@@ -10,7 +10,7 @@ module "fiscalismia_demo" {
   is_private        = true
   image_id          = data.hcloud_image.fedora_image.id
   location          = var.default_location
-  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type       = "cx33" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.demo_instance.name
   cloud_config      = data.cloudinit_config.demo_instance.rendered

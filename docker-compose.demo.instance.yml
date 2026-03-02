@@ -131,11 +131,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1024M
-          cpus: '0.6'
+          memory: 2048M
+          cpus: '1.2'
         reservations:
-          memory: 512M
-          cpus: '0.4'
+          memory: 1024M
+          cpus: '0.8'
     ### SECURITY HARDENING (minimal required permissions)
     tmpfs:
       - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.conf
