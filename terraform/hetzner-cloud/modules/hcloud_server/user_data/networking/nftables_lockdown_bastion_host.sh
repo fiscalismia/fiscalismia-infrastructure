@@ -83,6 +83,9 @@ table ip $TABLE_NAME {
         # Allow DNS queries to Hetzner DNS Servers and the Fallback DNS Server
         ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} udp dport 53 ct state new accept
 
+        # DNS runs on UDP, TCP is used only for large DNS queries exceeding the UDP limit e.g. in DNSSEC
+        ip daddr {185.12.64.2, 185.12.64.1, 8.8.8.8} tcp dport 53 ct state new accept
+
         # Allow ICMP to internet
         icmp type echo-request accept
 
