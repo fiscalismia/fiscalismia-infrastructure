@@ -1,0 +1,14 @@
+info:
+  name: db_hc
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{PROTOCOL}}://{{REST_API_ENDPOINT}}/api/fiscalismia/db_hc"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

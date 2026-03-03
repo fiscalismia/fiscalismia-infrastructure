@@ -1,5 +1,5 @@
 info:
-  name: health_check
+  name: hc
   type: http
   seq: 1
 
