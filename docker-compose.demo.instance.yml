@@ -31,15 +31,15 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1536M
-          cpus: '1.0'
-        reservations:
           memory: 512M
           cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.3'
     # tmpfs for temporary files
     tmpfs:
-      - /tmp:noexec,nosuid,size=1024m
-      - /run:noexec,nosuid,size=512m
+      - /tmp:noexec,nosuid,size=256m
+      - /run:noexec,nosuid,size=64m
     # Security hardening
     cap_drop:
       - ALL
@@ -84,14 +84,14 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1024M
-          cpus: '0.6'
+          memory: 256M
+          cpus: '0.3'
         reservations:
-          memory: 512M
-          cpus: '0.4'
+          memory: 128M
+          cpus: '0.2'
     ### SECURITY HARDENING (minimal required permissions)
     tmpfs:
-      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
+      - /tmp:noexec,nosuid,size=128m # set as cache directory in nginx.demo.conf
     cap_drop:
       - ALL
     cap_add:
@@ -131,14 +131,14 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2048M
-          cpus: '1.2'
+          memory: 6144M
+          cpus: '3.0'
         reservations:
-          memory: 1024M
-          cpus: '0.8'
+          memory: 5120M
+          cpus: '2.5'
     ### SECURITY HARDENING (minimal required permissions)
     tmpfs:
-      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.conf
+      - /tmp:noexec,nosuid,size=512m # set as cache directory in nginx.conf
     cap_drop:
       - ALL
     cap_add:
@@ -175,15 +175,15 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '0.4'
-        reservations:
-          memory: 256M
+          memory: 128M
           cpus: '0.2'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
     ### SECURITY HARDENING (minimal required permissions)
     read_only: true
     tmpfs:
-      - /tmp:noexec,nosuid,size=256m # set as cache directory in nginx.demo.conf
+      - /tmp:noexec,nosuid,size=64m # set as cache directory in nginx.demo.conf
     cap_drop:
       - ALL
     cap_add:
