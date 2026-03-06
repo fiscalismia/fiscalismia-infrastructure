@@ -1,13 +1,13 @@
 info:
-  name: read ws cdp session
+  name: write mouseinput ws
   type: websocket
-  seq: 4
+  seq: 5
 
 websocket:
   url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}?token={{JWT_SESSION_TOKEN}}"
   message:
     type: json
-    data: "{}"
+    data: "{type: 'mouseclick', x: 12, y: 25, button: 'left'}"
   auth: inherit
 
 settings:
