@@ -7,7 +7,13 @@ websocket:
   url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}?token={{JWT_SESSION_TOKEN}}"
   message:
     type: json
-    data: "{type: 'mouseclick', x: 12, y: 25, button: 'left'}"
+    data: |-
+      {
+        "type": "mouseclick", 
+        "x": 12, 
+        "y": 25, 
+        "button": "left"
+      }
   auth: inherit
 
 settings:
