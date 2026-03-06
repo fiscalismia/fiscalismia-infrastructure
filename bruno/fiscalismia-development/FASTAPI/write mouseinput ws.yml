@@ -9,9 +9,9 @@ websocket:
     type: json
     data: |-
       {
-        "type": "mouseclick", 
-        "x": 12, 
-        "y": 25, 
+        "type": "mouse_click",
+        "x": 12,
+        "y": 25,
         "button": "left"
       }
   auth: inherit
