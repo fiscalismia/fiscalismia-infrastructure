@@ -1,19 +1,13 @@
 info:
-  name: write mouseinput ws
+  name: auth ws
   type: websocket
-  seq: 6
+  seq: 4
 
 websocket:
   url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}"
   message:
-    type: json
-    data: |-
-      {
-        "type": "custom_mouse_click",
-        "x": 12,
-        "y": 25,
-        "button": "left"
-      }
+    type: text
+    data: "{{JWT_SESSION_TOKEN}}"
   auth: inherit
 
 settings:

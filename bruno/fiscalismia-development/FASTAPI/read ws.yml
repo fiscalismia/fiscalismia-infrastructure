@@ -1,12 +1,12 @@
 info:
   name: read ws
   type: websocket
-  seq: 4
+  seq: 5
 
 websocket:
-  url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}?token={{JWT_SESSION_TOKEN}}"
+  url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}"
   auth: inherit
 
 settings:
-  timeout: 0
+  timeout: 5000
   keepAliveInterval: 0
