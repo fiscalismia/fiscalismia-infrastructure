@@ -1,0 +1,15 @@
+info:
+  name: scrape aldi prospekt read ws
+  type: websocket
+  seq: 7
+
+websocket:
+  url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}"
+  message:
+    type: text
+    data: "{{JWT_SESSION_TOKEN}}"
+  auth: inherit
+
+settings:
+  timeout: 5000
+  keepAliveInterval: 0

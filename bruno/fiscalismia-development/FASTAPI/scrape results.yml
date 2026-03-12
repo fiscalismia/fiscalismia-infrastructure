@@ -1,0 +1,19 @@
+info:
+  name: scrape results
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/results/{{SESSION_ID}}"
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{JWT_SESSION_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
