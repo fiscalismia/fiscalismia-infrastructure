@@ -7,7 +7,8 @@ http:
   method: POST
   url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/supermarket/aldi_prospekt"
   body:
-    type: none
+    type: json
+    data: '{ "url": "https://www.aldi-sued.de/prospekte" }'
   auth:
     type: bearer
     token: "{{JWT_SESSION_TOKEN}}"
