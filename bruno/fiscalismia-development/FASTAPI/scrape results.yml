@@ -6,8 +6,6 @@ info:
 http:
   method: GET
   url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/results/{{SESSION_ID}}"
-  body:
-    type: none
   auth:
     type: bearer
     token: "{{JWT_SESSION_TOKEN}}"
