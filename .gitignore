@@ -41,3 +41,4 @@ response.json
 aws_lambda/terraform/output.txt
 terraform/aws/clipboard.txt
 copilot-instructions*
+.claude/
