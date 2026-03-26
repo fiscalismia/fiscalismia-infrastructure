@@ -1,0 +1,26 @@
+info:
+  name: etl aldi prospekt [test]
+  type: http
+  seq: 13
+
+http:
+  method: POST
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/etl/alditest"
+  auth:
+    type: bearer
+    token: "{{JWT_SESSION_TOKEN}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const sessionId = res.body?.session_id;
+            if (sessionId) {
+              bru.setVar("SESSION_ID", sessionId);
+            }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
