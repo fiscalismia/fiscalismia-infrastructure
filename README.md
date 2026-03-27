@@ -27,6 +27,21 @@ ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-monitoring-instance-key-hcloud -
 ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-instances-key-hcloud -C "Fiscalismia Production OpenSSH Public Key for User hangrybear666 to Hetzner Cloud"
 ```
 
+**Setup PKI Certificate Authority**
+```bash
+cat <<EOT | sudo tee /etc/yum.repos.d/smallstep.repo > /dev/null
+[smallstep]
+name=Smallstep
+baseurl=https://packages.smallstep.com/stable/fedora/
+enabled=1
+repo_gpgcheck=0
+gpgcheck=1
+gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg
+EOT
+sudo dnf makecache
+sudo dnf install -y step-cli step-ca
+```
+
 1. Terraform for Hetzner Cloud
 
 Provision Hetzner Cloud first, since aws route53 depends on hcloud server ipv4 addresses for Type A Records using `terraform_remote_state`
