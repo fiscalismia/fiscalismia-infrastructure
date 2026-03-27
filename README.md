@@ -37,6 +37,7 @@ This is achieved via [`step-ca`](https://github.com/smallstep/certificates), a p
 After installing below dependency, execute the scripts in the `./pki` [folder](pki/) in this repository in order, the first running only on a secure offline machine.
 
 See [PKI Basics](https://smallstep.com/blog/everything-pki/)
+See [step-ca config file](https://smallstep.com/docs/step-ca/configuration/#specify-a-configuration-file)
 See [Production Considerations](https://smallstep.com/docs/step-ca/certificate-authority-server-production/)
 See [IAM Roles Anywhere Auth](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication.html)
 
