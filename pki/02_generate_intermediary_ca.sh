@@ -28,8 +28,8 @@
 set -euo pipefail
 
 #### CONFIGURATION ####
-PKI_BASE="{$HOME}/.pki}"
-PKI_DIR="${PKI_BASE}/root"
+PKI_BASE="${HOME}/.pki"
+ROOT_DIR="${PKI_BASE}/root"
 INTERMEDIATE_DIR="${PKI_BASE}/intermediate"
 
 ROOT_CERT="${ROOT_DIR}/root_ca.crt"
@@ -83,13 +83,6 @@ trap 'rm -f "${ROOT_PW_FILE}" "${INTERMEDIATE_PW_FILE}" && exit 1' EXIT SIGINT S
 read -rsp "  Enter ROOT CA password (to sign the intermediate): " root_pw; echo
 echo -n "$root_pw" > "${ROOT_PW_FILE}"
 chmod 600 "${ROOT_PW_FILE}"
-
-# Quick validation: try to decrypt the root key with the provided password
-if ! step crypto key format "${ROOT_KEY}" --password-file="${ROOT_PW_FILE}" --no-password --out=/dev/null 2>/dev/null; then
-  # step crypto key format may not exist in all versions; try an alternative check
-  echo "Could not pre-validate root password (step version may not support this)."
-  echo "If the password is wrong, the signing step below will echo."
-fi
 
 # Read password twice for confirmation
 while true; do
@@ -179,16 +172,17 @@ echo "  CA Bundle         : ${BUNDLE_FILE}"
 echo "  Root Cert         : ${ROOT_CERT}"
 echo ""
 echo "  FILES TO DEPLOY TO HETZNER VM (step-ca container):"
-echo "    - ${ROOT_CERT}              (ca.json → \"root\")"
-echo "    - ${INTERMEDIATE_CERT}      (ca.json → \"crt\")"
-echo "    - ${INTERMEDIATE_KEY}       (ca.json → \"key\")"
+echo "    - ${ROOT_CERT}"
+echo "    - ${INTERMEDIATE_CERT}"
+echo "    - ${INTERMEDIATE_KEY}"
 echo ""
 echo "  CRITICAL NEXT STEPS:"
 echo "     0) MOVE the root key to a secure location"
-echo "     1) Store both passwords in your password manager:"
+echo "     1) Store both passwords in your password manager"
 echo "     2) DELETE the root key from this workstation:"
-echo "        shred -vfz -n 5 ${ROOT_KEY} && rm -f ${ROOT_KEY}"
-echo "     3) The root CERTIFICATE (${ROOT_CERT}) and ${FINGERPRINT}"
-echo "        should remain accessible — they are public and needed for"
-echo "        trust bootstrapping on all nodes."
+echo "        shred -vfz -n 5 ${ROOT_KEY}"
+echo "        rm -f ${ROOT_KEY}"
+echo "     3) The root CERTIFICATE (${ROOT_CERT}) and fingerprint:"
+echo "        \"${FINGERPRINT}\""
+echo "        should remain accessible for later verification"
 echo "==========================================================================="

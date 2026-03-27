@@ -22,7 +22,7 @@
 set -euo pipefail
 
 #### CONFIGURATION ####
-PKI_BASE="{$HOME}/.pki}"
+PKI_BASE="${HOME}/.pki"
 PKI_DIR="${PKI_BASE}/root"
 ROOT_CN="Fiscalismia Root CA"
 ROOT_ORG="Fiscalismia"
