@@ -21,8 +21,8 @@
 #
 # OUTPUT:
 #   $PKI_DIR/intermediate/
-#     ├── intermediate_ca.crt    # Intermediate CA cert
-#     └── intermediate_ca_key    # Intermediate CA encrypted key
+#     ├── intermediate-ca.pem        # Intermediate CA cert
+#     └── intermediate-ca-key.env    # Intermediate CA encrypted key
 #
 # =============================================================================
 set -euo pipefail
@@ -32,17 +32,18 @@ PKI_BASE="${HOME}/.pki"
 ROOT_DIR="${PKI_BASE}/root"
 INTERMEDIATE_DIR="${PKI_BASE}/intermediate"
 
-ROOT_CERT="${ROOT_DIR}/root_ca.crt"
-ROOT_KEY="${ROOT_DIR}/root_ca_key.enc"
+ROOT_CERT="${ROOT_DIR}/root-ca.pem"
+ROOT_KEY="${ROOT_DIR}/root-ca-key.enc"
 
-INTERMEDIATE_CN="Fiscalismia Intermediate CA"
-INTERMEDIATE_ORG="Fiscalismia"
+INTERMEDIATE_CN="Fiscalismia Intermediate CA 01"
+INTERMEDIATE_ORG="Fiscalismia" # should be the same across the chain
+INTERMEDIATE_COUNTRY="DE"      # should be the same across the chain
 INTERMEDIATE_VALIDITY_YEARS=5
 INTERMEDIATE_KEY_TYPE="EC"
 INTERMEDIATE_KEY_CURVE="P-384"  # 192-bit security; stronger than P-256
 
-INTERMEDIATE_CERT="${INTERMEDIATE_DIR}/intermediate_ca.crt"
-INTERMEDIATE_KEY="${INTERMEDIATE_DIR}/intermediate_ca_key"
+INTERMEDIATE_CERT="${INTERMEDIATE_DIR}/intermediate-ca.pem"
+INTERMEDIATE_KEY="${INTERMEDIATE_DIR}/intermediate-ca-key.enc"
 INTERMEDIATE_VALIDITY_HOURS=$(( INTERMEDIATE_VALIDITY_YEARS * 365 * 24 ))
 
 # Running verification of root-ca generation
@@ -78,7 +79,8 @@ chmod 700 "${INTERMEDIATE_DIR}"
 ROOT_PW_FILE=$(mktemp)
 INTERMEDIATE_PW_FILE=$(mktemp)
 # Ensure temp files are cleaned up on exit
-trap 'rm -f "${ROOT_PW_FILE}" "${INTERMEDIATE_PW_FILE}" && exit 1' EXIT SIGINT SIGKILL
+trap 'rm -f "${ROOT_PW_FILE}" "${INTERMEDIATE_PW_FILE}"' EXIT
+trap 'exit 1' SIGINT SIGTERM
 
 read -rsp "  Enter ROOT CA password (to sign the intermediate): " root_pw; echo
 echo -n "$root_pw" > "${ROOT_PW_FILE}"
@@ -114,11 +116,29 @@ echo "  Key Type:   ${INTERMEDIATE_KEY_TYPE} ${INTERMEDIATE_KEY_CURVE}"
 echo "  Validity:   ${INTERMEDIATE_VALIDITY_YEARS} years (${INTERMEDIATE_VALIDITY_HOURS}h)"
 echo ""
 
+# Write intermediate CA certificate template with full X.500 subject
+INTERMEDIATE_TEMPLATE="${INTERMEDIATE_DIR}/intermediate-ca.tpl"
+cat > "${INTERMEDIATE_TEMPLATE}" <<EOF
+{
+  "subject": {
+    "commonName": "{{ .Subject.CommonName }}",
+    "organization": "${INTERMEDIATE_ORG}",
+    "country": "${INTERMEDIATE_COUNTRY}"
+  },
+  "keyUsage": ["certSign", "crlSign"],
+  "basicConstraints": {
+    "isCA": true,
+    "maxPathLen": 0
+  }
+}
+EOF
+chmod 600 "${INTERMEDIATE_TEMPLATE}"
+
 step certificate create \
   "${INTERMEDIATE_CN}" \
   "${INTERMEDIATE_CERT}" \
   "${INTERMEDIATE_KEY}" \
-  --profile intermediate-ca \
+  --template "${INTERMEDIATE_TEMPLATE}" \
   --ca "${ROOT_CERT}" \
   --ca-key "${ROOT_KEY}" \
   --ca-password-file "${ROOT_PW_FILE}" \
@@ -127,11 +147,6 @@ step certificate create \
   --crv "${INTERMEDIATE_KEY_CURVE}" \
   --not-after "${INTERMEDIATE_VALIDITY_HOURS}h" \
   --force
-
-# --profile intermediate-ca automatically sets:
-#   - Basic Constraints: CA=TRUE, pathLen=0 (no further sub-CAs allowed)
-#   - Key Usage: Certificate Sign, CRL Sign
-#   - Signed by the Root CA
 
 echo "Intermediate CA certificate generated: ${INTERMEDIATE_CERT}"
 echo "Intermediate CA encrypted key generated: ${INTERMEDIATE_KEY}"
@@ -155,8 +170,8 @@ echo ""
 chmod 644 "${INTERMEDIATE_CERT}"   # Public cert
 chmod 600 "${INTERMEDIATE_KEY}"    # Private key
 
-# Generate bundle (root + intermediate public certs) for clients
-BUNDLE_FILE="${INTERMEDIATE_DIR}/ca-bundle.crt"
+# Generate bundle (root + intermediate public certs)
+BUNDLE_FILE="${INTERMEDIATE_DIR}/ca-bundle.pem"
 cat "${INTERMEDIATE_CERT}" "${ROOT_CERT}" > "${BUNDLE_FILE}"
 chmod 644 "${BUNDLE_FILE}"
 echo "CA bundle (intermediate + root) written to: ${BUNDLE_FILE}"

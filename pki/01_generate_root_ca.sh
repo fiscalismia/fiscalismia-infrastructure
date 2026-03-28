@@ -14,9 +14,9 @@
 #
 # OUTPUT:
 #   $PKI_DIR/root/
-#     ├── root_ca.crt          # Root CA certificate (public, distributable)
-#     ├── root_ca_key.enc      # Root CA encrypted private key (COLD STORAGE)
-#     └── root_ca.fingerprint  # SHA-256 fingerprint for bootstrap verification
+#     ├── root-ca.pem          # Root CA certificate (public, distributable)
+#     ├── root-ca-key.enc      # Root CA encrypted private key (COLD STORAGE)
+#     └── root-ca.fingerprint  # SHA-256 fingerprint for bootstrap verification
 #
 # =============================================================================
 set -euo pipefail
@@ -25,20 +25,21 @@ set -euo pipefail
 PKI_BASE="${HOME}/.pki"
 PKI_DIR="${PKI_BASE}/root"
 ROOT_CN="Fiscalismia Root CA"
-ROOT_ORG="Fiscalismia"
-ROOT_COUNTRY="DE"
+ROOT_ORG="Fiscalismia" # should be the same across the chain
+ROOT_COUNTRY="DE"      # should be the same across the chain
 ROOT_VALIDITY_YEARS=5
 ROOT_KEY_TYPE="EC"
 ROOT_KEY_CURVE="P-384"  # 192-bit security; stronger than P-256
-ROOT_CERT="${PKI_DIR}/root_ca.crt"
-ROOT_KEY="${PKI_DIR}/root_ca_key.enc"
-ROOT_FINGERPRINT_FILE="${PKI_DIR}/root_ca.fingerprint"
+ROOT_CERT="${PKI_DIR}/root-ca.pem"
+ROOT_KEY="${PKI_DIR}/root-ca-key.enc"
+ROOT_FINGERPRINT_FILE="${PKI_DIR}/root-ca.fingerprint"
 ROOT_VALIDITY_HOURS=$(( ROOT_VALIDITY_YEARS * 365 * 24 ))
 
 echo "Running basic verification..."
 command -v step >/dev/null 2>&1 || echo "step-cli is not installed. See: https://smallstep.com/docs/step-cli/installation/"
 if [[ -f "$ROOT_CERT" ]] || [[ -f "$ROOT_KEY" ]]; then
   echo "Root CA artifacts already exist in ${PKI_DIR}/. To regenerate, manually remove them first."
+  exit 1
 fi
 
 # Create PKI directory with restrictive permissions
@@ -49,7 +50,8 @@ chmod 700 "${PKI_DIR}"
 
 ROOT_PW_FILE=$(mktemp)
 # Ensure temp file is cleaned up on exit
-trap 'rm -f "${ROOT_PW_FILE}" && exit 1' EXIT SIGKILL SIGINT
+trap 'rm -f "${ROOT_PW_FILE}"' EXIT
+trap 'exit 1' SIGINT SIGTERM
 
 # Generate root CA password
 echo "You need a STRONG password to encrypt the root CA private key." && echo ""
@@ -78,21 +80,39 @@ echo "  Key Type:  ${ROOT_KEY_TYPE} ${ROOT_KEY_CURVE}"
 echo "  Validity:  ${ROOT_VALIDITY_YEARS} years (${ROOT_VALIDITY_HOURS}h)"
 echo ""
 
+# Write root CA certificate template with full X.500 subject
+ROOT_TEMPLATE="${PKI_DIR}/root-ca.tpl"
+cat > "${ROOT_TEMPLATE}" <<EOF
+{
+  "subject": {
+    "commonName": "{{ .Subject.CommonName }}",
+    "organization": "${ROOT_ORG}",
+    "country": "${ROOT_COUNTRY}"
+  },
+  "issuer": {
+    "commonName": "{{ .Subject.CommonName }}",
+    "organization": "${ROOT_ORG}",
+    "country": "${ROOT_COUNTRY}"
+  },
+  "keyUsage": ["certSign", "crlSign"],
+  "basicConstraints": {
+    "isCA": true,
+    "maxPathLen": 1
+  }
+}
+EOF
+chmod 600 "${ROOT_TEMPLATE}"
+
 step certificate create \
   "${ROOT_CN}" \
   "${ROOT_CERT}" \
   "${ROOT_KEY}" \
-  --profile root-ca \
+  --template "${ROOT_TEMPLATE}" \
   --kty "${ROOT_KEY_TYPE}" \
   --crv "${ROOT_KEY_CURVE}" \
   --not-after "${ROOT_VALIDITY_HOURS}h" \
   --password-file "${ROOT_PW_FILE}" \
   --force
-
-# step certificate create with --profile root-ca automatically sets:
-#   - Basic Constraints: CA=TRUE, pathlen=1
-#   - Key Usage: Certificate Sign, CRL Sign
-#   - Subject: CN as provided
 
 echo "Root CA certificate generated: ${ROOT_CERT}"
 echo "Root CA encrypted key generated: ${ROOT_KEY}"
