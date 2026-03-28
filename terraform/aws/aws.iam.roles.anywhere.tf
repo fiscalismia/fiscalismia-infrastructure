@@ -61,7 +61,6 @@ resource "aws_iam_role" "pki_roles_anywhere_secret_manager" {
   })
 }
 
-# Permission policies in the role of iamanywhere-trust-role
 resource "aws_iam_policy" "pki_roles_anywhere_secret_manager_access" {
   name        = "HetznerPKI-Secret-Retrieval-Policy"
   path        = "/"
