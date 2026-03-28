@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# INFO: RUN LOCALLY ON SECURE WORKSTATION
 # =============================================================================
 # Generate an offline Root CA certificate and encrypted private key using
 # step-cli. The root key MUST be kept offline after signing the intermediate.
@@ -17,7 +19,6 @@
 #     ├── root-ca.pem          # Root CA certificate (public, distributable)
 #     ├── root-ca-key.enc      # Root CA encrypted private key (COLD STORAGE)
 #     └── root-ca.fingerprint  # SHA-256 fingerprint for bootstrap verification
-#
 # =============================================================================
 set -euo pipefail
 

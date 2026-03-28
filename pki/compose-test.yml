@@ -1,0 +1,79 @@
+# =============================================================================
+# docker-compose.yml — Fiscalismia step-ca Certificate Authority
+# =============================================================================
+#
+# Run step-ca as an OCI container with your pre-generated intermediate CA.
+# The container uses the official smallstep/step-ca image without modification.
+#
+# PREREQUISITES:
+#   place PKI files with correct ownership (UID 1000:GID 1000).
+#
+# USAGE:
+#   docker compose up -d
+#   docker compose logs -f step-ca
+#
+# ARCHITECTURE:
+#   The container starts step-ca with YOUR intermediate cert+key (not a
+#   self-generated PKI). The entrypoint.sh detects that ca.json already
+#   exists and skips the init phase entirely, going straight to exec step-ca.
+#
+#   The ACME provisioner is pre-configured in ca.json with a policy that
+#   restricts certificate issuance to *.fiscalismia.com domains only.
+#
+# =============================================================================
+
+services:
+  step-ca:
+    image: docker.io/smallstep/step-ca:0.30.2
+    container_name: fiscalismia-pki
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000/tcp"
+    # -----------------------------------------------------------------------
+    # Volume mounts
+    # -----------------------------------------------------------------------
+    # We bind-mount the host directory prepared by 04_setup_step_ca_vm.sh
+    # into the container's /home/step. This gives step-ca access to:
+    #   - config/ca.json        (read)
+    #   - config/defaults.json  (read)
+    #   - certs/root_ca.crt     (read)
+    #   - certs/intermediate_ca.crt  (read)
+    #   - secrets/intermediate_ca_key  (read)
+    #   - secrets/password      (read)
+    #   - db/                   (read-write, badger database)
+    #
+    # The ':z' suffix is required for SELinux-enabled hosts (Fedora/RHEL)
+    # to relabel the mount for container access.
+    # -----------------------------------------------------------------------
+    volumes:
+      - ${STEP_CA_HOME:-/usr/local/etc/step-ca}:/home/step:z
+    # -----------------------------------------------------------------------
+    # Environment
+    # -----------------------------------------------------------------------
+    # We do NOT set DOCKER_STEPCA_INIT_* variables because we provide our
+    # own ca.json with a pre-existing PKI. The entrypoint checks for ca.json
+    # and skips init if it exists.
+    # -----------------------------------------------------------------------
+    environment:
+      - STEPPATH=/home/step
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+    healthcheck:
+      test: ["CMD", "step", "ca", "health", "--ca-url", "https://127.0.0.1:9000", "--root", "/home/step/certs/root-ca.pem"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.50"
+        reservations:
+          memory: 64M
+          cpus: "0.10"

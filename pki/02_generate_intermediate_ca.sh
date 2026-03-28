@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# INFO: RUN LOCALLY ON SECURE WORKSTATION
 # =============================================================================
 # Generate an Intermediate CA certificate signed by the Root CA. This
 # intermediate will be deployed to a Hetzner VM running step-ca in an OCI
@@ -23,7 +25,6 @@
 #   $PKI_DIR/intermediate/
 #     ├── intermediate-ca.pem        # Intermediate CA cert
 #     └── intermediate-ca-key.env    # Intermediate CA encrypted key
-#
 # =============================================================================
 set -euo pipefail
 

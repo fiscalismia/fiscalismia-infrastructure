@@ -54,6 +54,11 @@ resource "aws_iam_role" "pki_roles_anywhere_secret_manager" {
           }
           StringEquals = {
             "aws:PrincipalTag/x509Subject/CN" = "Fiscalismia End Entity"
+            "aws:PrincipalTag/x509Subject/O"  = "Fiscalismia"
+            "aws:PrincipalTag/x509Subject/C"  = "DE"
+          }
+          IpAddress = {
+            "aws:SourceIp" = ["${local.hcloud_fiscalismia_nat_gateway_ipv4}/32"]
           }
         }
       }
