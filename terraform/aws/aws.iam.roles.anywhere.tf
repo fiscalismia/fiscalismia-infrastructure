@@ -11,7 +11,7 @@ resource "aws_rolesanywhere_trust_anchor" "pki_roles_anywhere_secret_manager" {
     source_data {
       # We can either add the certificate bundle of root + intermediate
       # Or for better security posture, only the public cert of the intermediate
-      x509_certificate_data = file("${path.module}/certificates/PrivateCA.pem")
+      x509_certificate_data = file("${path.module}/certificates/intermediate-ca.pem")
     }
     source_type = "CERTIFICATE_BUNDLE"
   }
