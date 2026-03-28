@@ -32,9 +32,9 @@ ssh-keygen -t ed25519 -f $HOME/.ssh/fiscalismia-production-instances-key-hcloud 
 For remote deployment on hetzner, we use an intermediary X.509 certificate and private key to create on-demand end-entity certificates.
 This requires owning our own **certificate authority** with a local and airgapped root certificate not touching the internet.
 
-This is achieved via [`step-ca`](https://github.com/smallstep/certificates), a powerful and relatively simple library written in Go acting as a server running on Hetzner inside an oci container to automatically sign and renew certificates via Automated Certificiate Management Environment (ACME).
+This is achieved via [`step-ca`](https://github.com/smallstep/certificates), a powerful and relatively simple library written in Go acting as a server running on Hetzner inside an oci container to automatically sign and renew certificates via a custom JWK provisioner.
 
-After installing below dependency, execute the scripts in the `./pki` [folder](pki/) in this repository in order, the first running only on a secure offline machine.
+After installing below dependency, execute the scripts in the `./pki` [folder](pki/) in this repository in order, the first two running only on a secure offline machine. The remaining scripts running on target servers in the cloud provisioned via Webservice-Deployment Pipeline.
 
 See [PKI Basics](https://smallstep.com/blog/everything-pki/)
 See [step-ca config file](https://smallstep.com/docs/step-ca/configuration/#specify-a-configuration-file)
