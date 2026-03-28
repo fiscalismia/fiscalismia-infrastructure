@@ -193,6 +193,42 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  fiscalismia-pki:
+    image: docker.io/smallstep/step-ca:0.30.2
+    container_name: fiscalismia-pki
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000/tcp"
+    volumes:
+      - /usr/local/etc/step-ca:/home/step:z
+    environment:
+      - STEPPATH=/home/step
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      # the upstream Dockerfile runs setcap CAP_NET_BIND_SERVICE=+eip bin/step-ca
+      # Even though we do not bind to privilidged ports < 1024, we have to grant this for compatibility
+      - NET_BIND_SERVICE
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+    healthcheck:
+      test: ["CMD", "step", "ca", "health", "--ca-url", "https://fiscalismia-pki:9000", "--root", "/home/step/certs/root-ca.pem"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.40"
+        reservations:
+          memory: 128M
+          cpus: "0.20"
+
 # since nftables firewall blocks all port forwarding except in specific podman network cidrs, all containers must live in a network
 # The configured CIDR allows these networks: 10.89.0.0/24 | 10.89.1.0/24 | 10.89.2.0/24 | 10.89.3.0/24
 networks:
