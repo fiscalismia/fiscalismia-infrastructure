@@ -41,9 +41,7 @@ sudo chown -R "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}"
 sudo chmod 700 "${STEP_CA_HOME}/secrets"
 sudo chmod 700 "${STEP_CA_HOME}/db"
 
-# ---------------------------------------------------------------------------
-# Place PKI files
-# ---------------------------------------------------------------------------
+# Place PKI files manually (REPLACE WITH SCP IN PIPELINE)
 read -p """Place PKI files in the following locations:
 ${STEP_CA_HOME}/certs/root-ca.pem
 ${STEP_CA_HOME}/certs/root-ca.fingerprint
@@ -62,30 +60,15 @@ sudo chmod 600 "${STEP_CA_HOME}/secrets/intermediate-ca-key.enc"
 
 echo "PKI files placed and permissions set."
 
-# ---------------------------------------------------------------------------
-# Intermediate key password
-# ---------------------------------------------------------------------------
-echo ""
-echo "==========================================================================="
-echo "  INTERMEDIATE CA KEY PASSWORD"
-echo "==========================================================================="
-echo ""
-echo "  Enter the password you used to encrypt the intermediate CA private key."
-echo "  This is stored in ${STEP_CA_HOME}/secrets/password and read by step-ca"
-echo "  at startup via --password-file. It is NEVER stored in ca.json."
-echo ""
-
+# Intermediate key password (REPLACE WITH SECRETS_MGR IN PIPELINE)
 read -rsp "  Intermediate CA password: " int_pw; echo
 sudo bash -c "echo -n '${int_pw}' > '${STEP_CA_HOME}/secrets/password'"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/secrets/password"
 sudo chmod 600 "${STEP_CA_HOME}/secrets/password"
 echo "Password file written."
 
-# ---------------------------------------------------------------------------
 # Generate ca.json
-# ---------------------------------------------------------------------------
 echo "Generating ca.json..."
-
 # Convert comma-separated DNS names to JSON array
 IFS=',' read -ra DNS_ARRAY <<< "${CA_DNS_NAMES}"
 DNS_JSON=$(printf '%s\n' "${DNS_ARRAY[@]}" | jq -R . | jq -s .)
