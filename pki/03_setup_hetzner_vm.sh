@@ -63,11 +63,8 @@ sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/secrets/password"
 sudo chmod 600 "${STEP_CA_HOME}/secrets/password"
 echo "Password file written."
 
-# ---------------------------------------------------------------------------
-# Generate JWK provisioner key pair
-# ---------------------------------------------------------------------------
 # The JWK provisioner authenticates cert requests via signed JWTs.
-# The key pair and password are generated here at setup time and persisted
+# The key pair and password are generated here at setup time and persisted in secrets dir
 echo ""
 echo "Generating JWK provisioner key pair for '${JWK_PROVISIONER_NAME}'..."
 
@@ -223,8 +220,9 @@ if command -v step >/dev/null 2>&1; then
     --install 2>/dev/null || echo "Bootstrap will succeed once step-ca is running."
 fi
 
-# Summary
-echo ""
+# Final summary of script execution and further instructions
+echo "==========================================================================="
+echo "  Setup of step-ca oci container volume mounts complete"
 echo "==========================================================================="
 echo ""
 echo "  step-ca home:       ${STEP_CA_HOME}"
