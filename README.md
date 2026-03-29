@@ -54,7 +54,6 @@ gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg
 EOT
 sudo dnf makecache
 sudo dnf install -y step-cli step-ca
-
 ```
 
 1. Terraform for Hetzner Cloud

@@ -20,15 +20,15 @@ resource "aws_iam_role_policy_attachment" "lambda_role_app" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_role_app_secretsmgr_access" {
+resource "aws_iam_role_policy_attachment" "lambda_role_app_paramstore_access" {
   role       = aws_iam_role.lambda_execution_role_app.name
-  policy_arn = aws_iam_policy.lambda_query_secrets_manager_access.arn
+  policy_arn = aws_iam_policy.lambda_query_parameter_store_access.arn
 }
 
-resource "aws_iam_policy" "lambda_query_secrets_manager_access" {
-  name        = "ApplicationLambda_SecretsManagerAccess"
+resource "aws_iam_policy" "lambda_query_parameter_store_access" {
+  name        = "ApplicationLambda_ParameterStoreAccess"
   path        = "/"
-  description = "IAM policy for allowing Application Lambdas Access to scoped down Secrets"
+  description = "IAM policy for allowing Application Lambdas Access to hardcoded Parameter Store SecureStrings"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -36,11 +36,20 @@ resource "aws_iam_policy" "lambda_query_secrets_manager_access" {
       {
         Effect = "Allow"
         Action = [
-          "secretsmanager:GetSecretValue",
+          "ssm:GetParameter"
         ]
         Resource = [
-          "arn:aws:secretsmanager:eu-central-1:010928217051:secret:/google/sheets/fiscalismia-datasource-url-k38OGm",
-          "arn:aws:secretsmanager:eu-central-1:010928217051:secret:/api/fiscalismia/API_GW_SECRET_KEY-4AjIFN"
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/google/sheets/fiscalismia-datasource-url",
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/api/fiscalismia/API_GW_SECRET_KEY"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
         ]
       }
     ]
