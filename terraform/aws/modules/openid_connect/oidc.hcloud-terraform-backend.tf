@@ -148,7 +148,8 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_deployment_parameter_
           "ssm:GetParameter"
         ]
         Resource = [
-          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/github/terraform-destroyer-trigger-token",
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/pki/intermediate_ca_key.enc",
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/pki/intermediate_ca_key_password",
         ]
       },
       {
