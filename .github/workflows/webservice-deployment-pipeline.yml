@@ -248,7 +248,6 @@ jobs:
         ssh demo "ls -hlas ${REMOTE_DEMO_DIR}/scripts/"
         ssh demo "ls -hlas /tmp/pki/"
 
-        exit 1
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
         scp \
@@ -257,6 +256,18 @@ jobs:
           ${BACKEND_DIR}/database/pgsql-demo-dml.sql \
           ${BACKEND_DIR}/database/pgsql-local-initdb.sh \
           demo:${REMOTE_DEMO_DIR}/database/
+
+    - name: Setup DEMO Instance /w PKI for IAM Roles Anywhere
+      if: inputs.deploy_demo == true
+      run: |
+        ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
+        ssh demo << EOF
+          cd ${REMOTE_DEMO_DIR}
+          docker compose up --no-deps fiscalismia-pki --detach
+          sleep 5
+          curl localhost:9000/health
+        EOF
+        exit 0
 
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
