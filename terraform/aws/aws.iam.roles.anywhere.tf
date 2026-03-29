@@ -57,9 +57,6 @@ resource "aws_iam_role" "pki_roles_anywhere_secret_manager" {
             "aws:PrincipalTag/x509Subject/O"  = "Fiscalismia"
             "aws:PrincipalTag/x509Subject/C"  = "DE"
           }
-          IpAddress = {
-            "aws:SourceIp" = ["${local.hcloud_fiscalismia_nat_gateway_ipv4}/32"]
-          }
         }
       }
     ]
@@ -82,6 +79,11 @@ resource "aws_iam_policy" "pki_roles_anywhere_secret_manager_access" {
         Resource = [
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-backend/.env*",
         ]
+        Condition = {
+          IpAddress = {
+            "aws:SourceIp" = ["${local.hcloud_fiscalismia_nat_gateway_ipv4}/32"]
+          }
+        }
       }
     ]
   })

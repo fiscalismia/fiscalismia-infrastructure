@@ -16,8 +16,8 @@ PROVISIONER_PW_FILE="${STEP_CA_HOME}/secrets/provisioner-password"
 
 # End-entity cert output (separate from CA files)
 CERT_DIR="/etc/pki/iam-anywhere"
-CERT_FILE="${CERT_DIR}/end-entity.pem"
-KEY_FILE="${CERT_DIR}/end-entity-key.pem"
+CERT_FILE="${CERT_DIR}/end-entity-cert.pem"
+KEY_FILE="${CERT_DIR}/end-entity-key"
 LEAF_CERT_VALIDITY="168h"
 
 # X.509 subject CN — O and C are enforced server-side by the template
