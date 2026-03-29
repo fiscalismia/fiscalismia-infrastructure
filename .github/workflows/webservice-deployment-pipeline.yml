@@ -245,7 +245,7 @@ jobs:
           ${INFRA_DIR}/pki/04_generate_end_entity_certs.sh \
           ${INFRA_DIR}/pki/05_aws_sts_credential_req.sh \
           demo:${REMOTE_DEMO_DIR}/scripts/
-        ssh demo "ls -hlas ${INFRA_DIR}/pki/"
+        ssh demo "ls -hlas ${REMOTE_DEMO_DIR}/scripts/"
         ssh demo "ls -hlas /tmp/pki/"
 
         exit 1
