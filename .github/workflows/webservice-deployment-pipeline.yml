@@ -195,7 +195,7 @@ jobs:
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
         aws secretsmanager get-secret-value \
             --secret-id $ENV_FILE_SECRET_ID \
-            --region eu-central-1 \
+            --region ${{ vars.AWS_REGION }} \
             --output text \
             --query SecretString \
             >> ${INFRA_DIR}/.env
@@ -220,14 +220,14 @@ jobs:
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${ROOT_CA_FINGERPRINT} .
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${INTERMEDIATA_CA_PUB_KEY} .
         aws ssm get-parameter \
-          --region eu-central-1 \
+          --region ${{ vars.AWS_REGION }} \
           --name /pki/${SECRET_INTERMEDIATE_CA_KEY} \
           --with-decryption \
           --query Parameter.Value \
           --output text \
           >> ./${SECRET_INTERMEDIATE_CA_KEY}
         aws ssm get-parameter \
-          --region eu-central-1 \
+          --region ${{ vars.AWS_REGION }} \
           --name /pki/${SECRET_INTERMEDIATE_CA_KEY_PW} \
           --with-decryption \
           --query Parameter.Value \
