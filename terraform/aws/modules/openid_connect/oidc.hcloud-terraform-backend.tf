@@ -1,13 +1,13 @@
 # OIDC Role for Terraform Deployment
-resource "aws_iam_role" "github_actions_terraform_hcloud_s3_backend" {
-  name                 = "OpenID_Connect_GithubActions_TerraformHcloudBackendAccess"
-  assume_role_policy   = data.aws_iam_policy_document.github_actions_terraform_hcloud_s3_backend.json
+resource "aws_iam_role" "github_actions_terraform_hcloud_deployment" {
+  name                 = "OpenID_Connect_GithubActions_TerraformHcloudDeploymentAccess"
+  assume_role_policy   = data.aws_iam_policy_document.github_actions_terraform_hcloud_deployment.json
   max_session_duration = 3600 # 1 hour - limit session duration for security
 }
 
-data "aws_iam_policy_document" "github_actions_terraform_hcloud_s3_backend" {
+data "aws_iam_policy_document" "github_actions_terraform_hcloud_deployment" {
   statement {
-    sid     = "OpenIDConnectGithubActionsTerraformHcloudS3BackendAssumeRolePolicy"
+    sid     = "OpenIDConnectGithubActionsTerraformHcloudDeploymentAssumeRolePolicy"
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
@@ -36,9 +36,9 @@ data "aws_iam_policy_document" "github_actions_terraform_hcloud_s3_backend" {
   }
 }
 
-resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_s3" {
-  name        = "OpenID_Connect_GithubActions_TerraformHcloudBackend_S3Policy"
-  description = "Scoped S3 policy for GitHub Actions to update terraform state for hcloud deployments"
+resource "aws_iam_policy" "github_actions_terraform_hcloud_deployment_s3" {
+  name        = "OpenID_Connect_GithubActions_TerraformHcloudDeployment_S3Policy"
+  description = "Scoped S3 policy for GitHub Actions to update terraform state for hcloud deployments and access PKI setup data"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -67,6 +67,28 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_s3" {
           "arn:aws:s3:::${var.terraform_state_bucket}/fiscalismia-infrastructure/hcloud/*",
         ]
       },
+      # S3 - read PKI setup files
+      {
+        Sid    = "S3ListInfrastructurePkiBucketPrefix"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.infrastructure_s3_bucket}",
+          "arn:aws:s3:::${var.infrastructure_s3_bucket}/pki/*",
+        ]
+      },
+      {
+        Sid    = "S3ReadInfrastructurePkiBucketPrefix"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.infrastructure_s3_bucket}/pki/*",
+        ]
+      },
       {
         Sid    = "S3WriteTerraformBackendState"
         Effect = "Allow"
@@ -82,8 +104,8 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_s3" {
     })
 }
 
-resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_secretsmgr" {
-  name        = "OpenID_Connect_GithubActions_TerraformHcloudBackend_SecretsManagerPolicy"
+resource "aws_iam_policy" "github_actions_terraform_hcloud_deployment_secretsmgr" {
+  name        = "OpenID_Connect_GithubActions_TerraformHcloudDeployment_SecretsManagerPolicy"
   description = "Scoped Secrets Manager Access for hcloud deployment secrets"
 
   policy = jsonencode({
@@ -111,12 +133,52 @@ resource "aws_iam_policy" "github_actions_terraform_hcloud_s3_backend_secretsmgr
     })
 }
 
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_s3_backend_s3" {
-  role       = aws_iam_role.github_actions_terraform_hcloud_s3_backend.name
-  policy_arn = aws_iam_policy.github_actions_terraform_hcloud_s3_backend_s3.arn
+resource "aws_iam_policy" "github_actions_terraform_hcloud_deployment_parameter_store" {
+  name        = "OpenID_Connect_GithubActions_TerraformHcloudDeployment_ParameterStorePolicy"
+  description = "Scoped Parameter Store Access for hcloud deployment secrets"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Parameter Store Access for hardcoded Tokens and SecureStrings not rotated automatically
+      {
+        Sid    = "ParameterStoreReadAccess"
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter"
+        ]
+        Resource = [
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/github/terraform-destroyer-trigger-token",
+        ]
+      },
+      {
+        Sid    = "ParameterStoreKMSDecrypt"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
+        ]
+      },
+    ]
+    })
 }
 
-resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_s3_backend_secretsmgr" {
-  role       = aws_iam_role.github_actions_terraform_hcloud_s3_backend.name
-  policy_arn = aws_iam_policy.github_actions_terraform_hcloud_s3_backend_secretsmgr.arn
+
+
+
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_deployment_s3" {
+  role       = aws_iam_role.github_actions_terraform_hcloud_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_hcloud_deployment_s3.arn
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_deployment_secretsmgr" {
+  role       = aws_iam_role.github_actions_terraform_hcloud_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_hcloud_deployment_secretsmgr.arn
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_hcloud_deployment_parameter_store" {
+  role       = aws_iam_role.github_actions_terraform_hcloud_deployment.name
+  policy_arn = aws_iam_policy.github_actions_terraform_hcloud_deployment_parameter_store.arn
 }

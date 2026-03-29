@@ -33,7 +33,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v5.1.1
       # https://github.com/aws-actions/configure-aws-credentials
       with:
-        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudBackendAccess
+        role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudDeploymentAccess
         role-session-name: HcloudSecurityEvaluation_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
