@@ -393,7 +393,7 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_general" {
           "arn:aws:budgets::${data.aws_caller_identity.current.account_id}:budget/*"
         ]
       },
-      # Secrets Manager - For Terraform Destroy Trigger Lambda
+      # Secrets Manager Access for Secrets rotated automatically
       {
         Sid    = "SecretsManagerReadAccess"
         Effect = "Allow"
@@ -402,13 +402,33 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_general" {
           "secretsmanager:DescribeSecret"
         ]
         Resource = [
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:terraform-destroyer-trigger-token*",
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-infrastructure-master-key-hcloud*",
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-loadbalancer-instance-key-hcloud*",
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-nat-gateway-instance-key-hcloud*",
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-demo-instance-key-hcloud*",
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-monitoring-instance-key-hcloud*",
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-production-instances-key-hcloud*",
+        ]
+      },
+      # Parameter Store Access for hardcoded Tokens and SecureStrings not rotated automatically
+      {
+        Sid    = "ParameterStoreReadAccess"
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter"
+        ]
+        Resource = [
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/github/terraform-destroyer-trigger-token",
+        ]
+      },
+      {
+        Sid    = "ParameterStoreKMSDecrypt"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
         ]
       },
       # General read-only access for Terraform state management

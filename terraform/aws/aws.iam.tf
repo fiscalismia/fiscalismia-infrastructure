@@ -34,6 +34,7 @@ resource "aws_iam_policy" "lambda_query_parameter_store_access" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "ParameterStoreReadAccess"
         Effect = "Allow"
         Action = [
           "ssm:GetParameter"
@@ -44,6 +45,7 @@ resource "aws_iam_policy" "lambda_query_parameter_store_access" {
         ]
       },
       {
+        Sid    = "ParameterStoreKMSDecrypt"
         Effect = "Allow"
         Action = [
           "kms:Decrypt"
@@ -149,11 +151,24 @@ resource "aws_iam_role_policy" "terraform_destroy_trigger_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "ParameterStoreReadAccess"
         Effect = "Allow"
         Action = [
-          "secretsmanager:GetSecretValue"
+          "ssm:GetParameter"
         ]
-        Resource = "arn:aws:secretsmanager:${var.region}:*:secret:terraform-destroyer-trigger-token*"
+        Resource = [
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/github/terraform-destroyer-trigger-token",
+        ]
+      },
+      {
+        Sid    = "ParameterStoreKMSDecrypt"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
+        ]
       },
       {
         Effect = "Allow"
