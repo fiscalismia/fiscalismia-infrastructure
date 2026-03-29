@@ -8,6 +8,7 @@ STEP_CA_HOME="/usr/local/etc/step-ca"
 CA_DNS_NAMES="localhost,fiscalismia-pki,$(hostname -f)"
 CA_PORT="9000"
 CONTAINER_HOME="/home/step"
+PKI_TEMP_DIR="/tmp/pki"
 
 # Leaf certificate defaults
 DEFAULT_TLS_CERT_DURATION="168h"   # 7 days
@@ -39,29 +40,27 @@ sudo chmod 700 "${STEP_CA_HOME}/secrets"
 sudo chmod 700 "${STEP_CA_HOME}/db"
 
 # Place PKI files manually (REPLACE WITH SCP IN PIPELINE)
-read -p """Place PKI files in the following locations:
-${STEP_CA_HOME}/certs/root-ca.pem
-${STEP_CA_HOME}/certs/root-ca.fingerprint
-${STEP_CA_HOME}/certs/intermediate-ca.pem
-${STEP_CA_HOME}/secrets/intermediate-ca-key.enc
-[Press Enter to continue]
-"""
+pki_files=( root-ca.pem root-ca.fingerprint intermediate-ca.pem intermediate-ca-key.enc )
+for filename in "${pki_files[@]}"; do
+  [[ -f "/tmp/pki/${filename}" ]] || printf "\n$filename not found.\n" && exit 1
+done
+
+sudo mv "${PKI_TEMP_DIR}/root-ca.pem" "${STEP_CA_HOME}/certs/root-ca.pem"
+sudo mv "${PKI_TEMP_DIR}/root-ca.fingerprint" "${STEP_CA_HOME}/certs/root-ca.fingerprint"
+sudo mv "${PKI_TEMP_DIR}/intermediate-ca.pem" "${STEP_CA_HOME}/certs/intermediate-ca.pem"
+sudo mv "${PKI_TEMP_DIR}/intermediate-ca-key.enc" "${STEP_CA_HOME}/secrets/intermediate-ca-key.enc"
+sudo mv "${PKI_TEMP_DIR}/intermediate_ca_key_password" "${STEP_CA_HOME}/secrets/intermediate_ca_key_password"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/certs/root-ca.pem"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/certs/root-ca.fingerprint"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/certs/intermediate-ca.pem"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/secrets/intermediate-ca-key.enc"
+sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/secrets/intermediate_ca_key_password"
 sudo chmod 644 "${STEP_CA_HOME}/certs/root-ca.pem"
 sudo chmod 644 "${STEP_CA_HOME}/certs/root-ca.fingerprint"
 sudo chmod 644 "${STEP_CA_HOME}/certs/intermediate-ca.pem"
 sudo chmod 600 "${STEP_CA_HOME}/secrets/intermediate-ca-key.enc"
+sudo chmod 600 "${STEP_CA_HOME}/secrets/intermediate_ca_key_password"
 echo "PKI files placed and permissions set."
-
-# Intermediate key password (REPLACE WITH SECRETS_MGR IN PIPELINE)
-read -rsp "  Intermediate CA password: " int_pw; echo
-sudo bash -c "echo -n '${int_pw}' > '${STEP_CA_HOME}/secrets/password'"
-sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/secrets/password"
-sudo chmod 600 "${STEP_CA_HOME}/secrets/password"
-echo "Password file written."
 
 # The JWK provisioner authenticates cert requests via signed JWTs.
 # The key pair and password are generated here at setup time and persisted in secrets dir

@@ -169,6 +169,7 @@ jobs:
         mkdir -p ${REMOTE_DEMO_DIR}/backend/public
         mkdir -p ${REMOTE_DEMO_DIR}/fastapi
         mkdir -p ${REMOTE_DEMO_DIR}/certs
+        mkdir -p ${REMOTE_DEMO_DIR}/scripts
 
         # copy ssl certificates to deployment directory
         cp /etc/letsencrypt/live/demo.fiscalismia.com/fullchain.pem ${REMOTE_DEMO_DIR}/certs/
@@ -182,6 +183,13 @@ jobs:
       if: inputs.deploy_demo == true
       env:
         ENV_FILE_SECRET_ID: fiscalismia-backend/.env
+        S3_BUCKET: fiscalismia-infrastructure
+        S3_PREFIX: pki
+        ROOT_CA_PUB_KEY: root-ca.pem
+        ROOT_CA_FINGERPRINT: root-ca.fingerprint
+        INTERMEDIATA_CA_PUB_KEY: intermediate-ca.pem
+        SECRET_INTERMEDIATE_CA_KEY: intermediate-ca-key.enc
+        SECRET_INTERMEDIATE_CA_KEY_PW: intermediate_ca_key_password
       run: |
         ### INFRA SETUP
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
@@ -206,6 +214,41 @@ jobs:
         ### FASTAPI SETUP
         scp ${FASTAPI_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/fastapi/Dockerfile
 
+        ### PKI CERTIFICATE AUTHORITY SETUP
+        ssh demo "mkdir -p /tmp/pki/"
+        aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${ROOT_CA_PUB_KEY} .
+        aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${ROOT_CA_FINGERPRINT} .
+        aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${INTERMEDIATA_CA_PUB_KEY} .
+        aws ssm get-parameter \
+          --region eu-central-1 \
+          --name /pki/${SECRET_INTERMEDIATE_CA_KEY} \
+          --with-decryption \
+          --query Parameter.Value \
+          --output text \
+          >> ./${SECRET_INTERMEDIATE_CA_KEY}
+        aws ssm get-parameter \
+          --region eu-central-1 \
+          --name /pki/${SECRET_INTERMEDIATE_CA_KEY_PW} \
+          --with-decryption \
+          --query Parameter.Value \
+          --output text \
+          >> ./${SECRET_INTERMEDIATE_CA_KEY_PW}
+        scp \
+          ${ROOT_CA_PUB_KEY} \
+          ${ROOT_CA_FINGERPRINT} \
+          ${INTERMEDIATA_CA_PUB_KEY} \
+          ${SECRET_INTERMEDIATE_CA_KEY} \
+          ${SECRET_INTERMEDIATE_CA_KEY_PW} \
+          demo:/tmp/pki/
+        scp \
+          ${INFRA_DIR}/pki/03_setup_hetzner_vm.sh \
+          ${INFRA_DIR}/pki/04_generate_end_entity_certs.sh \
+          ${INFRA_DIR}/pki/05_aws_sts_credential_req.sh \
+          demo:${REMOTE_DEMO_DIR}/scripts/
+        ssh demo "ls -hlas ${INFRA_DIR}/pki/"
+        ssh demo "ls -hlas /tmp/pki/"
+
+        exit 1
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
         scp \
