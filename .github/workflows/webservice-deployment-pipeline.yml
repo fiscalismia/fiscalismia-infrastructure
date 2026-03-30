@@ -245,6 +245,12 @@ jobs:
           ${INFRA_DIR}/pki/04_generate_end_entity_certs.sh \
           ${INFRA_DIR}/pki/05_aws_sts_credential_req.sh \
           demo:${REMOTE_DEMO_DIR}/scripts/
+        ssh demo << EOF
+          cd ${INFRA_DIR} &&
+          chmod u+x 03_setup_hetzner_vm.sh
+          chmod u+x 04_generate_end_entity_certs.sh
+          chmod u+x 05_aws_sts_credential_req.sh
+        EOF
 
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
