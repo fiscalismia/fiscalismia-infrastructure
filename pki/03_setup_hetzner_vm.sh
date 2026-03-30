@@ -45,11 +45,11 @@ for filename in "${pki_files[@]}"; do
   [[ -f "/tmp/pki/${filename}" ]] || printf "\n$filename not found.\n" && exit 1
 done
 
-sudo mv "${PKI_TEMP_DIR}/root-ca.pem" "${STEP_CA_HOME}/certs/root-ca.pem"
-sudo mv "${PKI_TEMP_DIR}/root-ca.fingerprint" "${STEP_CA_HOME}/certs/root-ca.fingerprint"
-sudo mv "${PKI_TEMP_DIR}/intermediate-ca.pem" "${STEP_CA_HOME}/certs/intermediate-ca.pem"
-sudo mv "${PKI_TEMP_DIR}/intermediate-ca-key.enc" "${STEP_CA_HOME}/secrets/intermediate-ca-key.enc"
-sudo mv "${PKI_TEMP_DIR}/intermediate_ca_key_password" "${STEP_CA_HOME}/secrets/intermediate_ca_key_password"
+sudo mv --force "${PKI_TEMP_DIR}/root-ca.pem" "${STEP_CA_HOME}/certs/root-ca.pem"
+sudo mv --force "${PKI_TEMP_DIR}/root-ca.fingerprint" "${STEP_CA_HOME}/certs/root-ca.fingerprint"
+sudo mv --force "${PKI_TEMP_DIR}/intermediate-ca.pem" "${STEP_CA_HOME}/certs/intermediate-ca.pem"
+sudo mv --force "${PKI_TEMP_DIR}/intermediate-ca-key.enc" "${STEP_CA_HOME}/secrets/intermediate-ca-key.enc"
+sudo mv --force "${PKI_TEMP_DIR}/intermediate_ca_key_password" "${STEP_CA_HOME}/secrets/intermediate_ca_key_password"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/certs/root-ca.pem"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/certs/root-ca.fingerprint"
 sudo chown "${STEP_UID}:${STEP_GID}" "${STEP_CA_HOME}/certs/intermediate-ca.pem"

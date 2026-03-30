@@ -201,6 +201,8 @@ services:
       - "127.0.0.1:9000:9000/tcp"
     volumes:
       - /usr/local/etc/step-ca:/home/step:z
+    networks:
+      - demo-pki-only
     environment:
       - STEPPATH=/home/step
     read_only: true
@@ -256,3 +258,11 @@ networks:
       config:
         - subnet: 10.89.2.0/24
           gateway: 10.89.2.1
+  demo-pki-only:
+    name: demo-pki-only
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.89.3.0/24
+          gateway: 10.89.3.1

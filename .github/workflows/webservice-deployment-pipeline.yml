@@ -245,8 +245,6 @@ jobs:
           ${INFRA_DIR}/pki/04_generate_end_entity_certs.sh \
           ${INFRA_DIR}/pki/05_aws_sts_credential_req.sh \
           demo:${REMOTE_DEMO_DIR}/scripts/
-        ssh demo "ls -hlas ${REMOTE_DEMO_DIR}/scripts/"
-        ssh demo "ls -hlas /tmp/pki/"
 
         ### DATABASE SETUP
         scp ${BACKEND_DIR}/database/Dockerfile demo:${REMOTE_DEMO_DIR}/database/Dockerfile
@@ -265,9 +263,15 @@ jobs:
           cd ${REMOTE_DEMO_DIR}
           docker compose up --no-deps fiscalismia-pki --detach
           sleep 5
-          curl localhost:9000/health
+          curl --insecure https://localhost:9000/health
+          cd ${REMOTE_DEMO_DIR}/scripts/
+          echo "=== Executing PKI Setup Script ==="
+          ./03_setup_hetzner_vm.sh
+          echo "=== Creeating end-entity cert  ==="
+          ./04_generate_end_entity_certs.sh
+          echo "=== Getting AWS STS Credential ==="
+          ./05_aws_sts_credential_req.sh
         EOF
-        exit 0
 
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
@@ -275,7 +279,7 @@ jobs:
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
-          docker compose down --volumes || true
+          docker compose down --volumes --remove-orphans || true
           docker compose up --build --detach
         EOF
     #     __        __        ___       __      __   ___  __        __             ___      ___
