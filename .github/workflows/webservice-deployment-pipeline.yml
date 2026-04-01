@@ -261,19 +261,19 @@ jobs:
         SECRET_ID: fiscalismia-backend/.env
       run: |
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
+        echo "=== Executing initial PKI Setup Script ==="
+        ssh demo ${REMOTE_DEMO_DIR}/scripts/03_setup_hetzner_vm.sh
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
-          echo "=== Executing initial PKI Setup Script ==="
-          bash scripts/03_setup_hetzner_vm.sh
           echo "=== Running step-ca container ==="
           docker compose up --no-deps fiscalismia-pki --detach
           sleep 5
           curl --insecure https://localhost:9000/health
-          echo "=== Creating end-entity cert ==="
-          bash scripts/04_generate_end_entity_certs.sh
-          echo "=== Getting AWS STS Credential ==="
-          bash scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID}
         EOF
+        echo "=== Creating end-entity cert ==="
+        ssh demo "${REMOTE_DEMO_DIR}/scripts/04_generate_end_entity_certs.sh"
+        echo "=== Getting AWS STS Credential ==="
+        ssh demo "${REMOTE_DEMO_DIR}/scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID}""
 
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
