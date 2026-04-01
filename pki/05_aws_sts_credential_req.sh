@@ -42,6 +42,8 @@ credential_process = /usr/local/bin/aws_signing_helper credential-process \
 region = eu-central-1
 CONFIG
 
+# Query .env secret from AWS with temporary STS credentials
+set -euo pipefail
 export AWS_PROFILE="hetzner-pki"
 aws secretsmanager get-secret-value \
   --profile $AWS_PROFILE \
