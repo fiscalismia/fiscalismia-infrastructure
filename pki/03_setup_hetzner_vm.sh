@@ -45,6 +45,7 @@ for filename in "${pki_files[@]}"; do
   [[ -f "/tmp/pki/${filename}" ]] || { printf "\n$filename not found.\n"; exit 1; }
 done
 
+echo "PKI files exist in temp directory. Moving to target folder ${STEP_CA_HOME}"
 sudo mv --force "${PKI_TEMP_DIR}/root-ca.pem" "${STEP_CA_HOME}/certs/root-ca.pem"
 sudo mv --force "${PKI_TEMP_DIR}/root-ca.fingerprint" "${STEP_CA_HOME}/certs/root-ca.fingerprint"
 sudo mv --force "${PKI_TEMP_DIR}/intermediate-ca.pem" "${STEP_CA_HOME}/certs/intermediate-ca.pem"
