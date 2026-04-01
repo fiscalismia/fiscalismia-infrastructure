@@ -1,0 +1,8 @@
+### High Prio
+- asd
+
+### Medium Prio
+- move hcloud certbot aws setup to use x.509 end-entity cert with specific profile in config instead of aws credentials file
+
+### Low Prio
+- asd

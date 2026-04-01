@@ -182,7 +182,6 @@ jobs:
     - name: Secure Copy Dependencies to DEMO Instance
       if: inputs.deploy_demo == true
       env:
-        ENV_FILE_SECRET_ID: fiscalismia-backend/.env
         S3_BUCKET: fiscalismia-infrastructure
         S3_PREFIX: pki
         ROOT_CA_PUB_KEY: root-ca.pem
@@ -193,14 +192,6 @@ jobs:
       run: |
         ### INFRA SETUP
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
-        aws secretsmanager get-secret-value \
-            --secret-id $ENV_FILE_SECRET_ID \
-            --region ${{ vars.AWS_REGION }} \
-            --output text \
-            --query SecretString \
-            >> ${INFRA_DIR}/.env
-        scp ${INFRA_DIR}/.env demo:${REMOTE_DEMO_DIR}/.env
-        rm -f ${INFRA_DIR}/.env
 
         ### FRONTEND SETUP
         scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
@@ -263,6 +254,11 @@ jobs:
 
     - name: Setup DEMO Instance /w PKI for IAM Roles Anywhere
       if: inputs.deploy_demo == true
+      env:
+        TRUST_ANCHOR_ARN: arn:aws:rolesanywhere:eu-central-1:010928217051:trust-anchor/c3c0f28b-7779-4acb-b698-87e72a46b9db
+        PROFILE_ARN: arn:aws:rolesanywhere:eu-central-1:010928217051:profile/f0e050f8-2e78-411d-8c39-a2938475fbf5
+        ROLE_ARN: arn:aws:iam::010928217051:role/HetznerPKI-Secret-Retrieval-Role
+        SECRET_ID: fiscalismia-backend/.env
       run: |
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
         ssh demo << EOF
@@ -272,11 +268,11 @@ jobs:
           curl --insecure https://localhost:9000/health
           cd ${REMOTE_DEMO_DIR}/scripts/
           echo "=== Executing PKI Setup Script ==="
-          ./03_setup_hetzner_vm.sh
-          echo "=== Creeating end-entity cert  ==="
-          ./04_generate_end_entity_certs.sh
+          bash 03_setup_hetzner_vm.sh
+          echo "=== Creating end-entity cert  ==="
+          bash 04_generate_end_entity_certs.sh
           echo "=== Getting AWS STS Credential ==="
-          ./05_aws_sts_credential_req.sh
+          bash 05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID}
         EOF
 
     - name: Deploy on DEMO Instance via OpenSSH
