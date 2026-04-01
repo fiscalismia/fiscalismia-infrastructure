@@ -19,7 +19,6 @@ services:
       - database-v:/var/lib/postgresql/data
     networks:
       - demo-network
-    command: "-p 5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -p 5432 -U fiscalismia_api -d fiscalismia"]
       start_period: 0s
@@ -50,6 +49,7 @@ services:
       - DAC_READ_SEARCH # allows reading files regardless of permissions set
     security_opt:
       - no-new-privileges:true
+    command: "-p 5432"
 
   fiscalismia-backend:
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
@@ -204,8 +204,6 @@ services:
       - demo-pki-only
     environment:
       - STEPPATH=/home/step
-      - CONFIGPATH=/home/step/config/ca.json
-      - PWDPATH=/home/step/secrets/intermediate_ca_key_password
     read_only: true
     security_opt:
       - no-new-privileges:true
@@ -231,6 +229,11 @@ services:
         reservations:
           memory: 128M
           cpus: "0.20"
+    command:
+      - /usr/local/bin/step-ca
+      - --password-file
+      - /home/step/secrets/intermediate_ca_key_password
+      - /home/step/config/ca.json
 
 # since nftables firewall blocks all port forwarding except in specific podman network cidrs, all containers must live in a network
 # The configured CIDR allows these networks: 10.89.0.0/24 | 10.89.1.0/24 | 10.89.2.0/24 | 10.89.3.0/24
