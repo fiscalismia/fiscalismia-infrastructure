@@ -23,11 +23,10 @@ export ENV_FILE_SECRET_ID="fiscalismia-backend/.env"
 export AWS_PROFILE="hetzner-pki"
 aws secretsmanager get-secret-value \
   --profile hetzner-pki \
-  --secret-id $ENV_FILE_SECRET_ID \
+  --secret-id fiscalismia-backend/.env \
   --region eu-central-1 \
   --output text \
   --query SecretString \
   >> /tmp/.env
 
-cat /tmp/.env
 shred -vzf -n 5 /tmp/.env

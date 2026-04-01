@@ -50,7 +50,7 @@ jobs:
         DEMO_PUBLIC_KEY: fiscalismia-demo-instance-key-hcloud.pub
         PRODUCTION_PUBLIC_KEY: fiscalismia-production-instances-key-hcloud.pub
       run: |
-        set -eou pipefail
+        set -euo pipefail
         mkdir -p ~/.ssh/
         echo "Querying ${MASTER_PUBLIC_KEY} from AWS"
         aws secretsmanager get-secret-value \

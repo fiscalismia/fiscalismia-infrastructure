@@ -56,7 +56,7 @@ jobs:
         DEMO_PRIVATE_KEY: fiscalismia-demo-instance-key-hcloud
         PRODUCTION_PRIVATE_KEY: fiscalismia-production-instances-key-hcloud
       run: |
-        set -eou pipefail
+        set -euo pipefail
         mkdir -p ~/.ssh/
 
         echo "Starting ssh-agent and exporting environment variables"

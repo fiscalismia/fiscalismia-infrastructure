@@ -43,7 +43,7 @@ jobs:
         NAT_GATEWAY_PRIVATE_KEY: fiscalismia-nat-gateway-instance-key-hcloud
         MONITORING_PRIVATE_KEY: fiscalismia-monitoring-instance-key-hcloud
       run: |
-        set -eou pipefail
+        set -euo pipefail
 
         echo "Starting ssh-agent and exporting environment variables"
         eval "$(ssh-agent -s)"

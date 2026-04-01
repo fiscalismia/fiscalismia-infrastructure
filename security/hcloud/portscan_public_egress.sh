@@ -6,7 +6,7 @@
 # ./portscan_public_egress.sh nat_gw 49.13.27.238
 ##################################################
 
-set -eou pipefail
+set -euo pipefail
 
 timeout_seconds=0.05
 rate_limit_seconds=0.01

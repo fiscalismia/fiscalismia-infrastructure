@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
+set -euo pipefail
 
 sudo dnf install -y --quiet podman podman-docker
 sudo dnf install -y --quiet dnf-plugins-core
