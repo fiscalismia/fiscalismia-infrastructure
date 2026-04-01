@@ -204,6 +204,8 @@ services:
       - demo-pki-only
     environment:
       - STEPPATH=/home/step
+      - CONFIGPATH=/home/step/config/ca.json
+      - PWDPATH=/home/step/secrets/intermediate_ca_key_password
     read_only: true
     security_opt:
       - no-new-privileges:true

@@ -237,7 +237,7 @@ jobs:
           ${INFRA_DIR}/pki/05_aws_sts_credential_req.sh \
           demo:${REMOTE_DEMO_DIR}/scripts/
         ssh demo << EOF
-          cd ${REMOTE_DEMO_DIR}/scripts/ &&
+          cd ${REMOTE_DEMO_DIR}/scripts/
           chmod u+x 03_setup_hetzner_vm.sh
           chmod u+x 04_generate_end_entity_certs.sh
           chmod u+x 05_aws_sts_credential_req.sh
@@ -262,7 +262,7 @@ jobs:
       run: |
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
         echo "=== Executing initial PKI Setup Script ==="
-        ssh demo ${REMOTE_DEMO_DIR}/scripts/03_setup_hetzner_vm.sh
+        ssh demo "${REMOTE_DEMO_DIR}/scripts/03_setup_hetzner_vm.sh"
         echo "=== Running step-ca container ==="
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
