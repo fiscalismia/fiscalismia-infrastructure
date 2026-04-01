@@ -263,9 +263,10 @@ jobs:
         ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
         echo "=== Executing initial PKI Setup Script ==="
         ssh demo ${REMOTE_DEMO_DIR}/scripts/03_setup_hetzner_vm.sh
+        echo "=== Running step-ca container ==="
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
-          echo "=== Running step-ca container ==="
+          docker compose down --volumes --remove-orphans || true
           docker compose up --no-deps fiscalismia-pki --detach
           sleep 5
           curl --insecure https://localhost:9000/health
