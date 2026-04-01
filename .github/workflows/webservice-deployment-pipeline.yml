@@ -274,7 +274,7 @@ jobs:
         echo "=== Creating end-entity cert ==="
         ssh demo "${REMOTE_DEMO_DIR}/scripts/04_generate_end_entity_certs.sh"
         echo "=== Getting AWS STS Credential ==="
-        ssh demo "${REMOTE_DEMO_DIR}/scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID}""
+        ssh demo "${REMOTE_DEMO_DIR}/scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID}"
 
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
