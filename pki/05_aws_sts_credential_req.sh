@@ -51,10 +51,10 @@ aws secretsmanager get-secret-value \
   --region eu-central-1 \
   --output text \
   --query SecretString \
-  >> /tmp/.env
+  > /tmp/.env
 
 # TEMPORARY .env setup to be changed
-cp /tmp.env /usr/local/etc/fiscalismia-demo/.env
+cp /tmp/.env /usr/local/etc/fiscalismia-demo/.env
 chmod 400 /usr/local/etc/fiscalismia-demo/.env
 shred -vzf -n 5 /tmp/.env
 rm -f /tmp/.env
