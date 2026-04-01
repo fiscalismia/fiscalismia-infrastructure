@@ -19,7 +19,7 @@ services:
       - database-v:/var/lib/postgresql/data
     networks:
       - demo-network
-    command: "-p ${POSTGRES_PORT}"
+    command: "-p 5432"
     # to use healthcheck for backend server see https://wittcode.com/blogs/connect-a-node-server-to-postgres-with-docker-compose
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -p 5432 -U fiscalismia_api -d fiscalismia"]
