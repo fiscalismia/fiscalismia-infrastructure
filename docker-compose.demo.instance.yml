@@ -8,8 +8,8 @@ services:
   # to connect from local machine, the host has to be localhost!
   # psql -U $POSTGRES_USER -d $POSTGRES_DB -h localhost -p $POSTGRES_PORT
   fiscalismia-postgres:
-    image: ${POSTGRES_HOST}:1.0.0
-    container_name: ${POSTGRES_HOST}
+    image: fiscalismia-postgres:1.0.0
+    container_name: fiscalismia-postgres
     build:
       context: ./database/
       dockerfile: Dockerfile
@@ -22,7 +22,7 @@ services:
     command: "-p ${POSTGRES_PORT}"
     # to use healthcheck for backend server see https://wittcode.com/blogs/connect-a-node-server-to-postgres-with-docker-compose
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -p ${POSTGRES_PORT} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -p 5432 -U fiscalismia_api -d fiscalismia"]
       start_period: 0s
       interval: 5s
       timeout: 5s

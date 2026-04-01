@@ -52,13 +52,15 @@ echo "Running verification of root-ca generation"
 
 # check for local step installation
 command -v step >/dev/null 2>&1 || echo "step-cli is not installed."
+# check for pre-existing intermediary cert and exit script on find
+if [[ -f "$INTERMEDIATE_CERT" ]] || [[ -f "$INTERMEDIATE_KEY" ]]; then
+  echo "[INFO] Intermediate CA artifacts already exist in ${INTERMEDIATE_DIR}/. Remove them manually to regenerate."
+  echo "Exiting script $0"
+  exit 0
+fi
 # check root certificate and keys
 [[ -f "$ROOT_CERT" ]] || echo "Root CA certificate not found at: ${ROOT_CERT}. Run 01_generate_root_ca.sh first."
 [[ -f "$ROOT_KEY" ]]  || echo "Root CA key not found at: ${ROOT_KEY}."
-# check for pre-existing intermediary cert
-if [[ -f "$INTERMEDIATE_CERT" ]] || [[ -f "$INTERMEDIATE_KEY" ]]; then
-  echo "Intermediate CA artifacts already exist in ${INTERMEDIATE_DIR}/. Remove them manually to regenerate."
-fi
 # Verify root cert is actually a CA certificate
 if ! step certificate inspect "${ROOT_CERT}" --format json 2>/dev/null | grep -q '"is_ca": true'; then
   # Fallback: check with the short format
