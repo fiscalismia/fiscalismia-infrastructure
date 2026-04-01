@@ -39,9 +39,10 @@ sudo chmod 700 "${STEP_CA_HOME}/secrets"
 sudo chmod 700 "${STEP_CA_HOME}/db"
 
 # Place PKI files manually (REPLACE WITH SCP IN PIPELINE)
+echo "Verifiyng that pki root cert, fingerprint and intermediate cert and keys exist."
 pki_files=( root-ca.pem root-ca.fingerprint intermediate-ca.pem intermediate-ca-key.enc )
 for filename in "${pki_files[@]}"; do
-  [[ -f "/tmp/pki/${filename}" ]] || printf "\n$filename not found.\n" && exit 1
+  [[ -f "/tmp/pki/${filename}" ]] || { printf "\n$filename not found.\n"; exit 1; }
 done
 
 sudo mv --force "${PKI_TEMP_DIR}/root-ca.pem" "${STEP_CA_HOME}/certs/root-ca.pem"
