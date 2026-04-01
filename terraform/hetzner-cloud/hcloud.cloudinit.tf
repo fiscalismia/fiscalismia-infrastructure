@@ -72,7 +72,7 @@ data "cloudinit_config" "loadbalancer" {
       "${path.module}/modules/hcloud_server/user_data/cloud-config.loadbalancer.yml",
       {
         nftables_lockdown_loadbalancer_b64 = local.nftables_lockdown_loadbalancer_b64
-        install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        install_podman_docker_compose_b64 = local.install_podman_docker_compose_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         colorized_haproxy_logging_b64 = local.colorized_haproxy_logging_b64
         nat_gw_ephemeral_public_egress_b64 = local.nat_gw_ephemeral_public_egress_b64
@@ -95,7 +95,8 @@ data "cloudinit_config" "demo_instance" {
       "${path.module}/modules/hcloud_server/user_data/cloud-config.demo-instance.yml",
       {
         nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
-        install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        install_podman_docker_compose_b64 = local.install_podman_docker_compose_b64
+        install_pki_sts_base_requirements_b64 = local.install_pki_sts_base_requirements_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         fetch_and_validate_tls_certificates_b64 = local.fetch_and_validate_tls_certificates_b64
         VIRTUAL_NETWORK_GATEWAY = local.virtual_network_gateway_demo_net
@@ -117,7 +118,8 @@ data "cloudinit_config" "production_instances" {
     content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml",
       {
         nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
-        install_podman_docker-compose_b64 = local.install_podman_docker-compose_b64
+        install_podman_docker_compose_b64 = local.install_podman_docker_compose_b64
+        install_pki_sts_base_requirements_b64 = local.install_pki_sts_base_requirements_b64
         install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
         fetch_and_validate_tls_certificates_b64 = local.fetch_and_validate_tls_certificates_b64
         VIRTUAL_NETWORK_GATEWAY = local.virtual_network_gateway_production_net

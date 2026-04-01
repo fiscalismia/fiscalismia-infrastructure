@@ -18,8 +18,11 @@ locals {
   )
 
   ### TOOLS ###
-  install_podman_docker-compose_b64 = base64encode(
+  install_podman_docker_compose_b64 = base64encode(
     file("${path.module}/modules/hcloud_server/user_data/tools/install-podman-docker-compose-fedora.sh")
+  )
+  install_pki_sts_base_requirements_b64 = base64encode(
+    file("${path.module}/modules/hcloud_server/user_data/tools/install-pki-sts-base-requirements.sh")
   )
   install_network_hardening_tools_b64 = base64encode(
     file("${path.module}/modules/hcloud_server/user_data/tools/install-network-hardening-tools.sh")
@@ -42,7 +45,7 @@ locals {
 }
 
 data "hcloud_image" "fedora_image" {
-  name               = "fedora-42"
+  name               = "fedora-43"
   with_architecture  = "x86"
   most_recent        = true
   with_status        = ["available"]

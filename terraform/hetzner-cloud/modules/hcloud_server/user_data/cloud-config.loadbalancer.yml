@@ -16,7 +16,7 @@ write_files:
   ### INSTALL PODMAN & DOCKER COMPOSE V2 ###
   - path: /root/scripts/install-podman-docker-compose-fedora.sh
     encoding: b64
-    content: ${install_podman_docker-compose_b64}
+    content: ${install_podman_docker_compose_b64}
     permissions: "0755"
 
   ### INSTALL NETWORK HARDENING TOOLS ###

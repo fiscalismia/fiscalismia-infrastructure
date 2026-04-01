@@ -125,7 +125,7 @@ module "fiscalismia_nat_gateway" {
 # Dedicated Security Hardening Evaluation Instance with no public ingress but all open Private Ports for network portscans
 module "network_sentinel" {
   source            = "./modules/hcloud_server/"
-  instance_count    = 1
+  instance_count    = 0
 
   server_name       = "Network-Sentinel"
   image_id          = data.hcloud_image.fedora_image.id

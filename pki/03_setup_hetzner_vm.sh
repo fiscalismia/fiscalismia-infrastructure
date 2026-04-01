@@ -27,7 +27,6 @@ IAM_CERT_COUNTRY="DE"
 STEP_UID=1000
 STEP_GID=1000
 
-
 echo "Verifiying program installations..."
 command -v step >/dev/null 2>&1 || { echo "step-cli is not installed."; exit 1; }
 command -v jq   >/dev/null 2>&1 || { echo "jq is not installed.";       exit 1; }
