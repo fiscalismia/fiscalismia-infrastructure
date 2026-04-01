@@ -57,6 +57,8 @@ write_files:
     permissions: "0755"
 
 runcmd:
+  # PINNED BINARY VERSIONS
+  - export AWS_SIGNING_HELPER_VERSION="1.8.0"
   # Initialize logfile
   - export logfile="/root/cloud-config.log"
   - echo "Hello from cloud-config.production-instances.yml!" > $logfile
@@ -82,7 +84,7 @@ runcmd:
   - aws --version >> $logfile
   # Install step-ca cli and AWS signing helper binary
   - printf "\n# Installing step-ca cli and AWS signing helper binary\n" >> $logfile
-  - /root/scripts/install-pki-sts-base-requirements.sh >> $logfile 2>&1
+  - /root/scripts/install-pki-sts-base-requirements.sh $AWS_SIGNING_HELPER_VERSION >> $logfile 2>&1
   # Install podman and docker-compose v2 plugin
   - printf "\n# Installing podman and docker compose v2 plugin\n" >> $logfile
   - /root/scripts/install-podman-docker-compose-fedora.sh >> $logfile 2>&1
