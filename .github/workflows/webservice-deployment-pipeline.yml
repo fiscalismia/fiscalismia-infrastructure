@@ -279,7 +279,8 @@ jobs:
         ssh demo "${REMOTE_DEMO_DIR}/scripts/04_generate_end_entity_certs.sh"
         echo "=== Getting AWS STS Credential ==="
         ssh demo "${REMOTE_DEMO_DIR}/scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}"
-
+        echo "=== Stopping PKI container after Credential retrieval ==="
+        ssh demo "docker compose -f ${REMOTE_DEMO_DIR}/docker-compose.pki.yml down --volumes --remove-orphans || true"
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
       run: |
