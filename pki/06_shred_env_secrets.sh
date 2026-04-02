@@ -15,9 +15,9 @@ fi
 for secret in "${SECRET_FILES[@]}"; do
   target="$SECRET_RAM_DIR/$secret"
   if [[ -f "$target" ]]; then
-    echo "Shredding $target"
+    echo "[Shredding] $target"
     shred -vzf -n 3 "$target"
-    echo "Removing $target"
+    echo "[Removing] $target"
     rm -f "$target"
   else
     echo "WARN: $target not found, skipping"
@@ -28,7 +28,7 @@ done
 for dir in "${STEP_CA_DIRS[@]}"; do
   target_dir="$STEP_CA_HOME/$dir"
   if [[ -d "$target_dir" ]]; then
-    echo "Shredding files in $target_dir/"
+    echo "[Shredding] files in $target_dir/"
     # nullglob: if dir is empty, the glob expands to nothing instead of a literal '*'
     shopt -s nullglob
     for file in "$target_dir"/*; do
@@ -37,6 +37,7 @@ for dir in "${STEP_CA_DIRS[@]}"; do
         rm -f "$file"
       fi
     done
+    echo "[Removed] files in $target_dir/"
     shopt -u nullglob
   else
     echo "WARN: $target_dir/ not found, skipping"
