@@ -290,7 +290,7 @@ jobs:
           docker compose up --build --detach
           echo "Waiting for backend healthcheck..."
           timeout 60 sh -c '
-            until docker compose ps fiscalismia-backend | grep -q "healthy"; do
+            until [ "$(podman inspect --format="{{.State.Health.Status}}" fiscalismia-backend)" = "healthy" ]; do
               sleep 2
             done
           '
