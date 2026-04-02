@@ -56,6 +56,35 @@ sudo dnf makecache
 sudo dnf install -y step-cli step-ca
 ```
 
+### Architecture Diagrams
+
+
+<details open>
+<summary><b>Public Key Infrastructure Architecture Diagram</b></summary>
+
+![img_public_key_infrastructure](docs/img_public_key_infrastructure.png)
+</details>
+
+<details closed>
+<summary><b>Hetzner Cloud Infrastructure Architecture Diagram</b></summary>
+
+![img_hetzner_cloud_infrastructure](docs/img_hetzner_cloud_infrastructure.png)
+</details>
+
+
+<details closed>
+<summary><b>One Button Full Database Init from sheets Raw Data</b></summary>
+
+![img_raw_data_etl_db_init_lambda](docs/img_raw_data_etl_db_init_lambda.png)
+</details>
+
+<details closed>
+<summary><b>Infrastructure Pipelines for automated deployments</b></summary>
+
+![img_fiscalismia_infrastructure_pipelines](docs/img_fiscalismia_infrastructure_pipelines.png)
+</details>
+
+
 ### Deployment
 
 1. Terraform for Hetzner Cloud
