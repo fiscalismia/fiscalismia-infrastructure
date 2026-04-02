@@ -18,13 +18,10 @@ PROVISIONER_PW_FILE="${STEP_CA_HOME}/secrets/provisioner-password"
 CERT_DIR="/etc/pki/iam-anywhere"
 CERT_FILE="${CERT_DIR}/end-entity-cert.pem"
 KEY_FILE="${CERT_DIR}/end-entity-key"
-LEAF_CERT_VALIDITY="168h"
+LEAF_CERT_VALIDITY="1h"
 
 # X.509 subject CN — O and C are enforced server-side by the template
 CERT_CN="Fiscalismia End Entity"
-
-# Systemd renewal service
-RENEW_SERVICE="step-ca-renew-iam-anywhere"
 
 echo "Verifiying program installations..."
 command -v step >/dev/null 2>&1 || { echo "step-cli is not installed."; exit 1; }
@@ -83,47 +80,6 @@ else
   exit 1
 fi
 
-# Automated renewal via systemd timer running as a daemon against a oneshot (executes, then exits) systemd service
-# even though the timer runs every x OnUnitActiveSec, step-ca performs a renewal only after 2/3 of the certs validity
-echo "  Setting up automated certificate renewal"
-sudo tee "/etc/systemd/system/${RENEW_SERVICE}.service" > /dev/null <<EOF
-[Unit]
-Description=Renew IAM Roles Anywhere end-entity certificate via step-ca
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/step ca renew \\
-    ${CERT_FILE} ${KEY_FILE} \\
-    --ca-url ${CA_URL} \\
-    --root ${ROOT_CA_PATH} \\
-    --force
-
-ProtectSystem=full
-ProtectHome=true
-NoNewPrivileges=yes
-PrivateTmp=true
-EOF
-
-sudo tee "/etc/systemd/system/${RENEW_SERVICE}.timer" > /dev/null <<EOF
-[Unit]
-Description=Timer for IAM Roles Anywhere certificate renewal
-
-[Timer]
-OnBootSec=5min
-OnUnitActiveSec=8h
-RandomizedDelaySec=30min
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable --now "${RENEW_SERVICE}.timer"
-echo "Systemd timer installed and started."
-
 # Final summary of script execution and further instructions
 echo "==========================================================================="
 echo "  END-ENTITY CERTIFICATE ISSUANCE COMPLETE"
@@ -134,13 +90,8 @@ echo "  Private Key:  ${KEY_FILE}"
 echo ""
 echo "  Subject:      CN=${CERT_CN}, O=Fiscalismia, C=DE"
 echo "  Key Type:     ECDSA P-256"
-echo "  Validity:     7 days (renewed automatically)"
-echo ""
-echo "  Renewal:      systemd timer '${RENEW_SERVICE}' (8h check interval)"
-echo "    Status:     systemctl list-timers | grep ${RENEW_SERVICE}"
-echo "    Logs:       journalctl -u ${RENEW_SERVICE}.service"
-echo "    Manual run: sudo systemctl start ${RENEW_SERVICE}.service"
-echo ""
+echo "  Validity:     ${LEAF_CERT_VALIDITY}"
+
 echo "  AWS Roles Anywhere usage:"
 echo "    aws_signing_helper credential-process \\"
 echo "      --certificate ${CERT_FILE} \\"

@@ -192,6 +192,7 @@ jobs:
       run: |
         ### INFRA SETUP
         scp ${INFRA_DIR}/docker-compose.demo.instance.yml demo:${REMOTE_DEMO_DIR}/docker-compose.yml
+        scp ${INFRA_DIR}/docker-compose.pki.yml demo:${REMOTE_DEMO_DIR}/
 
         ### FRONTEND SETUP
         scp ${FRONTEND_DIR}/Dockerfile demo:${REMOTE_DEMO_DIR}/frontend/Dockerfile
@@ -266,8 +267,8 @@ jobs:
         echo "=== Running step-ca container ==="
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}
-          docker compose down --volumes --remove-orphans || true
-          docker compose up --no-deps fiscalismia-pki --detach
+          docker compose -f docker-compose.pki.yml down --volumes --remove-orphans || true
+          docker compose -f docker-compose.pki.yml up --build --detach
           sleep 5
           curl --insecure https://localhost:9000/health
         EOF

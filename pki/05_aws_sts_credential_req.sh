@@ -42,7 +42,11 @@ credential_process = /usr/local/bin/aws_signing_helper credential-process \
 region = eu-central-1
 CONFIG
 
-# Query .env secret from AWS with temporary STS credentials
+# Setup RAM-backed tmpfs without swap possibility to avoid .env ever touching disk
+SECRET_RAM_DIR="/usr/local/etc/fiscalismia-demo/secrets"
+sudo mount -t tmpfs -o size=1m,mode=0700,noexec,nosuid,nodev,noswap tmpfs $SECRET_RAM_DIR
+
+# Query .env secret from AWS with temporary STS credentials and write to RAM tmpfs
 set -euo pipefail
 export AWS_PROFILE="hetzner-pki"
 aws secretsmanager get-secret-value \
@@ -51,10 +55,5 @@ aws secretsmanager get-secret-value \
   --region eu-central-1 \
   --output text \
   --query SecretString \
-  > /tmp/.env
-
-# TEMPORARY .env setup to be changed
-cp /tmp/.env /usr/local/etc/fiscalismia-demo/.env
-chmod 400 /usr/local/etc/fiscalismia-demo/.env
-shred -vzf -n 5 /tmp/.env
-rm -f /tmp/.env
+  > $SECRET_RAM_DIR/.env
+chmod 400 $SECRET_RAM_DIR/.env

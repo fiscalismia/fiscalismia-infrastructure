@@ -27,7 +27,7 @@ resource "aws_rolesanywhere_profile" "pki_roles_anywhere_secret_manager" {
   enabled             = true
   name                = "HetznerPKI-Secret-Retrieval-Profile"
   role_arns           = [aws_iam_role.pki_roles_anywhere_secret_manager.arn]
-  duration_seconds    = 900
+  duration_seconds    = 3600
 }
 
 resource "aws_iam_role" "pki_roles_anywhere_secret_manager" {
