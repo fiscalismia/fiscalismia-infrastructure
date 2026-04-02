@@ -106,5 +106,11 @@ fi
 echo "ANTHROPIC_API_KEY=${ANTHROPIC_KEY}" >> "$SECRET_RAM_DIR/$WEBSCRAPER_SECRET"
 
 unset ANTHROPIC_KEY
+
+# read only access to python user id 1001 which runs the uvicorn supervisord service
 chmod 400 "$SECRET_RAM_DIR/$WEBSCRAPER_SECRET"
+chown 1001:1001 "$SECRET_RAM_DIR/$WEBSCRAPER_SECRET"
+
+# read only access to nodejs user id 1001 which runs the node supervisord service
 chmod 400 "$SECRET_RAM_DIR/$BACKEND_SECRET"
+chown 1001:1001 "$SECRET_RAM_DIR/$BACKEND_SECRET"
