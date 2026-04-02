@@ -26,7 +26,7 @@ services:
     networks:
       - demo-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -p 5432 -U fiscalismia_api -d fiscalismia"]
       start_period: 0s
       interval: 5s
       timeout: 5s
@@ -54,7 +54,7 @@ services:
     # tmpfs for temporary files
     tmpfs:
       - /tmp:noexec,nosuid,size=256m
-    command: "-p $POSTGRES_PORT"
+    command: "-p 5432"
 
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
