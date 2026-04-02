@@ -56,6 +56,8 @@ sudo dnf makecache
 sudo dnf install -y step-cli step-ca
 ```
 
+### Deployment
+
 1. Terraform for Hetzner Cloud
 
 Provision Hetzner Cloud first, since aws route53 depends on hcloud server ipv4 addresses for Type A Records using `terraform_remote_state`
