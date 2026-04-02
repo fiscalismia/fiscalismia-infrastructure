@@ -31,6 +31,7 @@ else
   exit 1
 fi
 
+echo "Setting up ~/.aws/config for short-lived credential process"
 sudo tee ~/.aws/config > /dev/null << CONFIG
 [profile hetzner-pki]
 credential_process = /usr/local/bin/aws_signing_helper credential-process \
@@ -44,7 +45,13 @@ CONFIG
 
 # Setup RAM-backed tmpfs without swap possibility to avoid .env ever touching disk
 SECRET_RAM_DIR="/usr/local/etc/fiscalismia-demo/secrets"
-sudo mount -t tmpfs -o size=1m,mode=0700,noexec,nosuid,nodev,noswap tmpfs $SECRET_RAM_DIR
+if ! mountpoint -q "$SECRET_RAM_DIR" 2>/dev/null; then
+  echo "Mountpoint not detected for secret fs in RAM. Mounting..."
+  mkdir -p $SECRET_RAM_DIR
+  sudo mount -t tmpfs -o size=1m,mode=0700,noexec,nosuid,nodev,noswap tmpfs $SECRET_RAM_DIR
+else
+  echo "Mountpoint detected for secret fs in RAM."
+fi
 
 # Query .env secret from AWS with temporary STS credentials and write to RAM tmpfs
 set -euo pipefail

@@ -91,7 +91,7 @@ echo ""
 echo "  Subject:      CN=${CERT_CN}, O=Fiscalismia, C=DE"
 echo "  Key Type:     ECDSA P-256"
 echo "  Validity:     ${LEAF_CERT_VALIDITY}"
-
+echo ""
 echo "  AWS Roles Anywhere usage:"
 echo "    aws_signing_helper credential-process \\"
 echo "      --certificate ${CERT_FILE} \\"
