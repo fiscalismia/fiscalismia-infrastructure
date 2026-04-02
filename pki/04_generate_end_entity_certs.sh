@@ -19,6 +19,8 @@ CERT_DIR="/etc/pki/iam-anywhere"
 CERT_FILE="${CERT_DIR}/end-entity-cert.pem"
 KEY_FILE="${CERT_DIR}/end-entity-key"
 LEAF_CERT_VALIDITY="1h"
+LEAF_KEY_TYPE="EC"
+LEAF_KEY_CURVE="P-256"  # 128-bit security; more isn't supported by IAM Roles anywhere
 
 # X.509 subject CN — O and C are enforced server-side by the template
 CERT_CN="Fiscalismia End Entity"
@@ -58,7 +60,7 @@ sudo step ca certificate \
   --provisioner-password-file "${PROVISIONER_PW_FILE}" \
   --ca-url "${CA_URL}" \
   --root "${ROOT_CA_PATH}" \
-  --kty EC --crv P-256 \
+  --kty "${LEAF_KEY_TYPE}" --crv ${LEAF_KEY_CURVE} \
   --not-after "${LEAF_CERT_VALIDITY}" \
   --force
 

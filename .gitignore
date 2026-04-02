@@ -30,6 +30,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 .env
+backend.env
+database.env
+webscraper.env
 terraform/hetzner-cloud/server-ips.txt
 
 # AWS Lambda Artifacts

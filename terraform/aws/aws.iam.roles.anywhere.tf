@@ -89,7 +89,46 @@ resource "aws_iam_policy" "pki_roles_anywhere_secret_manager_access" {
   })
 }
 
+resource "aws_iam_policy" "pki_roles_anywhere_parameter_store_access" {
+  name        = "HetznerPKI-ParameterStore-Retrieval-Policy"
+  path        = "/"
+  description = "Allows retrieval of parameter store secure strings to Hetzner servers authenticated via X.509 PKIs"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Parameter Store Access for hardcoded Tokens and SecureStrings not rotated automatically
+      {
+        Sid    = "ParameterStoreReadAccess"
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter"
+        ]
+        Resource = [
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/fastapi/fiscalismia/ANTHROPIC_API_KEY",
+        ]
+      },
+      {
+        Sid    = "ParameterStoreKMSDecrypt"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
+        ]
+      },
+    ]
+    })
+}
+
 resource "aws_iam_role_policy_attachment" "pki_roles_anywhere_secret_manager_access" {
   role       = aws_iam_role.pki_roles_anywhere_secret_manager.name
   policy_arn = aws_iam_policy.pki_roles_anywhere_secret_manager_access.arn
 }
+
+resource "aws_iam_role_policy_attachment" "pki_roles_anywhere_parameter_store_access" {
+  role       = aws_iam_role.pki_roles_anywhere_secret_manager.name
+  policy_arn = aws_iam_policy.pki_roles_anywhere_parameter_store_access.arn
+}
+

@@ -13,12 +13,20 @@ services:
     build:
       context: ./database/
       dockerfile: Dockerfile
+    restart: "no"
+    environment:
+      POSTGRES_USER: fiscalismia_api
+      POSTGRES_DB: fiscalismia
+      POSTGRES_PORT: 5432
+      # After initial deployment, PostgreSQL's internal catalog (the pg_authid table on the persistent volume)
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     volumes:
       - database-v:/var/lib/postgresql/data
+      - /usr/local/etc/fiscalismia-demo/secrets/postgres_password:/run/secrets/postgres_password:ro,z
     networks:
       - demo-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -p 5432 -U fiscalismia_api -d fiscalismia"]
+      test: ["CMD-SHELL", "pg_isready -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB"]
       start_period: 0s
       interval: 5s
       timeout: 5s
@@ -32,11 +40,7 @@ services:
         reservations:
           memory: 256M
           cpus: '0.3'
-    # tmpfs for temporary files
-    tmpfs:
-      - /tmp:noexec,nosuid,size=256m
-      - /run:noexec,nosuid,size=64m
-    # Security hardening
+    # Security hardening (minimal required permissions)
     cap_drop:
       - ALL
     cap_add:
@@ -47,7 +51,11 @@ services:
       - DAC_READ_SEARCH # allows reading files regardless of permissions set
     security_opt:
       - no-new-privileges:true
-    command: "-p 5432"
+    # tmpfs for temporary files
+    tmpfs:
+      - /tmp:noexec,nosuid,size=256m
+    command: "-p $POSTGRES_PORT"
+
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
     container_name: fiscalismia-frontend
@@ -81,8 +89,6 @@ services:
           cpus: '0.1'
     ### SECURITY HARDENING (minimal required permissions)
     read_only: true
-    tmpfs:
-      - /tmp:noexec,nosuid,size=64m # set as cache directory in nginx.demo.conf
     cap_drop:
       - ALL
     cap_add:
@@ -91,6 +97,8 @@ services:
       - NET_BIND_SERVICE
     security_opt:
       - no-new-privileges:true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m # set as cache directory in nginx.demo.conf
 
   fiscalismia-backend:
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
@@ -106,7 +114,7 @@ services:
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
       # tmpfs backed mounted RAM filesystem on the host ensures .env file in container lives in memory only
       # The host file is shredded and deleted after container health check succeeds, resulting in .env file only existing during startup
-      - /usr/local/etc/fiscalismia-demo/secrets/.env:/run/secrets/.env:ro,z
+      - /usr/local/etc/fiscalismia-demo/secrets/backend.env:/run/secrets/.env:ro,z
     networks:
       - demo-network
     ports:
@@ -131,8 +139,6 @@ services:
           memory: 128M
           cpus: '0.2'
     ### SECURITY HARDENING (minimal required permissions)
-    tmpfs:
-      - /tmp:noexec,nosuid,size=128m # set as cache directory in nginx.demo.conf
     cap_drop:
       - ALL
     cap_add:
@@ -142,21 +148,23 @@ services:
       - KILL  # Required for supervisor to signal child processes
     security_opt:
       - no-new-privileges:true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=128m # set as cache directory in nginx.demo.conf
 
   fiscalismia-webscraper:
     image: ghcr.io/fiscalismia/fiscalismia-webscraper-demo:latest
     container_name: fiscalismia-webscraper
     pull_policy: always
-    restart: unless-stopped
-    env_file:
-    # todo this uses the backend's .env file and exposes a lot of unnecessary data.
-      - /usr/local/etc/fiscalismia-demo/secrets/.env
+    restart: "no" # .env file is loaded into container memory only once during deployment
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro,z
+      # tmpfs backed mounted RAM filesystem on the host ensures .env file in container lives in memory only
+      # The host file is shredded and deleted after container health check succeeds, resulting in .env file only existing during startup
+      - /usr/local/etc/fiscalismia-demo/secrets/webscraper.env:/run/secrets/.env:ro,z
     networks:
       - demo-webscraper-only
     ports:
@@ -178,8 +186,6 @@ services:
           memory: 5120M
           cpus: '2.5'
     ### SECURITY HARDENING (minimal required permissions)
-    tmpfs:
-      - /tmp:noexec,nosuid,size=512m # set as cache directory in nginx.conf
     cap_drop:
       - ALL
     cap_add:
@@ -189,6 +195,8 @@ services:
       - KILL  # Required for supervisor to signal child processes
     security_opt:
       - no-new-privileges:true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=512m # set as cache directory in nginx.conf
 
 # since nftables firewall blocks all port forwarding except in specific podman network cidrs, all containers must live in a network
 # The configured CIDR allows these networks: 10.89.0.0/24 | 10.89.1.0/24 | 10.89.2.0/24 | 10.89.3.0/24
