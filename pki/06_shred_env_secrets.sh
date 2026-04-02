@@ -44,5 +44,6 @@ for dir in "${STEP_CA_DIRS[@]}"; do
   fi
 done
 
-echo "Unmounting $SECRET_RAM_DIR/"
-sudo umount "$SECRET_RAM_DIR"
+# Unmounting actively mounted podman volume mounts is not wise, shredding and removing the secrets should be sufficient
+# echo "Unmounting $SECRET_RAM_DIR/"
+# sudo umount "$SECRET_RAM_DIR"
