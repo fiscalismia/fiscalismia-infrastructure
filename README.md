@@ -1,5 +1,5 @@
 ## fiscalismia-infrastructure
-Terraform pipelines for AWS & Hetzner Cloud Infrastructure. Bastion-Host ProxyJump Deployment. DNS TLS Certificate request & renewal Pipeline. Security & Firewall Network Evaluation Pipeline. NAT Gateway Instance for HTTPS and DNS Egress. TerraformDestroyer Pipeline to teardown cloud infrastructure after cost threshold has been surpassed.
+Terraform pipelines for AWS & Hetzner Cloud. Bastion-Host ProxyJump Deployment. TLS LetsEncrypt Cert request & renewal. Security & Firewall Network Evaluation. NAT Gateway for HTTPS and DNS Egress. PKI /w Certificate Authority & X.509 Certs to fetch short-lived STS credentials. TerraformDestroyer tears down aws after cost threshold is surpassed.
 
 ### Prerequisites
 
