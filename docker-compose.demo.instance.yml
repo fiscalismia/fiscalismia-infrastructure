@@ -13,8 +13,6 @@ services:
     build:
       context: ./database/
       dockerfile: Dockerfile
-    env_file:
-      - .env
     volumes:
       - database-v:/var/lib/postgresql/data
     networks:
@@ -50,7 +48,6 @@ services:
     security_opt:
       - no-new-privileges:true
     command: "-p 5432"
-
   fiscalismia-frontend:
     image: ghcr.io/fiscalismia/fiscalismia-frontend-demo:latest
     container_name: fiscalismia-frontend
@@ -99,7 +96,7 @@ services:
     image: ghcr.io/fiscalismia/fiscalismia-backend-demo:latest
     container_name: fiscalismia-backend
     pull_policy: always
-    restart: never # .env file is loaded into container memory only once during deployment
+    restart: "no" # .env file is loaded into container memory only once during deployment
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the
@@ -153,7 +150,7 @@ services:
     restart: unless-stopped
     env_file:
     # todo this uses the backend's .env file and exposes a lot of unnecessary data.
-      - .env
+      - /usr/local/etc/fiscalismia-demo/secrets/.env
     volumes:
       # The ':z' flag is required on SELinux-enabled systems (like Fedora/CentOS)
       # to relabel the host directory. This allows the container to access the

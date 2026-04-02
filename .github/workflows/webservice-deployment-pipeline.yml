@@ -236,12 +236,14 @@ jobs:
           ${INFRA_DIR}/pki/03_setup_hetzner_vm.sh \
           ${INFRA_DIR}/pki/04_generate_end_entity_certs.sh \
           ${INFRA_DIR}/pki/05_aws_sts_credential_req.sh \
+          ${INFRA_DIR}/pki/06_shred_env_secrets.sh \
           demo:${REMOTE_DEMO_DIR}/scripts/
         ssh demo << EOF
           cd ${REMOTE_DEMO_DIR}/scripts/
           chmod u+x 03_setup_hetzner_vm.sh
           chmod u+x 04_generate_end_entity_certs.sh
           chmod u+x 05_aws_sts_credential_req.sh
+          chmod u+x 06_shred_env_secrets.sh
         EOF
 
         ### DATABASE SETUP
@@ -285,7 +287,15 @@ jobs:
           cd ${REMOTE_DEMO_DIR}
           docker compose down --volumes --remove-orphans || true
           docker compose up --build --detach
+          echo "Waiting for backend healthcheck..."
+          timeout 60 sh -c '
+            until docker compose ps fiscalismia-backend | grep -q "healthy"; do
+              sleep 2
+            done
+          '
         EOF
+        echo "=== Shredding .env file following deployment ==="
+        ssh demo "${REMOTE_DEMO_DIR}/scripts/06_shred_env_secrets.sh"
     #     __        __        ___       __      __   ___  __        __             ___      ___
     #    |__)  /\  /  ` |__/ |__  |\ | |  \    |  \ |__  |__) |    /  \ \ /  |\/| |__  |\ |  |
     #    |__) /~~\ \__, |  \ |___ | \| |__/    |__/ |___ |    |___ \__/  |   |  | |___ | \|  |
