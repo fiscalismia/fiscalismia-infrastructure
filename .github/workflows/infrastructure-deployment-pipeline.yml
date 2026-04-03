@@ -160,6 +160,7 @@ jobs:
           if (( \$exit_code > 0 )); then
             printf "\nSetting up ephemeral internet access via NAT GW\n"
             /root/scripts/nat_gw_ephemeral_public_egress.sh $PRIVATE_NETWORK_INTERFACE
+            cat /root/nat_gw_egress_setup.log
           else
             printf "\nInternet Access already setup. Continue.\n"
           fi
