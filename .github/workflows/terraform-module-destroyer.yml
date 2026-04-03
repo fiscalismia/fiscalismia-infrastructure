@@ -20,7 +20,6 @@ on:
 
 jobs:
   destroy-aws-and-hcloud:
-    if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
     runs-on: ubuntu-latest
 
     permissions:
@@ -77,6 +76,7 @@ jobs:
         done
 
     - name: Destroy AWS and Hetzner Cloud resources
+      if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
       env:
         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       run: |
