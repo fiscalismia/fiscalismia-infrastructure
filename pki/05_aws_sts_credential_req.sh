@@ -69,7 +69,7 @@ aws secretsmanager get-secret-value \
   --region eu-central-1 \
   --output text \
   --query SecretString \
-  > $SECRET_RAM_DIR/$BACKEND_SECRET
+  > "$SECRET_RAM_DIR/$BACKEND_SECRET"
 
 # setup postgres password file for demo container
 if [[ "${TARGET_ENV}" == "demo" ]]; then

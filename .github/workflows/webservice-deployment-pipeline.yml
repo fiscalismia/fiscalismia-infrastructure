@@ -267,6 +267,7 @@ jobs:
           ${BACKEND_DIR}/database/pgsql-demo-dml.sql \
           ${BACKEND_DIR}/database/pgsql-local-initdb.sh \
           demo:${REMOTE_DEMO_DIR}/database/
+
     - name: Setup DEMO Instance /w PKI for IAM Roles Anywhere
       if: inputs.deploy_demo == true
       env:
