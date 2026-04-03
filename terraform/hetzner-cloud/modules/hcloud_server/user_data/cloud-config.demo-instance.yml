@@ -107,6 +107,8 @@ runcmd:
       "$PODMAN_LISTENER_PORT_LIST" \
       $OPTIONAL_BACKEND_DEMO_INGRESS_PORTS \
       >> $logfile 2>&1
+  # Sets default directory on ssh connect to application directory - fallback to root user
+  - echo "cd /usr/local/etc/fiscalismia-demo/ || cd /root/" >> ~/.bashrc
   ######################################################################################
   # reboots server for persistent network config to take effect
   - printf "\n# Rebooting server...\n" >> $logfile
