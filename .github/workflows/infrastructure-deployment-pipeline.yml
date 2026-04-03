@@ -186,7 +186,7 @@ jobs:
         echo "Waiting for loadbalancer to come back online..."
         sleep 30
         for i in $(seq 1 12); do
-          echo "SSH connectivity probe attempt \"$i\"..."
+          echo "SSH connectivity probe attempt $i..."
           ssh -o ConnectTimeout=5 loadbalancer "podman ps --format '{{.Names}} {{.Status}}'" && break
           sleep 10
         done
