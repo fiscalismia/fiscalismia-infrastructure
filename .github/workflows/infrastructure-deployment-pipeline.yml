@@ -140,6 +140,8 @@ jobs:
         echo "INFRA_DIR=${GITHUB_WORKSPACE}/fiscalismia-infrastructure" >> $GITHUB_ENV
 
     - name: Deploy HAProxy LOADBALANCER via OpenSSH
+      env:
+        PRIVATE_NETWORK_INTERFACE: 172.24.1.3
       if: inputs.deploy_haproxy == true
       run: |
         # SETUP REMOTE WORKSPACE FOR HAPROXY
@@ -157,7 +159,7 @@ jobs:
           # only execute if curl times out
           if (( \$exit_code > 0 )); then
             printf "\nSetting up ephemeral internet access via NAT GW\n"
-            /root/scripts/nat_gw_ephemeral_public_egress.sh 172.24.1.3
+            /root/scripts/nat_gw_ephemeral_public_egress.sh $PRIVATE_NETWORK_INTERFACE
           else
             printf "\nInternet Access already setup. Continue.\n"
           fi
@@ -169,7 +171,27 @@ jobs:
           cd ${REMOTE_HAPROXY_DIR}
           docker compose down --volumes --remove-orphans || true
           docker compose up --detach
-          echo "Waiting for backend healthcheck..."
+          echo "Waiting for haproxy healthcheck post image pull..."
+          timeout 60 sh -c '
+            until [ "\$(podman inspect --format="{{.State.Health.Status}}" haproxy)" = "healthy" ]; do
+              sleep 2
+            done
+          '
+          # enables podman to honor the restart policy after reboot
+          sudo systemctl enable podman-restart.service
+        EOF
+
+        echo "Rebooting loadbalancer to remove ephemeral internet access..."
+        ssh loadbalancer "sudo systemctl reboot" || true
+        echo "Waiting for loadbalancer to come back online..."
+        sleep 30
+        for i in $(seq 1 12); do
+          echo "SSH connectivity probe attempt \"$i\"..."
+          ssh -o ConnectTimeout=5 loadbalancer "podman ps --format '{{.Names}} {{.Status}}'" && break
+          sleep 10
+        done
+        ssh loadbalancer << EOF
+          echo "Waiting for haproxy healthcheck post reboot..."
           timeout 60 sh -c '
             until [ "\$(podman inspect --format="{{.State.Health.Status}}" haproxy)" = "healthy" ]; do
               sleep 2
