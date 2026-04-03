@@ -97,3 +97,11 @@ resource "aws_route53_record" "type_A_monitoring_domain" {
   records = [var.loadbalancer_instance_ipv4]
   ttl     = 300
 }
+
+resource "aws_route53_record" "type_AAAA_woodpecker_ci_domain" {
+  zone_id = data.aws_route53_zone.selected_zone.zone_id
+  name    = "${var.ainac_woodpecker_ci_subdomains}.${var.domain_name}"
+  type    = "AAAA"
+  records = [var.ainac_ci_instance_static_ipv6]
+  ttl     = 300
+}

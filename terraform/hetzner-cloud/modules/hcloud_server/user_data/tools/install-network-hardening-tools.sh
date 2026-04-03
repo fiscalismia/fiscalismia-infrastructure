@@ -20,7 +20,7 @@ sudo dnf install $TOOL_SUITE -y --quiet
 printf "\n# Installed [nmap] port scanner version:\n" >> $LOG_FILE
 nmap --version >> $LOG_FILE 2>&1
 printf "\n# Installed [nc] port scanner version:\n" >> $LOG_FILE
-nc --version >> $LOG_FILE 2>&1
+nc -v >> $LOG_FILE 2>&1
 printf "\n# Installed [dig] dns resolver version:\n" >> $LOG_FILE
 dig -v >> $LOG_FILE 2>&1
 printf "\n# Installed [netstat] port analyzer version:\n" >> $LOG_FILE

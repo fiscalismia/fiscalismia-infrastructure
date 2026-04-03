@@ -6,3 +6,5 @@ variable "monitoring_subdomain" {}
 variable "loadbalancer_instance_ipv4" {}
 variable "demo_backend_subdomains" {}
 variable "demo_fastapi_subdomains" {}
+variable "ainac_woodpecker_ci_subdomains" {}
+variable "ainac_ci_instance_static_ipv6" {}
