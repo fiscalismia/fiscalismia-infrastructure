@@ -1,8 +1,8 @@
 ### High Prio
-- asd
 
 ### Medium Prio
 - move hcloud certbot aws setup to use x.509 end-entity cert with specific profile in config instead of aws credentials file
+- remove port 80 from hcloud public firewall https rule, from all nftables of demo instance as well and check for remaining files
 
 ### Low Prio
 - asd

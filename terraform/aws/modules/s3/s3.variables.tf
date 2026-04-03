@@ -1,7 +1,11 @@
 variable "bucket_name" {}
 variable "fqdn" {}
 variable "demo_fqdn" {}
-variable "lambda_execution_role_arns" {}
+variable "lambda_execution_role_arns" {
+  description = "ARNs of Lambda execution roles that need S3 access"
+  type        = list(string)
+  default     = []
+}
 variable "data_infrequent_access" {
   default     = false
   type        = bool
@@ -33,4 +37,9 @@ variable "versioning" {
   default = false
   type    = bool
   description = "whether buckets are versioned to retain history."
+}
+variable "apply_cors_rules" {
+  description = "Whether to apply CORS rules to the S3 bucket"
+  type        = bool
+  default     = false
 }

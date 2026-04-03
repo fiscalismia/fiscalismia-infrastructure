@@ -8,7 +8,7 @@ module "fiscalismia_bastion_host" {
   instance_count      = 1
 
   server_name         = "Fiscalismia-Bastion-Host"
-  image_id            = data.hcloud_image.fedora_image.id
+  image_id            = data.hcloud_image.fedora_latest.id
   location            = var.default_location
   static_public_ip_id = module.bastion_host_static_ip.ip.id
   server_type         = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
@@ -50,7 +50,7 @@ module "fiscalismia_loadbalancer" {
   instance_count      = 1
 
   server_name         = "Fiscalismia-LoadBalancer"
-  image_id            = data.hcloud_image.fedora_image.id
+  image_id            = data.hcloud_image.fedora_latest.id
   location            = var.default_location
   static_public_ip_id = module.loadbalancer_static_ip.ip.id
   server_type         = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
@@ -93,7 +93,7 @@ module "fiscalismia_nat_gateway" {
   instance_count      = 1
 
   server_name       = "Fiscalismia-NAT-Gateway"
-  image_id          = data.hcloud_image.fedora_image.id
+  image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
@@ -128,7 +128,7 @@ module "network_sentinel" {
   instance_count    = 0
 
   server_name       = "Network-Sentinel"
-  image_id          = data.hcloud_image.fedora_image.id
+  image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
   # CPU Performance Optimized
   server_type       = "cpx32" # "cpx22" 7.72€ / Month | "cpx33" 13.03€/Month

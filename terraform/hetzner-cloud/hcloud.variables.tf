@@ -13,7 +13,6 @@ variable "default_region" {
   type          = string
   default       = "eu-central"
 }
-
 variable "unix_distro" {
   description   = "The Linux image to use for all servers"
   type          = string

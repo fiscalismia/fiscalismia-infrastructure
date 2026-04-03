@@ -44,7 +44,7 @@ locals {
   }
 }
 
-data "hcloud_image" "fedora_image" {
+data "hcloud_image" "fedora_latest" {
   name               = "fedora-43"
   with_architecture  = "x86"
   most_recent        = true

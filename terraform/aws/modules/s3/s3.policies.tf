@@ -1,11 +1,12 @@
 # Resource Policy allowing Lambda to list all objects and read/write objects
 data "aws_iam_policy_document" "lambda_s3_resource_policy_access" {
+  count = length(var.lambda_execution_role_arns) > 0 ? 1 : 0
+
   statement {
     sid       = "LambdaBucketReadAccess"
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
-    resources = ["${aws_s3_bucket.storage_bucket.arn}"]
-
+    resources = [aws_s3_bucket.storage_bucket.arn]
     principals {
       type        = "AWS"
       identifiers = var.lambda_execution_role_arns
@@ -15,10 +16,8 @@ data "aws_iam_policy_document" "lambda_s3_resource_policy_access" {
   statement {
     sid       = "LambdaObjectReadWriteAccess"
     effect    = "Allow"
-    actions   = ["s3:GetObject",
-                "s3:PutObject"]
+    actions   = ["s3:GetObject", "s3:PutObject"]
     resources = ["${aws_s3_bucket.storage_bucket.arn}/*"]
-
     principals {
       type        = "AWS"
       identifiers = var.lambda_execution_role_arns
@@ -27,6 +26,8 @@ data "aws_iam_policy_document" "lambda_s3_resource_policy_access" {
 }
 
 resource "aws_s3_bucket_policy" "resource_policy" {
+  count  = length(var.lambda_execution_role_arns) > 0 ? 1 : 0
+
   bucket = aws_s3_bucket.storage_bucket.id
-  policy = data.aws_iam_policy_document.lambda_s3_resource_policy_access.json
+  policy = data.aws_iam_policy_document.lambda_s3_resource_policy_access[0].json
 }

@@ -1,10 +1,12 @@
 terraform {
   required_providers {
     hcloud = {
+      # See https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs
       source  = "hetznercloud/hcloud"
       version = "~> 1.60.1"
     }
     cloudinit = {
+      # See https://registry.terraform.io/providers/hashicorp/cloudinit/latest
       source = "hashicorp/cloudinit"
       version = "~> 2.3.7"
     }
@@ -17,14 +19,12 @@ terraform {
   }
 }
 
+# cloudinit offers an automated way to configure and provision fresh linux machine images
 provider "cloudinit" {
-  # Configuration options
 }
 
-
 provider "hcloud" {
-  # set HCLOUD_TOKEN environment variable instead
-  # token = var.hcloud_token
+  # set HCLOUD_TOKEN environment variable instead of hardcoding any secrets here
 }
 
 locals {

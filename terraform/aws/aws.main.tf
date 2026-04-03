@@ -45,6 +45,7 @@ module "s3_image_storage" {
   data_archival_days                    = null
   data_expiration                       = false # do NOT delete
   data_expiration_days                  = null
+  apply_cors_rules                      = true
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_app.arn]
 }
 
@@ -76,6 +77,20 @@ module "s3_infrastructure_storage" {
   data_expiration                       = false # do NOT delete
   data_expiration_days                  = null
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_infra.arn]
+}
+
+# Backend Terraform State Bucket for AinAC Hetzner Infrastructure
+module "s3_ainac_terraform_backend" {
+  source                                = "./modules/s3"
+  bucket_name                           = "ainac-tf-backend-state-bucket"
+  fqdn                                  = null
+  demo_fqdn                             = null
+  data_infrequent_access                = false # do NOT move to IA
+  data_infrequent_access_days           = null
+  data_archival                         = false # do NOT archive
+  data_archival_days                    = null
+  data_expiration                       = false # do NOT delete
+  data_expiration_days                  = null
 }
 
 # endpoint to connect fiscalismia containers (file upload) to lambdas for further processing

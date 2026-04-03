@@ -60,6 +60,7 @@ locals {
 }
 
 resource "aws_s3_bucket_cors_configuration" "cross_origin_rules" {
+  count  = var.apply_cors_rules ? 1 : 0
   bucket = aws_s3_bucket.storage_bucket.id
 
   cors_rule {
