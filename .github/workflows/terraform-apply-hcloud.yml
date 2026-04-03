@@ -42,12 +42,14 @@ jobs:
       run: mkdir -p ${GITHUB_WORKSPACE}/planfiles
 
     - name: Query SSH public keys for Hcloud servers from AWS Secrets Manager
+      env:
+        SSH_KEY_SECRET_ID: fiscalismia-ssh-keys-hcloud
       run: |
         set -euo pipefail
         mkdir -p ~/.ssh/
-        echo "Querying SSH public keys from AWS secret fiscalismia-ssh-keys-hcloud"
+        echo "Querying SSH public keys from AWS secret $SSH_KEY_SECRET_ID"
         SECRET_JSON=$(aws secretsmanager get-secret-value \
-          --secret-id fiscalismia-ssh-keys-hcloud \
+          --secret-id ${SSH_KEY_SECRET_ID} \
           --output text \
           --query SecretString)
 

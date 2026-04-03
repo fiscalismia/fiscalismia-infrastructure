@@ -67,6 +67,7 @@ jobs:
 
     - name: Query SSH private keys for Hcloud servers from AWS Secrets Manager
       env:
+        SSH_KEY_SECRET_ID: fiscalismia-ssh-keys-hcloud
         MASTER_PRIVATE_KEY: fiscalismia-infrastructure-master-key-hcloud
         DEMO_PRIVATE_KEY: fiscalismia-demo-instance-key-hcloud
         PRODUCTION_PRIVATE_KEY: fiscalismia-production-instances-key-hcloud
@@ -80,11 +81,15 @@ jobs:
         echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
 
         query_aws_plaintext_secret() {
-          echo "Querying $1 from AWS"
+          echo "Querying $1 key from AWS Secret $SSH_KEY_SECRET_ID"
+          # INFO: sed escapes and replaces literal newlines
+          # since the ssh-keys are saved as is without json escapes
           aws secretsmanager get-secret-value \
-            --secret-id $1 \
+            --secret-id $SSH_KEY_SECRET_ID \
             --output text \
             --query SecretString \
+            | sed ':a;N;$!ba;s/\n/\\n/g' \
+            | jq -r --arg key "$1" '.[$key]' \
             | ssh-add - > /dev/null 2>&1
         }
 
