@@ -401,12 +401,6 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_general" {
         ]
         Resource = [
           "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-ssh-keys-hcloud*",
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-infrastructure-master-key-hcloud*",
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-loadbalancer-instance-key-hcloud*",
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-nat-gateway-instance-key-hcloud*",
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-demo-instance-key-hcloud*",
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-monitoring-instance-key-hcloud*",
-          "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:fiscalismia-production-instances-key-hcloud*",
         ]
       },
       # Parameter Store Access for hardcoded Tokens and SecureStrings not rotated automatically
