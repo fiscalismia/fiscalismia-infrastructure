@@ -213,6 +213,8 @@ jobs:
 
         ### PKI CERTIFICATE AUTHORITY SETUP
         ssh demo "mkdir -p /tmp/pki/"
+
+        # Fetch Secrets and Public Keys from AWS
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${ROOT_CA_PUB_KEY} .
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${ROOT_CA_FINGERPRINT} .
         aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}/${INTERMEDIATA_CA_PUB_KEY} .
@@ -237,6 +239,12 @@ jobs:
           ${SECRET_INTERMEDIATE_CA_KEY} \
           ${SECRET_INTERMEDIATE_CA_KEY_PW} \
           demo:/tmp/pki/
+        # Cleanup Secrets and Public Keys from Runner Workspace
+        rm -f ./${ROOT_CA_PUB_KEY} \
+          ./${ROOT_CA_FINGERPRINT} \
+          ./${INTERMEDIATA_CA_PUB_KEY} \
+          ./${SECRET_INTERMEDIATE_CA_KEY} \
+          ./${SECRET_INTERMEDIATE_CA_KEY_PW}
         scp \
           ${INFRA_DIR}/pki/03_setup_hetzner_vm.sh \
           ${INFRA_DIR}/pki/04_generate_end_entity_certs.sh \
@@ -259,7 +267,6 @@ jobs:
           ${BACKEND_DIR}/database/pgsql-demo-dml.sql \
           ${BACKEND_DIR}/database/pgsql-local-initdb.sh \
           demo:${REMOTE_DEMO_DIR}/database/
-
     - name: Setup DEMO Instance /w PKI for IAM Roles Anywhere
       if: inputs.deploy_demo == true
       env:

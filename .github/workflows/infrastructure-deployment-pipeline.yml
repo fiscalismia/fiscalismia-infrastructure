@@ -24,9 +24,25 @@ jobs:
       actions: read
 
     steps:
-    - name: Checkout SCM
+    - name: Checkout Fiscalismia-Infrastructure Repository
       uses: actions/checkout@v5
       # https://github.com/actions/checkout
+      with:
+        path: fiscalismia-infrastructure
+
+    - name: Checkout Fiscalismia-Loadbalancer Repository
+      uses: actions/checkout@v5
+      # https://github.com/actions/checkout
+      with:
+        repository: fiscalismia/fiscalismia-loadbalancer
+        path: fiscalismia-loadbalancer
+
+    - name: Checkout Fiscalismia-Monitoring Repository
+      uses: actions/checkout@v5
+      # https://github.com/actions/checkout
+      with:
+        repository: fiscalismia/fiscalismia-monitoring
+        path: fiscalismia-monitoring
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
       uses: aws-actions/configure-aws-credentials@v5.1.1
@@ -112,10 +128,36 @@ jobs:
 
         chmod 600 ~/.ssh/config
 
+    - name: Prepare Runner Workspace for Deployment
+      env:
+        REMOTE_HAPROXY_DIR: /usr/local/etc/haproxy
+        REMOTE_MONITORING_DIR: /usr/local/etc/fiscalismia-monitoring
+      run: |
+        echo "REMOTE_HAPROXY_DIR=$REMOTE_HAPROXY_DIR" >> $GITHUB_ENV
+        echo "REMOTE_MONITORING_DIR=$REMOTE_MONITORING_DIR" >> $GITHUB_ENV
+        echo "MONITORING_DIR=${GITHUB_WORKSPACE}/fiscalismia-monitoring" >> $GITHUB_ENV
+        echo "LOADBALANCER_DIR=${GITHUB_WORKSPACE}/fiscalismia-loadbalancer" >> $GITHUB_ENV
+        echo "INFRA_DIR=${GITHUB_WORKSPACE}/fiscalismia-infrastructure" >> $GITHUB_ENV
+
     - name: Deploy HAProxy LOADBALANCER via OpenSSH
       if: inputs.deploy_haproxy == true
       run: |
-        ssh loadbalancer "hostname -I"
+        # SETUP REMOTE WORKSPACE FOR HAPROXY
+        ssh loadbalancer "mkdir -p ${REMOTE_HAPROXY_DIR}""
+        scp ${LOADBALANCER_DIR}/docker-compose.yml loadbalancer:${REMOTE_HAPROXY_DIR}/
+
+        # Give loadbalancer temporary internet access until reboot for pulling haproxy image
+        ssh loadbalancer << EOF
+          timeout 2 curl -s ifconfig.me
+          exit_code=\$?
+          # only execute if curl times out
+          if (( \$exit_code > 0 )); then
+            printf "\nSetting up ephemeral internet access via NAT GW\n"
+            /root/scripts/nat_gw_ephemeral_public_egress.sh 172.24.1.3
+          else
+            printf "\nInternet Access already setup. Continue.\n"
+          fi
+        EOF
 
     - name: Deploy PROMETHEUS & GRAFANA on Monitoring Instance via OpenSSH
       if: inputs.deploy_prometheus_grafana == true
