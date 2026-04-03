@@ -143,8 +143,12 @@ jobs:
       if: inputs.deploy_haproxy == true
       run: |
         # SETUP REMOTE WORKSPACE FOR HAPROXY
-        ssh loadbalancer "mkdir -p ${REMOTE_HAPROXY_DIR}""
+        ssh loadbalancer EOF
+          mkdir -p ${REMOTE_HAPROXY_DIR}
+          mkdir -p ${REMOTE_HAPROXY_DIR}/scripts
+        EOF
         scp ${LOADBALANCER_DIR}/docker-compose.yml loadbalancer:${REMOTE_HAPROXY_DIR}/
+        ssh loadbalancer "cp /root/scripts/colorized-haproxy-logging.sh ${REMOTE_HAPROXY_DIR}/scripts/"
 
         # Give loadbalancer temporary internet access until reboot for pulling haproxy image
         ssh loadbalancer << EOF
@@ -158,6 +162,23 @@ jobs:
             printf "\nInternet Access already setup. Continue.\n"
           fi
         EOF
+
+        # Deploy latest container via docker compose
+        ssh loadbalancer "ls -Rhla ${REMOTE_HAPROXY_DIR}/"
+        ssh loadbalancer << EOF
+          cd ${REMOTE_HAPROXY_DIR}
+          docker compose down --volumes --remove-orphans || true
+          docker compose up --detach
+          echo "Waiting for backend healthcheck..."
+          timeout 60 sh -c '
+            until [ "\$(podman inspect --format="{{.State.Health.Status}}" haproxy)" = "healthy" ]; do
+              sleep 2
+            done
+          '
+        EOF
+
+        echo "=== For human readable colored haproxy ingress logs run below cmd ==="
+        echo "ssh loadbalancer ${REMOTE_HAPROXY_DIR}/scripts/colorized-haproxy-logging.sh"
 
     - name: Deploy PROMETHEUS & GRAFANA on Monitoring Instance via OpenSSH
       if: inputs.deploy_prometheus_grafana == true
