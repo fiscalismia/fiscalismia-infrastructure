@@ -52,10 +52,14 @@ jobs:
         set -euo pipefail
         mkdir -p ~/.ssh/
         echo "Querying SSH public keys from AWS secret $SSH_KEY_SECRET_ID"
+        # INFO: sed escapes and replaces literal newlines
+        # since the ssh-keys are saved as is without json escapes
         SECRET_JSON=$(aws secretsmanager get-secret-value \
           --secret-id ${SSH_KEY_SECRET_ID} \
           --output text \
-          --query SecretString)
+          --query SecretString \
+          | sed ':a;N;$!ba;s/\n/\\n/g')
+
 
         KEY_NAMES=(
           "fiscalismia-infrastructure-master-key-hcloud.pub"
