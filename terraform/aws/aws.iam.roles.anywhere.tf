@@ -106,6 +106,7 @@ resource "aws_iam_policy" "pki_roles_anywhere_parameter_store_access" {
         ]
         Resource = [
           "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/fastapi/fiscalismia/ANTHROPIC_API_KEY",
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/postgres/user/admin/INITIAL_DEPLOYMENT_PASSWORD",
         ]
       },
       {

@@ -3,7 +3,7 @@ set -euo pipefail
 
 SECRET_RAM_DIR="/usr/local/etc/fiscalismia-demo/secrets"
 STEP_CA_HOME="/usr/local/etc/step-ca"
-SECRET_FILES=(backend.env webscraper.env postgres_password)
+SECRET_FILES=(backend.env webscraper.env postgres_password admin_password)
 STEP_CA_DIRS=(config certs secrets db templates)
 
 if ! mountpoint -q "$SECRET_RAM_DIR" 2>/dev/null; then

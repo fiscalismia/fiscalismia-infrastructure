@@ -24,6 +24,7 @@ export TARGET_ENV="$5"
 BACKEND_SECRET="backend.env"
 WEBSCRAPER_SECRET="webscraper.env"
 POSTGRES_SECRET="postgres_password"
+ADMIN_SECRET="admin_password"
 
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5" ]]; then
     echo "Error: Missing required parameters."
@@ -82,6 +83,19 @@ if [[ "${TARGET_ENV}" == "demo" ]]; then
     exit 1
   fi
   chmod 400 "$SECRET_RAM_DIR/$POSTGRES_SECRET"
+
+  echo "Querying INITIAL_ADMIN_PASSWORD from AWS Parameter Store"
+  INITIAL_ADMIN_PASSWORD=$(aws ssm get-parameter \
+    --region eu-central-1 \
+    --name /postgres/user/admin/INITIAL_DEPLOYMENT_PASSWORD \
+    --with-decryption \
+    --query Parameter.Value \
+    --output text)
+  if [[ -z "$INITIAL_ADMIN_PASSWORD" ]]; then
+    echo "ERROR: Failed to retrieve INITIAL_ADMIN_PASSWORD from Parameter Store"
+    exit 1
+  fi
+  echo "${INITIAL_ADMIN_PASSWORD}" > "$SECRET_RAM_DIR/$ADMIN_SECRET"
 fi
 
 # setup webscraper password file for demo container
