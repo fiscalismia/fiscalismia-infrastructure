@@ -11,7 +11,7 @@ module "fiscalismia_bastion_host" {
   image_id            = data.hcloud_image.fedora_latest.id
   location            = var.default_location
   static_public_ip_id = module.bastion_host_static_ip.ip.id
-  server_type         = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type         = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids        = [
     hcloud_firewall.egress_DENY_ALL_public.id,
     hcloud_firewall.public_ssh_ingress.id,
@@ -53,7 +53,7 @@ module "fiscalismia_loadbalancer" {
   image_id            = data.hcloud_image.fedora_latest.id
   location            = var.default_location
   static_public_ip_id = module.loadbalancer_static_ip.ip.id
-  server_type         = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type         = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids        = [
     hcloud_firewall.egress_DENY_ALL_public.id,
     hcloud_firewall.public_https_ingress.id,
@@ -95,7 +95,7 @@ module "fiscalismia_nat_gateway" {
   server_name       = "Fiscalismia-NAT-Gateway"
   image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
-  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = [
     hcloud_firewall.egress_public_http_https_dns_icmp.id,
     hcloud_firewall.public_icmp_ping_ingress.id,

@@ -10,7 +10,7 @@ module "fiscalismia_demo" {
   is_private        = true
   image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
-  server_type       = "cx33" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type       = "cx33" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.demo_instance.name
   cloud_config      = data.cloudinit_config.demo_instance.rendered
@@ -38,7 +38,7 @@ module "fiscalismia_monitoring" {
   is_private        = true
   image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
-  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.monitoring_instance.name
   cloud_config      = data.cloudinit_config.production_instances.rendered
@@ -65,7 +65,7 @@ module "fiscalismia_backend" {
   is_private        = true
   image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
-  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.production_instances.name
   cloud_config      = data.cloudinit_config.production_instances.rendered
@@ -92,7 +92,7 @@ module "fiscalismia_frontend" {
   is_private        = true
   image_id          = data.hcloud_image.fedora_latest.id
   location          = var.default_location
-  server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
+  server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.production_instances.name
   cloud_config      = data.cloudinit_config.production_instances.rendered

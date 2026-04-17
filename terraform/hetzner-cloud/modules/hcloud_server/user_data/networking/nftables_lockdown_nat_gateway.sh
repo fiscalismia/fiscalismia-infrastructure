@@ -69,8 +69,8 @@ table ip $TABLE_NAME {
         # Allow HTTP & HTTPS Ingress from private networks
         ip saddr \$PRIVATE_SUBNETS tcp dport {80,443} ct state new accept
 
-        # Allow ICMP Ingress from private networks
-        ip saddr \$PRIVATE_SUBNETS icmp type echo-request accept
+        # Allow ICMP Ingress from all addresses
+        icmp type echo-request accept
     }
 
     # Allow outbound http, https, dns, icmp
