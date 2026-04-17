@@ -98,6 +98,7 @@ module "fiscalismia_nat_gateway" {
   server_type       = "cx23" # 3.56€ / Month | "cx33" # 5.93€/Month
   firewall_ids      = [
     hcloud_firewall.egress_public_http_https_dns_icmp.id,
+    hcloud_firewall.public_icmp_ping_ingress.id,
   ]
   ssh_key_name      = hcloud_ssh_key.nat_gateway_instance.name
   cloud_config      = data.cloudinit_config.nat_gateway.rendered
