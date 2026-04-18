@@ -23,15 +23,15 @@ jobs:
 
     steps:
     - name: Checkout SCM
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
 
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3.1.2
+      uses: hashicorp/setup-terraform@v4.0.0
       # https://github.com/hashicorp/setup-terraform
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.1
+      uses: aws-actions/configure-aws-credentials@v6.1.0
       # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudDeploymentAccess
@@ -89,7 +89,7 @@ jobs:
           -out ${GITHUB_WORKSPACE}/planfiles/hcloud.plan
 
     - name: Upload Planfile Artifacts
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v7.0.1
       # https://github.com/actions/upload-artifact
       with:
         name: hcloud-planfile
@@ -98,7 +98,7 @@ jobs:
           planfiles/hcloud*
 
     - name: Upload Hcloud Public Keys for Apply Step
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v7.0.1
       # https://github.com/actions/upload-artifact
       with:
         name: public-hcloud-keys
@@ -121,15 +121,15 @@ jobs:
 
     steps:
     - name: Checkout SCM
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
 
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3.1.2
+      uses: hashicorp/setup-terraform@v4.0.0
       # https://github.com/hashicorp/setup-terraform
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.1
+      uses: aws-actions/configure-aws-credentials@v6.1.0
       # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudDeploymentAccess
@@ -137,14 +137,14 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Download Hcloud Planfile Artifact
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       # https://github.com/actions/download-artifact
       with:
         name: hcloud-planfile
         path: planfiles/
 
     - name: Download Hcloud Public SSH Key Artifacts
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       # https://github.com/actions/download-artifact
       with:
         name: public-hcloud-keys

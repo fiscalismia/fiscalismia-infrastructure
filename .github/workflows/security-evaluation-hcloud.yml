@@ -26,11 +26,11 @@ jobs:
     steps:
 
     - name: Checkout SCM
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.1
+      uses: aws-actions/configure-aws-credentials@v6.1.0
       # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudDeploymentAccess

@@ -31,34 +31,34 @@ jobs:
     steps:
 
     - name: Checkout Fiscalismia-Infrastructure Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
       with:
         path: fiscalismia-infrastructure
 
     - name: Checkout Fiscalismia-Frontend Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
       with:
         repository: fiscalismia/fiscalismia-frontend
         path: fiscalismia-frontend
 
     - name: Checkout Fiscalismia-Backend Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
       with:
         repository: fiscalismia/fiscalismia-backend
         path: fiscalismia-backend
 
     - name: Checkout Fiscalismia-Webscraper Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.2
       # https://github.com/actions/checkout
       with:
         repository: fiscalismia/fiscalismia-webscraper
         path: fiscalismia-webscraper
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Hcloud Backend Role
-      uses: aws-actions/configure-aws-credentials@v5.1.1
+      uses: aws-actions/configure-aws-credentials@v6.1.0
       # https://github.com/aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::010928217051:role/OpenID_Connect_GithubActions_TerraformHcloudDeploymentAccess
