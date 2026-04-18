@@ -125,7 +125,7 @@ variable "demo_backend_subdomains" {
 }
 variable "fastapi_subdomain" {
   default     = "fastapi"
-  description = "Subdomain for backend service"
+  description = "Subdomain for python fastapi service"
   type        = string
 }
 variable "demo_fastapi_subdomains" {
@@ -133,9 +133,19 @@ variable "demo_fastapi_subdomains" {
   description = "Subdomain for backend service on demo server"
   type        = string
 }
+variable "demo_golang_subdomains" {
+  default     = "golang.demo"
+  description = "Subdomain for golang unified healthcheck on demo server"
+  type        = string
+}
 variable "monitoring_subdomain" {
   default     = "monitoring"
-  description = "Subdomain for monitoring frontend"
+  description = "Subdomain for grafana monitoring frontend"
+  type        = string
+}
+variable "golang_monitoring_subdomains" {
+  default     = "golang.monitoring"
+  description = "Subdomain for golang unified healthcheck"
   type        = string
 }
 variable "ainac_woodpecker_ci_subdomains" {

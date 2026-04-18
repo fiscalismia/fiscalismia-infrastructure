@@ -4,7 +4,9 @@
 # Certbot queries letsencrypt for a certificate and then adds a TXT Record to the AWS hosted zone's for validation
 # certbot sets up automatic renewal and by default certificates are valid for only 90 days.
 # PARAM $1 is the domain or subdomnain for tls certificate
-# PARAM $2 optional second domain to fetch and validate. e.g. the demo instance uses two separate certs.
+# PARAM $2 optional second domain to fetch and validate. e.g. the express backend api on the demo instance
+# PARAM $3 optional third domain to fetch and validate. e.g. the fastapi webscraper on the demo instance
+# PARAM $4 optional fourth domain to fetch and validate. e.g. the golang healthcheck on the demo instance
 ##################################################################################################################
 
 if [[ -z "$1" ]] then
@@ -15,7 +17,19 @@ fi
 
 echo "Installing certbot and route53 dns plugin"
 sudo dnf install --quiet -y certbot python3-certbot-dns-route53
-if [[ -n "$2" && -n "$3" ]]; then
+if [[ -n "$2" && -n "$3" && -n "$4" ]]; then
+    echo "Requesting four tls certificates for"
+    echo "$1" && echo "$2" && echo "$3" && echo "$4"
+    sudo certbot certonly \
+        --dns-route53 \
+        --non-interactive \
+        --agree-tos \
+        --key-type ecdsa \
+        -d "$1" \
+        -d "$2" \
+        -d "$3" \
+        -d "$4"
+elif [[ -n "$2" && -n "$3" && -z "$4" ]]; then
     echo "Requesting three tls certificates for"
     echo "$1" && echo "$2" && echo "$3"
     sudo certbot certonly \
@@ -26,7 +40,7 @@ if [[ -n "$2" && -n "$3" ]]; then
         -d "$1" \
         -d "$2" \
         -d "$3"
-elif [[ -n "$2" && -z "$3" ]]; then
+elif [[ -n "$2" && -z "$3" && -z "$4" ]]; then
     echo "Requesting two tls certificates for"
     echo "$1" && echo "$2"
     sudo certbot certonly \

@@ -3,10 +3,12 @@ module "route_53_dns" {
   demo_subdomain                        = var.demo_subdomain                 # demo frontend
   demo_backend_subdomains               = var.demo_backend_subdomains        # demo backend
   demo_fastapi_subdomains               = var.demo_fastapi_subdomains        # demo fastapi
+  demo_golang_subdomains                = var.demo_golang_subdomains         # demo golang
   domain_name                           = var.domain_name                    # MAIN Frontend
   backend_subdomain                     = var.backend_subdomain              # MAIN Backend
   fastapi_subdomain                     = var.fastapi_subdomain              # MAIN Fastapi
   monitoring_subdomain                  = var.monitoring_subdomain           # Prometheus & Grafana
+  golang_monitoring_subdomains          = var.golang_monitoring_subdomains   # Golang Unified Healthcheck
   ainac_woodpecker_ci_subdomains        = var.ainac_woodpecker_ci_subdomains # Woodpecker CI Instance
   ainac_ci_instance_static_ipv6         = "2a01:4f8:c014:6fdd::1" # For Route 53 DNS Type AAAA Record
   loadbalancer_instance_ipv4            = local.hcloud_fiscalismia_loadbalancer_ipv4

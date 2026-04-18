@@ -8,6 +8,11 @@ on:
         required: true
         default: true
         type: boolean
+      deploy_go_healthcheck:
+        description: 'Deploy Go Healthcheck Binary on Monitoring Instance'
+        required: true
+        default: false
+        type: boolean
       deploy_prometheus_grafana:
         description: 'Deploy PROMETHEUS & GRAFANA on Monitoring Instance'
         required: true
@@ -202,6 +207,11 @@ jobs:
 
         echo "=== For human readable colored haproxy ingress logs run below cmd ==="
         echo "ssh loadbalancer ${REMOTE_HAPROXY_DIR}/scripts/colorized-haproxy-logging.sh"
+
+    - name: Deploy Go Healthcheck Binary on Monitoring Instance via OpenSSH
+      if: inputs.deploy_go_healthcheck == true
+      run: |
+        echo "Deploying Go Healthcheck Binary on Monitoring Instance"
 
     - name: Deploy PROMETHEUS & GRAFANA on Monitoring Instance via OpenSSH
       if: inputs.deploy_prometheus_grafana == true
