@@ -149,7 +149,7 @@ jobs:
         PRIVATE_NETWORK_INTERFACE: 172.24.1.3
       if: inputs.deploy_haproxy == true
       run: |
-        # SETUP REMOTE WORKSPACE FOR HAPROXY
+        echo "SETUP REMOTE WORKSPACE FOR HAPROXY"
         ssh loadbalancer << EOF
           mkdir -p ${REMOTE_HAPROXY_DIR}
           mkdir -p ${REMOTE_HAPROXY_DIR}/scripts
@@ -157,7 +157,7 @@ jobs:
         scp ${LOADBALANCER_DIR}/docker-compose.yml loadbalancer:${REMOTE_HAPROXY_DIR}/
         ssh loadbalancer "cp /root/scripts/colorized-haproxy-logging.sh ${REMOTE_HAPROXY_DIR}/scripts/"
 
-        # Give loadbalancer temporary internet access until reboot for pulling haproxy image
+        echo "Give loadbalancer temporary internet access until reboot for pulling haproxy image"
         ssh loadbalancer << EOF
           timeout 2 curl -s ifconfig.me
           exit_code=\$?
@@ -171,7 +171,7 @@ jobs:
           fi
         EOF
 
-        # Deploy latest container via docker compose
+        echo "Deploy latest container via docker compose"
         ssh loadbalancer "ls -Rhla ${REMOTE_HAPROXY_DIR}/"
         ssh loadbalancer << EOF
           cd ${REMOTE_HAPROXY_DIR}

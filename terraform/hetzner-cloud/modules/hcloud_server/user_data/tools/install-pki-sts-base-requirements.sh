@@ -25,7 +25,7 @@ gpgcheck=1
 gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg
 EOT
 sudo dnf makecache
-sudo dnf install -y --quiet step-cli
+sudo dnf install -y --quiet jq step-cli
 
 # Download and copy AWS signing helper binary for renewing short-lived STS credentials via credential_process by authenticating with X.509 PKI Certs
 cd /tmp
