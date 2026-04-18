@@ -84,6 +84,11 @@ sudo dnf install -y step-cli step-ca
 ![img_fiscalismia_infrastructure_pipelines](docs/img_fiscalismia_infrastructure_pipelines.png)
 </details>
 
+<details closed>
+<summary><b>Application Pipelines for automated deployments</b></summary>
+
+![img_fiscalismia_application_pipelines](docs/img_fiscalismia_application_pipelines.png)
+</details>
 
 ### Deployment
 
