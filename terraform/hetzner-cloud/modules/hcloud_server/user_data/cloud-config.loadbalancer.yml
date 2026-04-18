@@ -60,7 +60,8 @@ runcmd:
   - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
   - |
-    export APIS_DEMO_INGRESS_PORTS="8443,8444"
+    # These ports identify the express backend api, the webscraper fastapi, the golang healthcheck
+    export APIS_DEMO_INGRESS_PORTS="8443,8444,8445"
     /root/scripts/nftables_lockdown_loadbalancer.sh \
       ${BASTION_HOST_PRIVATE_IP} \
       ${DEMO_INSTANCE_PRIVATE_IP} \

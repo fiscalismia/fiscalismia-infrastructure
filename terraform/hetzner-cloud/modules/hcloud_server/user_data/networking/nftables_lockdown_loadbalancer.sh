@@ -5,7 +5,7 @@
 # We manually install and configure nftables, the best practice tools for firewall rules used as backend for other frameworks
 # PARAM $1 is the bastion-host private ipv4 for ssh ingress allowance via production network
 # PARAM $2 is the demo instance private ip in order to allow an additional port for the running backend
-# PARAM $3 Parameter to allow additional port(s) as egress to the demo instance running frontend + backend + fastapi
+# PARAM $3 Parameter to allow additional port(s) as egress to the demo instance running frontend + backend + fastapi + golang
 # e.g. ./scripts/nftables_lockdown_loadbalancer.sh 172.24.1.2
 ##############################################################################################################################
 
