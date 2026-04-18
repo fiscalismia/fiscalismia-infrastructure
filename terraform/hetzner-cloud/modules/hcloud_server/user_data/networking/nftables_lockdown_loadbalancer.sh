@@ -6,7 +6,11 @@
 # PARAM $1 is the bastion-host private ipv4 for ssh ingress allowance via production network
 # PARAM $2 is the demo instance private ip in order to allow an additional port for the running backend
 # PARAM $3 Parameter to allow additional port(s) as egress to the demo instance running frontend + backend + fastapi + golang
-# e.g. ./scripts/nftables_lockdown_loadbalancer.sh 172.24.1.2
+# PARAM $4 is the production backend instance private ip for targeted egress allowance
+# PARAM $5 Parameter to allow additional port(s) as egress to the production backend instance running fastapi
+# PARAM $6 is the production monitoring instance private ip for targeted egress allowance
+# PARAM $7 Parameter to allow additional port(s) as egress to the production monitoring instance running golang
+# e.g. ./scripts/nftables_lockdown_loadbalancer.sh 172.24.1.2 172.20.0.2 "8443,8444,8445" 172.24.0.4 "8444" 172.24.0.2 "8445"
 ##############################################################################################################################
 
 # wait for the private network interface to initialize.
@@ -15,12 +19,16 @@ sleep 60
 export BASTION_HOST_PRIVATE_IP="$1" # use production network private ip
 export DEMO_INSTANCE_PRIVATE_IP="$2"
 export APIS_DEMO_INGRESS_PORTS="$3"
+export PROD_BACKEND_PRIVATE_IP="$4"
+export APIS_PROD_BACKEND_INGRESS_PORTS="$5"
+export PROD_MONITORING_PRIVATE_IP="$6"
+export APIS_PROD_MONITORING_INGRESS_PORTS="$7"
 export TABLE_NAME='lockdown_loadbalancer_private_net'
 export CONFIG_PATH='/etc/sysconfig/nftables.conf'
 
-if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5" ]] || [[ -z "$6" ]] || [[ -z "$7" ]]; then
     echo "Error: Missing required parameters."
-    echo "Usage: $0 <BASTION_HOST_PRIVATE_IP> <DEMO_INSTANCE_PRIVATE_IP> <APIS_DEMO_INGRESS_PORTS>"
+    echo "Usage: $0 <BASTION_HOST_PRIVATE_IP> <DEMO_INSTANCE_PRIVATE_IP> <APIS_DEMO_INGRESS_PORTS> <PROD_BACKEND_PRIVATE_IP> <APIS_PROD_BACKEND_INGRESS_PORTS> <PROD_MONITORING_PRIVATE_IP> <APIS_PROD_MONITORING_INGRESS_PORTS>"
     exit 1
 fi
 
@@ -89,6 +97,12 @@ table ip $TABLE_NAME {
 
         # Allow HTTPS Egress to additional demo instance port
         ip daddr $DEMO_INSTANCE_PRIVATE_IP tcp dport {$APIS_DEMO_INGRESS_PORTS} ct state new accept
+
+        # Allow Egress to production backend instance on fastapi webscraper port(s)
+        ip daddr $PROD_BACKEND_PRIVATE_IP tcp dport {$APIS_PROD_BACKEND_INGRESS_PORTS} ct state new accept
+
+        # Allow Egress to production monitoring instance on golang healthcheck port(s)
+        ip daddr $PROD_MONITORING_PRIVATE_IP tcp dport {$APIS_PROD_MONITORING_INGRESS_PORTS} ct state new accept
     }
 
     # Drop all packages to be forwarded (we're not a gateway!)

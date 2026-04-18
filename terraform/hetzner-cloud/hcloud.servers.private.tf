@@ -41,7 +41,7 @@ module "fiscalismia_monitoring" {
   server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.monitoring_instance.name
-  cloud_config      = data.cloudinit_config.production_instances.rendered
+  cloud_config      = data.cloudinit_config.production_monitoring.rendered
 
   labels            = local.default_labels
 
@@ -68,7 +68,7 @@ module "fiscalismia_backend" {
   server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.production_instances.name
-  cloud_config      = data.cloudinit_config.production_instances.rendered
+  cloud_config      = data.cloudinit_config.production_backend.rendered
 
   labels            = local.default_labels
 
@@ -95,7 +95,7 @@ module "fiscalismia_frontend" {
   server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = null # not allowed for private instances without public ip
   ssh_key_name      = hcloud_ssh_key.production_instances.name
-  cloud_config      = data.cloudinit_config.production_instances.rendered
+  cloud_config      = data.cloudinit_config.production_frontend.rendered
 
   labels            = local.default_labels
 

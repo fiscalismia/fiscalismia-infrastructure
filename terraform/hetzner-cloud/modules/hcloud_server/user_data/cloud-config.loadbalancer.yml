@@ -60,12 +60,19 @@ runcmd:
   - /root/scripts/install-network-hardening-tools.sh $logfile
   # Lockdown private network interface access to minimal required config
   - |
-    # These ports identify the express backend api, the webscraper fastapi, the golang healthcheck
+    # Demo exposes all three API ports on a single instance: express backend, fastapi webscraper, golang healthcheck
     export APIS_DEMO_INGRESS_PORTS="8443,8444,8445"
+    # Production splits these across dedicated instances: fastapi on the backend, golang on monitoring
+    export APIS_PROD_BACKEND_INGRESS_PORTS="8444"
+    export APIS_PROD_MONITORING_INGRESS_PORTS="8445"
     /root/scripts/nftables_lockdown_loadbalancer.sh \
       ${BASTION_HOST_PRIVATE_IP} \
       ${DEMO_INSTANCE_PRIVATE_IP} \
       $APIS_DEMO_INGRESS_PORTS \
+      ${BACKEND_INSTANCE_PRIVATE_IP} \
+      $APIS_PROD_BACKEND_INGRESS_PORTS \
+      ${MONITORING_INSTANCE_PRIVATE_IP} \
+      $APIS_PROD_MONITORING_INGRESS_PORTS \
       >> $logfile 2>&1
   # Sets default directory on ssh connect to application directory - fallback to root user
   - echo "cd /usr/local/etc/haproxy/ || cd /root/" >> ~/.bashrc

@@ -79,6 +79,8 @@ data "cloudinit_config" "loadbalancer" {
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
         PRIVATE_IP_TO_NAT = local.fiscalismia_loadbalancer_private_ipv4_production_net
         DEMO_INSTANCE_PRIVATE_IP = local.fiscalismia_demo_private_ipv4
+        BACKEND_INSTANCE_PRIVATE_IP = local.fiscalismia_backend_private_ipv4
+        MONITORING_INSTANCE_PRIVATE_IP = local.fiscalismia_monitoring_private_ipv4
       }
     )
   }
@@ -108,7 +110,7 @@ data "cloudinit_config" "demo_instance" {
   }
 }
 
-data "cloudinit_config" "production_instances" {
+data "cloudinit_config" "production_frontend" {
   gzip          = false
   base64_encode = false
 
@@ -126,6 +128,58 @@ data "cloudinit_config" "production_instances" {
         LOADBALANCER_PRIVATE_IP = local.fiscalismia_loadbalancer_private_ipv4_production_net
         BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
         NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_production_net
+        PODMAN_LISTENER_PORT_LIST = "443"
+        OPTIONAL_LB_INGRESS_PORTS = ""
+      }
+    )
+  }
+}
+
+data "cloudinit_config" "production_backend" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "cloud-config.production-instances.yml"
+    content_type = "text/cloud-config"
+    content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml",
+      {
+        nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
+        install_podman_docker_compose_b64 = local.install_podman_docker_compose_b64
+        install_pki_sts_base_requirements_b64 = local.install_pki_sts_base_requirements_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+        fetch_and_validate_tls_certificates_b64 = local.fetch_and_validate_tls_certificates_b64
+        VIRTUAL_NETWORK_GATEWAY = local.virtual_network_gateway_production_net
+        LOADBALANCER_PRIVATE_IP = local.fiscalismia_loadbalancer_private_ipv4_production_net
+        BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
+        NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_production_net
+        PODMAN_LISTENER_PORT_LIST = "443,8444"
+        OPTIONAL_LB_INGRESS_PORTS = "8444"
+      }
+    )
+  }
+}
+
+data "cloudinit_config" "production_monitoring" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "cloud-config.production-instances.yml"
+    content_type = "text/cloud-config"
+    content      = templatefile("${path.module}/modules/hcloud_server/user_data/cloud-config.production-instances.yml",
+      {
+        nftables_lockdown_private_instances_b64 = local.nftables_lockdown_private_instances_b64
+        install_podman_docker_compose_b64 = local.install_podman_docker_compose_b64
+        install_pki_sts_base_requirements_b64 = local.install_pki_sts_base_requirements_b64
+        install_network_hardening_tools_b64 = local.install_network_hardening_tools_b64
+        fetch_and_validate_tls_certificates_b64 = local.fetch_and_validate_tls_certificates_b64
+        VIRTUAL_NETWORK_GATEWAY = local.virtual_network_gateway_production_net
+        LOADBALANCER_PRIVATE_IP = local.fiscalismia_loadbalancer_private_ipv4_production_net
+        BASTION_HOST_PRIVATE_IP = local.fiscalismia_bastion_host_private_ipv4_production_net
+        NAT_GATEWAY_PRIVATE_IP = local.fiscalismia_nat_gateway_private_ipv4_production_net
+        PODMAN_LISTENER_PORT_LIST = "443,8445"
+        OPTIONAL_LB_INGRESS_PORTS = "8445"
       }
     )
   }
