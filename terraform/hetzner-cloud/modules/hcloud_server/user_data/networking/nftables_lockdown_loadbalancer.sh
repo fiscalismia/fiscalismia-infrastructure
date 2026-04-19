@@ -127,4 +127,7 @@ printf "\n# Checking status of nftables:\n"
 sudo systemctl status nftables
 
 ### DEBUG ###
-# ls -l /etc/nftables/ # example nft configs not activated
+# ls -l /etc/nftables/
+# nft list tables
+# nft list ruleset
+# to check logs, run "journalctl -kf"

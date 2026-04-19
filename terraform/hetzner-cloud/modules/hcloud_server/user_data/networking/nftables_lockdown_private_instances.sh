@@ -173,8 +173,10 @@ printf "\n# Checking status of nftables:\n"
 sudo systemctl status nftables
 
 ### DEBUG ###
-# ls -l /etc/nftables/ # example nft configs not activated
+# ls -l /etc/nftables/
+# nft list tables
 # nft list ruleset
+# to check logs, run "journalctl -kf"
 # nft add rule ip lockdown_private_instances input ip saddr 172.20.1.5 udp dport 500 ct state new accept
 # nft add rule ip lockdown_private_instances input udp dport 501 ct state new accept
 

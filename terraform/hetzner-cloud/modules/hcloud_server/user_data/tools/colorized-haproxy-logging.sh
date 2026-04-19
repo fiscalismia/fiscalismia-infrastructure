@@ -86,6 +86,9 @@ podman logs --follow "$@" "${CONTAINER}" 2>&1 | sed -u \
     -e "s/\(CLOSE Tw=\)/${CLOSE}CLOSE${RESET} ${LINEBREAK}Tw=/g" \
     -e "s/\(ERROR Tw=\)/${ERROR}ERROR${RESET} Tw=/g" \
     -e "s/\(silent-drop\)/${ERROR}\1${RESET}/g" \
+    -e "s/\(drop=SNI_REJECTED\)/${ERROR}\1${RESET}/g" \
+    -e "s/\(drop=RATE_LIMITED\)/${BOLD}${BG_MAGENTA}\1${RESET}/g" \
+    -e "s/drop=-/${DEBUG}drop=-${RESET}/g" \
     \
     -e "s/\(ts=CD\)/ts=${TS_INFO}CD${RESET}/g" \
     -e "s/\(ts=LR\)/ts=${TS_INFO}LR${RESET}/g" \
