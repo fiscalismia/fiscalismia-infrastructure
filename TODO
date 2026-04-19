@@ -1,4 +1,5 @@
 ### High Prio
+- Unify hc endpoints across containers, baking in commit and build-time and environment if possible, following example in go build
 
 ### Medium Prio
 - move hcloud certbot aws setup to use x.509 end-entity cert with specific profile in config instead of aws credentials file
