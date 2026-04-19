@@ -185,7 +185,7 @@ It limits the private instances in both the demo and production network to:
 - Ingress on Port 22 TCP from the Private IPv4 of the Bastion-Host
 - [Production] Ingress on Port 443, 8444 (FastAPI Backend), 8445 (Golang Monitoring) TCP from the Private IPv4 of the LoadBalancer
 - [DEMO] Instance only: Ingress on Port 443, 8443, 8444 and 8445 TCP from the Private IPv4 of the LoadBalancer
-- Ingress on ICMP Protocol for Pings from the Private IPv4 of the LoadBalancer
+- Ingress on ICMP Protocol for Pings is typically allowed for all sources, to enable persistent health checks on otherwise locked down instances
 - Egress on Port {80,443} TCP to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
 - Egress on Port 53 UDP for DNS Queries to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
 - Egress for ICMP for pings to the public internet (via the Virtual Network Gateway routing to the NAT-Gateway)
