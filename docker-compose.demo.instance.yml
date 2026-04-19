@@ -213,8 +213,7 @@ services:
       # mounted volume by applying a shared SELinux label.
       - /usr/local/etc/fiscalismia-demo/certs/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro,z
       - /usr/local/etc/fiscalismia-demo/certs/privkey.pem:/etc/ssl/certs/privkey.pem:ro,z
-    networks:
-      - demo-network
+    network_mode: host # required to reach other private instances and break out of the bridge network
     ports:
       - "0.0.0.0:8445:8445/tcp"
     deploy:
