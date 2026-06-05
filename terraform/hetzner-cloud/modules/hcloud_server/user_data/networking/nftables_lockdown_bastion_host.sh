@@ -91,6 +91,9 @@ table ip $TABLE_NAME {
 
         # Allow HTTP, HTTPS to internet
         tcp dport {80,443} ct state new accept
+
+        # Allow Network Time Protocol (NTP) to synchronize system clock via systemctl chronyd - check via "timedatectl"
+        udp dport {123} ct state new accept
     }
 
     # Drop all packages to be forwarded (we're not a gateway!)

@@ -95,6 +95,9 @@ table ip $TABLE_NAME {
         # Allow HTTP, HTTPS to internet and private networks
         tcp dport {80,443} ct state new accept
 
+        # Allow Network Time Protocol (NTP) to synchronize system clock via systemctl chronyd - check via "timedatectl"
+        udp dport {123} ct state new accept
+
         # Allow HTTPS Egress to additional demo instance port
         ip daddr $DEMO_INSTANCE_PRIVATE_IP tcp dport {$APIS_DEMO_INGRESS_PORTS} ct state new accept
 
