@@ -4,6 +4,7 @@
 ### Medium Prio
 - move hcloud certbot aws setup to use x.509 end-entity cert with specific profile in config instead of aws credentials file
 - remove port 80 from hcloud public firewall https rule, from all nftables of demo instance as well and check for remaining files
+- think about updating binaries that are hardcoded to a specific version, currently known: AWS_SIGNING_HELPER_VERSION="1.8.0"
 
 ### Low Prio
-- asd
+- 

@@ -51,9 +51,6 @@ credential_process = /usr/local/bin/aws_signing_helper credential-process \
 region = eu-central-1
 CONFIG
 
-/usr/local/bin/aws_signing_helper credential-process   --certificate /etc/pki/iam-anywhere/end-entity-cert.pem --private-key /etc/pki/iam-anywhere/end-entity-key   --trust-anchor-arn arn:aws:rolesanywhere:eu-central-1:010928217051:trust-anchor/c3c0f28b-7779-4acb-b698-87e72a46b9db   --profile-arn arn:aws:rolesanywhere:eu-central-1:010928217051:profile/f0e050f8-2e78-411d-8c39-a2938475fbf5   --role-arn arn:aws:iam::010928217051:role/HetznerPKI-Secret-Retrieval-Role
-
-
 # Setup RAM-backed tmpfs without swap possibility to avoid .env ever touching disk
 SECRET_RAM_DIR="/usr/local/etc/fiscalismia-demo/secrets"
 if ! mountpoint -q "$SECRET_RAM_DIR" 2>/dev/null; then
@@ -87,6 +84,7 @@ if [[ "${TARGET_ENV}" == "demo" ]]; then
 
   echo "Querying INITIAL_ADMIN_PASSWORD from AWS Parameter Store"
   INITIAL_ADMIN_PASSWORD=$(aws ssm get-parameter \
+    --profile hetzner-pki \
     --region eu-central-1 \
     --name /postgres/user/admin/INITIAL_DEPLOYMENT_PASSWORD \
     --with-decryption \
@@ -109,6 +107,7 @@ if [[ ! -s "$SECRET_RAM_DIR/webscraper.env" ]]; then
 fi
 echo "Extracting Anthropic API Key from AWS Parameter Store"
 ANTHROPIC_KEY=$(aws ssm get-parameter \
+  --profile hetzner-pki \
   --region eu-central-1 \
   --name /fastapi/fiscalismia/ANTHROPIC_API_KEY \
   --with-decryption \
