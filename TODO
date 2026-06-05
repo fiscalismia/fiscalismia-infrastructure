@@ -7,4 +7,5 @@
 - think about updating binaries that are hardcoded to a specific version, currently known: AWS_SIGNING_HELPER_VERSION="1.8.0"
 
 ### Low Prio
-- 
+- rethink monitoring integration, currently another monitoring instance is architected for prod, with resources present in terraform (dns, hetzner vps)
+- - perhaps we can switch this to the go binary and a telegram bot instead
