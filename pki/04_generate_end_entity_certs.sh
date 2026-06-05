@@ -60,7 +60,8 @@ sudo step ca certificate \
   --provisioner-password-file "${PROVISIONER_PW_FILE}" \
   --ca-url "${CA_URL}" \
   --root "${ROOT_CA_PATH}" \
-  --kty "${LEAF_KEY_TYPE}" --crv ${LEAF_KEY_CURVE} \
+  --kty "${LEAF_KEY_TYPE}" \
+  --crv "${LEAF_KEY_CURVE}" \
   --not-after "${LEAF_CERT_VALIDITY}" \
   --force
 

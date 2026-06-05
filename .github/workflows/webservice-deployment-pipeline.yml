@@ -277,23 +277,31 @@ jobs:
         SECRET_ID: fiscalismia-backend/.env
         TARGET_ENV: demo
       run: |
-        ssh demo "ls -Rhla ${REMOTE_DEMO_DIR}/"
-        echo "=== Executing initial PKI Setup Script ==="
-        ssh demo "${REMOTE_DEMO_DIR}/scripts/03_setup_hetzner_vm.sh"
-        echo "=== Running step-ca container ==="
         ssh demo << EOF
+          echo "=== Listing deployment directory content ==="
           cd ${REMOTE_DEMO_DIR}
+          ls -Rhlas
+
+          echo "=== Executing initial PKI Setup Script ==="
+          bash ./scripts/03_setup_hetzner_vm.sh
+
+          echo "=== Running step-ca container ==="
           docker compose -f docker-compose.pki.yml down --volumes --remove-orphans || true
           docker compose -f docker-compose.pki.yml up --build --detach
-          sleep 5
+          sleep 10
           curl --insecure https://localhost:9000/health
+
+          echo "=== Creating end-entity cert ==="
+          bash ./scripts/04_generate_end_entity_certs.sh
+          sleep 3
+
+          echo "=== Getting AWS STS Credential ==="
+          bash ./scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}
+          sleep 3
+
+          echo "=== Stopping PKI container after Credential retrieval ==="
+          docker compose -f docker-compose.pki.yml down --volumes --remove-orphans || true
         EOF
-        echo "=== Creating end-entity cert ==="
-        ssh demo "${REMOTE_DEMO_DIR}/scripts/04_generate_end_entity_certs.sh"
-        echo "=== Getting AWS STS Credential ==="
-        ssh demo "${REMOTE_DEMO_DIR}/scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}"
-        echo "=== Stopping PKI container after Credential retrieval ==="
-        ssh demo "docker compose -f ${REMOTE_DEMO_DIR}/docker-compose.pki.yml down --volumes --remove-orphans || true"
     - name: Deploy on DEMO Instance via OpenSSH
       if: inputs.deploy_demo == true
       run: |
