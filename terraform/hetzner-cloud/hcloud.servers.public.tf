@@ -98,7 +98,7 @@ module "fiscalismia_nat_gateway" {
   location          = var.default_location
   server_type       = "cx23" # 4.75€ / Month | "cx33" # 7.72€/Month
   firewall_ids      = [
-    hcloud_firewall.egress_public_http_https_dns_icmp.id,
+    hcloud_firewall.egress_public_http_https_dns_icmp_ntp.id,
     hcloud_firewall.public_icmp_ping_ingress.id,
   ]
   ssh_key_name      = hcloud_ssh_key.nat_gateway_instance.name
@@ -135,7 +135,7 @@ module "network_sentinel" {
   # CPU Performance Optimized
   server_type       = "cpx32" # "cpx22" 7.72€ / Month | "cpx33" 13.03€/Month
   firewall_ids      = [
-    hcloud_firewall.egress_public_http_https_dns_icmp.id,
+    hcloud_firewall.egress_public_http_https_dns_icmp_ntp.id,
   ]
   ssh_key_name      = hcloud_ssh_key.infrastructure_orchestration.name
   cloud_config      = data.cloudinit_config.network_sentinel.rendered

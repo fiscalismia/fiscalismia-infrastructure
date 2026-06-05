@@ -29,3 +29,5 @@ printf "\n# Installed [traceroute] network analyzer version:\n" >> $LOG_FILE
 traceroute --version >> $LOG_FILE 2>&1
 printf "\n# Installed [tree] directory listing utility:\n" >> $LOG_FILE
 tree --version >> $LOG_FILE 2>&1
+printf "\n# Installed [tree] directory listing utility:\n" >> $LOG_FILE
+tree --version >> $LOG_FILE 2>&1

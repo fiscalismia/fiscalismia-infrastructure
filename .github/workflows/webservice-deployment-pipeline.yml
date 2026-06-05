@@ -289,17 +289,14 @@ jobs:
           echo "=== Running step-ca container ==="
           docker compose -f docker-compose.pki.yml down --volumes --remove-orphans || true
           docker compose -f docker-compose.pki.yml up --build --detach
-          sleep 10
+          sleep 5
           curl --insecure https://localhost:9000/health
 
           echo "=== Creating end-entity cert ==="
           bash ./scripts/04_generate_end_entity_certs.sh
-          sleep 3
 
           echo "=== Getting AWS STS Credential ==="
           echo bash ./scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}
-          exit 1
-          sleep 3
 
           echo "=== Stopping PKI container after Credential retrieval ==="
           docker compose -f docker-compose.pki.yml down --volumes --remove-orphans || true

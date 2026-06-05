@@ -93,8 +93,8 @@ table ip $TABLE_NAME {
         # Allow ICMP to internet and private networks
         icmp type echo-request accept
 
-        # Allow HTTP, HTTPS to internet and private networks
-        tcp dport {80,443} ct state new accept
+        # Allow HTTP, HTTPS, NTP to internet and private networks
+        tcp dport {80,443,123} ct state new accept
     }
 }
 

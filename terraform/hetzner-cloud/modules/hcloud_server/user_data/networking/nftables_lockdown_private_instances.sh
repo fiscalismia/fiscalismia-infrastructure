@@ -112,8 +112,8 @@ table ip $TABLE_NAME {
         # Allow ICMP to internet
         icmp type echo-request accept
 
-        # Allow HTTP, HTTPS to internet
-        tcp dport {80,443} ct state new accept
+        # Allow HTTP, HTTPS, NTP to internet
+        tcp dport {80,443,123} ct state new accept
     }
 
     # Traffic routed through the VM, such as virtual bridge networks that Podman uses,
