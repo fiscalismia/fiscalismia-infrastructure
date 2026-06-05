@@ -141,7 +141,7 @@ resource "hcloud_firewall" "egress_ALLOW_ALL_public" {
 # Rule specifically for the NAT-Gateway to provide outbound internet access to private instances
 resource "hcloud_firewall" "egress_public_http_https_dns_icmp_ntp" {
     labels = local.default_labels
-    name   = "egress-public-https-icmp-only"
+    name   = "egress-public-https-dns-icmp-ntp-only"
 
     rule {
         description     = "Allow all outbound HTTPS"
