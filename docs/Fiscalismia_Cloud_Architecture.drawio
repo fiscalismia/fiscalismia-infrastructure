@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram name="Page-1" id="SFjtN74bUgn6KRebL6FT">
-    <mxGraphModel dx="297" dy="687" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="801" dy="989" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1662,8 +1662,8 @@
         <mxCell id="T3EVVozRcLlW4yHXdnjV-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#bac8d3;strokeColor=#23445d;fontStyle=4;fontFamily=Helvetica;" value="Hetzner Private Network" vertex="1">
           <mxGeometry height="21.5" width="760" x="1479" y="1827.25" as="geometry" />
         </mxCell>
-        <mxCell id="dZomsxdbjYwcMkCxCwu0-25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=0;fontFamily=Helvetica;" value="Public Internet Egress&lt;div&gt;HTTPS Port 443 TCP&lt;br&gt;HTTP Port 80 TCP&lt;br&gt;DNS Port 53 UDP&lt;br&gt;ICMP for Pings&lt;/div&gt;" vertex="1">
-          <mxGeometry height="107.5" width="190" x="2282" y="1900" as="geometry" />
+        <mxCell id="dZomsxdbjYwcMkCxCwu0-25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=0;fontFamily=Helvetica;" value="Public Internet Egress&lt;div&gt;HTTPS Port 443 TCP&lt;br&gt;HTTP Port 80 TCP&lt;br&gt;DNS Port 53 UDP&lt;/div&gt;&lt;div&gt;NTP Port 123 UDP&lt;br&gt;ICMP for Pings&lt;/div&gt;" vertex="1">
+          <mxGeometry height="127.5" width="190" x="2282" y="1880" as="geometry" />
         </mxCell>
         <mxCell id="T3EVVozRcLlW4yHXdnjV-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=4;fontFamily=Helvetica;" value="Hetzner Public Network" vertex="1">
           <mxGeometry height="21.5" width="212" x="2270" y="2028" as="geometry" />
