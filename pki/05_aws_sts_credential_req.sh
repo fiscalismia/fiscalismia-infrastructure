@@ -73,12 +73,6 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   > "$SECRET_RAM_DIR/$BACKEND_SECRET"
 
-aws secretsmanager get-secret-value \
-  --profile $AWS_PROFILE \
-  --secret-id fiscalismia-backend/.env \
-  --region eu-central-1 \
-  --output text \
-  --query SecretString
 # setup postgres password file for demo container
 if [[ "${TARGET_ENV}" == "demo" ]]; then
   echo "Extracting POSTGRES_PASSWORD for demo instance"
