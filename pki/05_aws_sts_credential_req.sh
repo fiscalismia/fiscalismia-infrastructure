@@ -51,6 +51,9 @@ credential_process = /usr/local/bin/aws_signing_helper credential-process \
 region = eu-central-1
 CONFIG
 
+/usr/local/bin/aws_signing_helper credential-process   --certificate /etc/pki/iam-anywhere/end-entity-cert.pem --private-key /etc/pki/iam-anywhere/end-entity-key   --trust-anchor-arn arn:aws:rolesanywhere:eu-central-1:010928217051:trust-anchor/c3c0f28b-7779-4acb-b698-87e72a46b9db   --profile-arn arn:aws:rolesanywhere:eu-central-1:010928217051:profile/f0e050f8-2e78-411d-8c39-a2938475fbf5   --role-arn arn:aws:iam::010928217051:role/HetznerPKI-Secret-Retrieval-Role
+
+
 # Setup RAM-backed tmpfs without swap possibility to avoid .env ever touching disk
 SECRET_RAM_DIR="/usr/local/etc/fiscalismia-demo/secrets"
 if ! mountpoint -q "$SECRET_RAM_DIR" 2>/dev/null; then
@@ -62,16 +65,20 @@ else
 fi
 
 # Query .env secret from AWS with temporary STS credentials and write to RAM tmpfs
-set -euo pipefail
-export AWS_PROFILE="hetzner-pki"
 aws secretsmanager get-secret-value \
-  --profile $AWS_PROFILE \
+  --profile hetzner-pki \
   --secret-id $SECRET_ID \
   --region eu-central-1 \
   --output text \
   --query SecretString \
   > "$SECRET_RAM_DIR/$BACKEND_SECRET"
 
+aws secretsmanager get-secret-value \
+  --profile $AWS_PROFILE \
+  --secret-id fiscalismia-backend/.env \
+  --region eu-central-1 \
+  --output text \
+  --query SecretString
 # setup postgres password file for demo container
 if [[ "${TARGET_ENV}" == "demo" ]]; then
   echo "Extracting POSTGRES_PASSWORD for demo instance"

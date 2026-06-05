@@ -278,6 +278,7 @@ jobs:
         TARGET_ENV: demo
       run: |
         ssh demo << EOF
+          set -euo pipefail
           echo "=== Listing deployment directory content ==="
           cd ${REMOTE_DEMO_DIR}
           ls -Rhlas
@@ -296,7 +297,8 @@ jobs:
           sleep 3
 
           echo "=== Getting AWS STS Credential ==="
-          bash ./scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}
+          echo bash ./scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}
+          exit 1
           sleep 3
 
           echo "=== Stopping PKI container after Credential retrieval ==="
