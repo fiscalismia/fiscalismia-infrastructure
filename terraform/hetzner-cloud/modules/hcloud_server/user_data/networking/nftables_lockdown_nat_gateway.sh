@@ -93,8 +93,11 @@ table ip $TABLE_NAME {
         # Allow ICMP to internet and private networks
         icmp type echo-request accept
 
-        # Allow HTTP, HTTPS, NTP to internet and private networks
-        tcp dport {80,443,123} ct state new accept
+        # Allow HTTP, HTTPS to internet and private networks
+        tcp dport {80,443} ct state new accept
+
+        # Allow Network Time Protocol (NTP) to synchronize system clock via systemctl chronyd - check via "timedatectl"
+        udp dport {123} ct state new accept
     }
 }
 
