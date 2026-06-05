@@ -296,7 +296,7 @@ jobs:
           bash ./scripts/04_generate_end_entity_certs.sh
 
           echo "=== Getting AWS STS Credential ==="
-          echo bash ./scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}
+          bash ./scripts/05_aws_sts_credential_req.sh ${TRUST_ANCHOR_ARN} ${PROFILE_ARN} ${ROLE_ARN} ${SECRET_ID} ${TARGET_ENV}
 
           echo "=== Stopping PKI container after Credential retrieval ==="
           docker compose -f docker-compose.pki.yml down --volumes --remove-orphans || true
