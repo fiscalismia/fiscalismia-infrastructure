@@ -20,7 +20,7 @@ jobs:
       env:
         TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
-        TELEGRAM_CHAT_ID: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_CHAT_ID }}
+        TELEGRAM_CHAT_ID: ${{ secrets.ADMIN_TELEGRAM_CHAT_ID }}
         SEND_MSG_METHOD: sendMessage
       run: |
         ENDPOINT=$( echo $TELEGRAM_BOT_ENDPOINT \
@@ -31,15 +31,12 @@ jobs:
           --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
           --data-urlencode "text=Trivial Bot Message from Github Actions"
 
-        ENDPOINTT=$( echo $TELEGRAM_BOT_ENDPOINT | sed "s/_TOKEN_PLACEHOLDER_/$TELEGRAM_API_TOKEN/g" | sed "s/_METHOD_PLACEHOLDER_/$SEND_MSG_METHOD/g" )
-        curl -sS "$ENDPOINTT" --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" --data-urlencode "text=Trivial Bot Message from Github Actions"
-
     - name: Markdown Encoded Bot Message
       if: inputs.test_telegram == true
       env:
         TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
-        TELEGRAM_CHAT_ID: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_CHAT_ID }}
+        TELEGRAM_CHAT_ID: ${{ secrets.ADMIN_TELEGRAM_CHAT_ID }}
         SEND_MSG_METHOD: sendMessage
         GET_UPDATES_METHOD: getUpdates
       run: |
