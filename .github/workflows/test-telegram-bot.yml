@@ -31,7 +31,7 @@ jobs:
         )
         curl -sS "$ENDPOINT" \
           --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-          --data-urlencode "text=Trivial Bot Message from Github Actions"
+          --data-urlencode "text=PRAISE THE SUN (from Github Actions)"
 
     - name: Markdown Encoded Bot Message
       if: inputs.test_telegram == true
@@ -40,7 +40,6 @@ jobs:
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.ADMIN_TELEGRAM_CHAT_ID }}
         SEND_MSG_METHOD: sendMessage
-        GET_UPDATES_METHOD: getUpdates
       run: |
         ENDPOINT=$( echo $TELEGRAM_BOT_ENDPOINT \
           | sed "s/_TOKEN_PLACEHOLDER_/$TELEGRAM_API_TOKEN/g" \
@@ -89,6 +88,54 @@ jobs:
           --arg     chat_id "$TELEGRAM_CHAT_ID" \
           --rawfile text    "$msg_file" \
           '{chat_id: $chat_id, parse_mode: "MarkdownV2", text: $text}' \
+        | curl -sS \
+          -H 'Content-Type: application/json' \
+          --data-binary @- \
+          "$ENDPOINT"
+
+    - name: HTML Encoded Bot Message
+      if: inputs.test_telegram == true
+      env:
+        TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
+        TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.ADMIN_TELEGRAM_CHAT_ID }}
+        SEND_MSG_METHOD: sendMessage
+      run: |
+        ENDPOINT=$( echo $TELEGRAM_BOT_ENDPOINT \
+            | sed "s/_TOKEN_PLACEHOLDER_/$TELEGRAM_API_TOKEN/g" \
+            | sed "s/_METHOD_PLACEHOLDER_/$SEND_MSG_METHOD/g" \
+        )
+
+        html_file=$(mktemp)
+
+        cat > "$html_file" << 'HTML_EOF'
+        <pre>Github Actions HTML Formatted Message</pre>
+        <b>bold</b>, <strong>bold</strong>
+        <i>italic</i>, <em>italic</em>
+        <u>underline</u>, <ins>underline</ins>
+        <s>strikethrough</s>, <strike>strikethrough</strike>, <del>strikethrough</del>
+        <span class="tg-spoiler">spoiler</span>, <tg-spoiler>spoiler</tg-spoiler>
+        <b>bold <i>italic bold <s>italic bold strikethrough <span class="tg-spoiler">italic bold strikethrough spoiler</span></s> <u>underline italic bold</u></i> bold</b>
+        <a href="http://www.example.com/">inline URL</a>
+        <a href="tg://user?id=123456789">inline mention of a user</a>
+        <tg-emoji emoji-id="5368324170671202286">👍</tg-emoji>
+        <tg-time unix="1647531900" format="wDT">22:45 tomorrow</tg-time>
+        <tg-time unix="1647531900" format="t">22:45 tomorrow</tg-time>
+        <tg-time unix="1647531900" format="r">22:45 tomorrow</tg-time>
+        <tg-time unix="1647531900">22:45 tomorrow</tg-time>
+        <code>inline fixed-width code</code>
+        <pre>pre-formatted fixed-width code block</pre>
+        <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language</code></pre>
+        <blockquote>Block quotation started\nBlock quotation continued\nThe last line of the block quotation</blockquote>
+        <blockquote expandable>Expandable block quotation started\nExpandable block quotation continued\nExpandable block quotation continued\nHidden by default part of the block quotation started\nExpandable block quotation continued\nThe last line of the block quotation</blockquote>
+        HTML_EOF
+        ls -hla $html_file
+        cat $html_file
+
+        jq -n \
+          --arg     chat_id "$TELEGRAM_CHAT_ID" \
+          --rawfile html    "$html_file" \
+          '{chat_id: $chat_id, parse_mode: "HTML", text: $html}' \
         | curl -sS \
           -H 'Content-Type: application/json' \
           --data-binary @- \
