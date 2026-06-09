@@ -3,12 +3,31 @@ name: Telegram-Bot-Testing
 on:
   workflow_dispatch:
     inputs:
-      test_telegram:
-        description: 'Test Telegram Message'
+      send_ascii_bears:
+        description: 'Send ASCII Bear Friends (HTML)'
         required: true
         default: true
         type: boolean
-
+      send_base64jpg:
+        description: 'Send JPEG Image'
+        required: true
+        default: true
+        type: boolean
+      test_trivial:
+        description: 'Send Trivial Message'
+        required: true
+        default: false
+        type: boolean
+      test_markdownv2:
+        description: 'Send MarkdownV2 Message'
+        required: true
+        default: false
+        type: boolean
+      test_html:
+        description: 'Send Trivial Message'
+        required: true
+        default: false
+        type: boolean
 jobs:
   test-telegram:
     # Bot API Documentation https://core.telegram.org/bots/api#sendmessage
@@ -18,7 +37,7 @@ jobs:
 
     # INFO: To find out your own chat id, send a message to the bot and listen at https://api.telegram.org/bot<TELEGRAM_API_TOKEN>/getUpdates
     - name: Trivial Bot Message
-      if: inputs.test_telegram == true
+      if: inputs.test_trivial == true
       env:
         TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
@@ -34,7 +53,7 @@ jobs:
           --data-urlencode "text=PRAISE THE SUN (from Github Actions)"
 
     - name: Markdown Encoded Bot Message
-      if: inputs.test_telegram == true
+      if: inputs.test_markdownv2 == true
       env:
         TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
@@ -142,7 +161,7 @@ jobs:
           "$ENDPOINT"
 
     - name: ASCII Bear Encoded Bot Message
-      if: inputs.test_telegram == true
+      if: inputs.send_ascii_bears == true
       env:
         TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
@@ -157,35 +176,36 @@ jobs:
         bears_file=$(mktemp)
 
         cat > "$bears_file" << 'BEARS_EOF'
-        <b>ʕ•ᴥ•ʔ BEAR ACTION ROSTER ʕ•ᴥ•ʔ</b>
+        <b>ʕ•ᴥ•ʔ BEEP BEAR FRIENDS ʕ•ᴥ•ʔ</b>
 
         <code>ʕ•ᴥ•ʔ</code> idle
         <code>ʕっ•ᴥ•ʔっ⭐</code> star catch
         <code>⊂ʕ•ᴥ•⊂ʔ</code> hug
+        <code>ʕっ•ᴥ•ʔっ</code> hug too
         <code>ฅʕ•ᴥ•ʔฅ</code> rawr
         <code>ʕ •ᴥ•ʔゝ☆</code> salute
+        <code>ʕ •`ᴥ•´ʔ</code> hangry
         <code>┏ʕ •ᴥ•ʔ┛</code> dancing
-        <code>ʕノ≧ᴥ≦ʔノ</code> celebrating
+        <code>ʕっ•ᴥ•ʔっ💕</code> loving
         <code>ʕง•ᴥ•ʔง</code> fight stance
         <code>ʕっ•ᴥ•ʔ⊃━☆ﾟ.*</code> casting magic
         <code>ʕノ•ᴥ•ʔノ ︵ ┻━┻</code> table flip
         <code>┬─┬ノʕ•ᴥ•ノʔ</code> table restore
-        <code>ʕっ˘ڡ˘ςʔ</code> yum
         <code>ʕ－ᴥ－ʔ zZ</code> sleeping
-        <code>ʕ◉ᴥ◉ʔ</code> shocked
         <code>ʕ◔ᴥ◔ʔ</code> eye roll
         <code>ʕ￣ᴥ￣ʔ</code> smug
         <code>ʕ*ᴥ*ʔ</code> starstruck
         <code>ʕ✿ᴥ✿ʔ</code> flower power
         <code>ʕ♡ᴥ♡ʔ</code> in love
+        <code>ʕﾉ•ᴥ•ʔﾉ♡</code> love hug
         <code>ʕ&gt;ᴥ&lt;ʔ</code> squee
+        <code>ʕ •́؈•̀)</code> retarded
         <code>ʕ;ᴥ;ʔ</code> crying
-        <code>ʕ?ᴥ?ʔ</code> confused
         <code>ʕxᴥxʔ</code> knocked out
-        <code>ʕ☞ᴥ☜ʔ</code> finger guns
+        <code>ʕ•ᴥ•ʔ🎉</code> party
         <code>ʕ／•ᴥ•＼ʔ</code> hands up
 
-        <i>tap a bear to copy it</i>
+        <i>boop a bear to copy it to your clipboard</i>
         BEARS_EOF
 
         jq -n \
@@ -198,13 +218,22 @@ jobs:
           "$ENDPOINT"
 
     - name: Send Base64 Image
-      if: inputs.test_telegram == true
+      if: inputs.send_base64jpg == true
       env:
         TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
         TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.ADMIN_TELEGRAM_CHAT_ID }}
         SEND_PHOTO_METHOD: sendPhoto
+        SEND_MSG_METHOD: sendMessage
       run: |
+        ENDPOINT=$( echo $TELEGRAM_BOT_ENDPOINT \
+          | sed "s/_TOKEN_PLACEHOLDER_/$TELEGRAM_API_TOKEN/g" \
+          | sed "s/_METHOD_PLACEHOLDER_/$SEND_MSG_METHOD/g" \
+        )
+        curl -sS "$ENDPOINT" \
+          --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+          --data-urlencode "text=\[-|-]/ PRAISE THE SUN \[T]/"
+
         ENDPOINT=$( echo $TELEGRAM_BOT_ENDPOINT \
           | sed "s/_TOKEN_PLACEHOLDER_/$TELEGRAM_API_TOKEN/g" \
           | sed "s/_METHOD_PLACEHOLDER_/$SEND_PHOTO_METHOD/g" \
