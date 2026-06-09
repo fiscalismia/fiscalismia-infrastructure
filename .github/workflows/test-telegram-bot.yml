@@ -13,11 +13,6 @@ jobs:
   webservice-deployment:
     runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write # for aws OIDC STS tokens to work
-      contents: read
-      actions: read
-
     steps:
 
     - name: Trivial Bot Message
@@ -86,7 +81,7 @@ jobs:
         >The last line of the expandable block quotation with the expandability mark||
         MSG_EOF
 
-        echo $msg_file
+        cat $msg_file
 
         jq -n \
           --arg     chat_id "$TELEGRAM_CHAT_ID" \
