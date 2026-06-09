@@ -141,6 +141,62 @@ jobs:
           --data-binary @- \
           "$ENDPOINT"
 
+    - name: ASCII Bear Encoded Bot Message
+      if: inputs.test_telegram == true
+      env:
+        TELEGRAM_BOT_ENDPOINT: https://api.telegram.org/bot_TOKEN_PLACEHOLDER_/_METHOD_PLACEHOLDER_
+        TELEGRAM_API_TOKEN: ${{ secrets.FISCALISMIA_MSG_TELEGRAM_API_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.ADMIN_TELEGRAM_CHAT_ID }}
+        SEND_MSG_METHOD: sendMessage
+      run: |
+        ENDPOINT=$( echo $TELEGRAM_BOT_ENDPOINT \
+            | sed "s/_TOKEN_PLACEHOLDER_/$TELEGRAM_API_TOKEN/g" \
+            | sed "s/_METHOD_PLACEHOLDER_/$SEND_MSG_METHOD/g" \
+        )
+
+        bears_file=$(mktemp)
+
+        cat > "$bears_file" << 'BEARS_EOF'
+        <b>ʕ•ᴥ•ʔ BEAR ACTION ROSTER ʕ•ᴥ•ʔ</b>
+
+        <code>ʕ•ᴥ•ʔ</code> idle
+        <code>ʕっ•ᴥ•ʔっ⭐</code> star catch
+        <code>⊂ʕ•ᴥ•⊂ʔ</code> hug
+        <code>ฅʕ•ᴥ•ʔฅ</code> rawr
+        <code>ʕ •ᴥ•ʔゝ☆</code> salute
+        <code>┏ʕ •ᴥ•ʔ┛</code> dancing
+        <code>ʕノ≧ᴥ≦ʔノ</code> celebrating
+        <code>ʕง•ᴥ•ʔง</code> fight stance
+        <code>ʕっ•ᴥ•ʔ⊃━☆ﾟ.*</code> casting magic
+        <code>ʕノ•ᴥ•ʔノ ︵ ┻━┻</code> table flip
+        <code>┬─┬ノʕ•ᴥ•ノʔ</code> table restore
+        <code>ʕっ˘ڡ˘ςʔ</code> yum
+        <code>ʕ－ᴥ－ʔ zZ</code> sleeping
+        <code>ʕ◉ᴥ◉ʔ</code> shocked
+        <code>ʕ◔ᴥ◔ʔ</code> eye roll
+        <code>ʕ￣ᴥ￣ʔ</code> smug
+        <code>ʕ*ᴥ*ʔ</code> starstruck
+        <code>ʕ✿ᴥ✿ʔ</code> flower power
+        <code>ʕ♡ᴥ♡ʔ</code> in love
+        <code>ʕ&gt;ᴥ&lt;ʔ</code> squee
+        <code>ʕ;ᴥ;ʔ</code> crying
+        <code>ʕ?ᴥ?ʔ</code> confused
+        <code>ʕxᴥxʔ</code> knocked out
+        <code>ʕ☞ᴥ☜ʔ</code> finger guns
+        <code>ʕ／•ᴥ•＼ʔ</code> hands up
+
+        <i>tap a bear to copy it</i>
+        BEARS_EOF
+
+        jq -n \
+          --arg     chat_id "$TELEGRAM_CHAT_ID" \
+          --rawfile html    "$bears_file" \
+          '{chat_id: $chat_id, parse_mode: "HTML", text: $html}' \
+        | curl -sS \
+          -H 'Content-Type: application/json' \
+          --data-binary @- \
+          "$ENDPOINT"
+
     - name: Send Base64 Image
       if: inputs.test_telegram == true
       env:
