@@ -4,7 +4,7 @@ info:
   seq: 5
 
 websocket:
-  url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/ws/session/{{SESSION_ID}}"
+  url: "{{WS_PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/ws/session/{{SESSION_ID}}"
   auth: inherit
 
 settings:

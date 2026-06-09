@@ -113,7 +113,7 @@ echo "Extracting Anthropic API Key from AWS Parameter Store"
 ANTHROPIC_KEY=$(aws ssm get-parameter \
   --profile hetzner-pki \
   --region eu-central-1 \
-  --name /fastapi/fiscalismia/ANTHROPIC_API_KEY \
+  --name /fastapi/ANTHROPIC_API_KEY \
   --with-decryption \
   --query Parameter.Value \
   --output text)

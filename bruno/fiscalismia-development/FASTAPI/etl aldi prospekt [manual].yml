@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/etl/aldi/01d66abe-90b8-4631-9719-56f05c0a9c2c"
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/rest/cdp/scrape/etl/aldi/01d66abe-90b8-4631-9719-56f05c0a9c2c"
   auth:
     type: bearer
     token: "{{JWT_SESSION_TOKEN}}"

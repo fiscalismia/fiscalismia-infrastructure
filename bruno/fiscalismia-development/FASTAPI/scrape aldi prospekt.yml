@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/supermarket/aldi_prospekt"
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/rest/cdp/scrape/supermarket/aldi_prospekt"
   body:
     type: json
     data: '{ "url": "https://www.aldi-sued.de/prospekte" }'

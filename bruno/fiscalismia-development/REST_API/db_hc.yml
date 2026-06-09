@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{PROTOCOL}}://{{REST_API_ENDPOINT}}/api/fiscalismia/db_hc"
+  url: "{{PROTOCOL}}://{{REST_API_ENDPOINT}}/api/db_hc"
 
 settings:
   encodeUrl: true

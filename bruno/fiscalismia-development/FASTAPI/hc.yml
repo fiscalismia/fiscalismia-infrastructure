@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/hc"
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/hc"
   auth: inherit
 
 settings:

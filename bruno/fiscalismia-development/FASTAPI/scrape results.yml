@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/fiscalismia/rest/cdp/scrape/results/{{SESSION_ID}}"
+  url: "{{PROTOCOL}}://{{FASTAPI_ENDPOINT}}/fastapi/rest/cdp/scrape/results/{{SESSION_ID}}"
   auth:
     type: bearer
     token: "{{JWT_SESSION_TOKEN}}"
