@@ -47,7 +47,7 @@ jobs:
 
         msg_file="$(mktemp)"
         cat > "$msg_file" <<'MSG_EOF'
-        # GITHUB ACTIONS MULTILINE MARKDOWNV2
+        \\# GITHUB ACTIONS MULTILINE MARKDOWNV2
         *bold \*text*
         _italic \*text_
         __underline__
