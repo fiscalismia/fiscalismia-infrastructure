@@ -24,7 +24,7 @@ on:
         default: false
         type: boolean
       test_html:
-        description: 'Send Trivial Message'
+        description: 'Send HTML Message'
         required: true
         default: false
         type: boolean
