@@ -102,14 +102,9 @@ resource "aws_iam_role" "lambda_execution_role_infra" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_role_infra_basic" {
+resource "aws_iam_role_policy_attachment" "lambda_role_infra" {
   role       = aws_iam_role.lambda_execution_role_infra.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_role_infra_apigw_route_throttler" {
-  role       = aws_iam_role.lambda_execution_role_infra.name
-  policy_arn = aws_iam_role_policy.apigw_route_throttler_policy.arn
 }
 
 resource "aws_iam_role_policy" "apigw_route_throttler_policy" {
@@ -124,7 +119,7 @@ resource "aws_iam_role_policy" "apigw_route_throttler_policy" {
         Action = [
           "apigateway:PATCH",
         ]
-        Resource = "arn:aws:apigateway:${var.region}::/apis/*/stages/apigw/*"
+        Resource = "arn:aws:apigateway:${var.region}::/apis/*/stages/apigw*"
       },
       {
         Effect = "Allow"
