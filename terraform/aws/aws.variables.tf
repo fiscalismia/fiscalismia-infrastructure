@@ -30,7 +30,7 @@ variable "lambda_handler_name" {
   type = string
 }
 variable "lambda_function_application_log_level" {
-  default = "INFO"
+  default = "DEBUG"
   description = "Valid values: TRACE, DEBUG, INFO, WARN, ERROR, FATAL."
   type = string
 }

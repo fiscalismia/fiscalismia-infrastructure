@@ -115,13 +115,15 @@ resource "aws_iam_role_policy" "apigw_route_throttler_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "PatchApiGatewayStageSettings"
         Effect = "Allow"
         Action = [
           "apigateway:PATCH",
         ]
-        Resource = "arn:aws:apigateway:${var.region}::/apis/*/stages/apigw*"
+        Resource = "arn:aws:apigateway:${var.region}::/apis/*/stages/apigw"
       },
       {
+        Sid    = "ListApiGateways"
         Effect = "Allow"
         Action = [
           "apigateway:GET"
@@ -129,6 +131,22 @@ resource "aws_iam_role_policy" "apigw_route_throttler_policy" {
         Resource = "arn:aws:apigateway:${var.region}::/apis/*"
       },
       {
+        Sid    = "AllowChangingApiGwLogsOnUpdate"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogDelivery",
+          "logs:PutResourcePolicy",
+          "logs:UpdateLogDelivery",
+          "logs:DeleteLogDelivery",
+          "logs:CreateLogGroup",
+          "logs:DescribeResourcePolicies",
+          "logs:GetLogDelivery",
+          "logs:ListLogDeliveries",
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowSNSTelegramNotifications"
         Effect = "Allow"
         Action = [
           "sns:Publish"
