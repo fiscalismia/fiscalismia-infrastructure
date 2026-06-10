@@ -59,6 +59,15 @@ resource "aws_lambda_function" "apigw_route_throttler" {
   memory_size              = 256  # MB
   runtime                  = var.infrastructure_runtime
 
+  environment {
+    variables = {
+      REST_API_ID                       = var.api_gateway_id
+      REST_API_STAGE                    = var.api_gateway_stage
+      REST_API_S3_IMG_DOWNSCALE_ROUTE   = var.post_img_route
+      REST_API_RAW_DATA_ETL_ROUTE       = var.post_raw_data_route
+    }
+  }
+
   # Advanced logging configuration
   logging_config {
     log_format            = "JSON"

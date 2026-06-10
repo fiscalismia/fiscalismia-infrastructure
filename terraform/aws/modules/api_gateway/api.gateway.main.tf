@@ -96,14 +96,18 @@ resource "aws_apigatewayv2_stage" "main_stage_route_config" {
     })
   }
   route_settings {
-    route_key             = "${var.post_img_route}"
-    throttling_burst_limit = 5
-    throttling_rate_limit  = 2.0
+    route_key                = "${var.post_img_route}"
+    data_trace_enabled       = false
+    detailed_metrics_enabled = false
+    throttling_burst_limit   = 5
+    throttling_rate_limit    = 2.0
   }
   route_settings {
-    route_key             = "${var.post_raw_data_route}"
-    throttling_burst_limit = 5
-    throttling_rate_limit  = 2.0
+    route_key                = "${var.post_raw_data_route}"
+    data_trace_enabled       = false
+    detailed_metrics_enabled = false
+    throttling_burst_limit   = 5
+    throttling_rate_limit    = 2.0
   }
   auto_deploy = true
   depends_on = [aws_apigatewayv2_route.upload_img, aws_apigatewayv2_route.post_raw_data_etl]
@@ -120,7 +124,7 @@ resource "aws_cloudwatch_log_group" "api_gw_access_logs" {
 #   api_id                            = aws_apigatewayv2_api.example.id
 #   name                              = "jwt-authorizer"
 #   authorizer_type                   = "JWT"
-#   identity_sources                  = ["$request.header.Authorization"] 
+#   identity_sources                  = ["$request.header.Authorization"]
 #   authorizer_payload_format_version = "2.0"+
 #   jwt_configuration                 = {
 #    audience = ["your-client-id"]  # The expected audience of the JWT (e.g., Cognito client ID or your OAuth2 client)

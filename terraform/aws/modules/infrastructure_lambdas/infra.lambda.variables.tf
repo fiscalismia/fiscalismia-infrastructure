@@ -17,6 +17,8 @@ variable "region" {}
 variable "handler_name" {}
 variable "application_log_level" {}
 variable "system_log_level" {}
-variable "cloudwatch_log_retention_days" {
-  type = number
-}
+variable "api_gateway_id" {}
+variable "api_gateway_stage" {}
+variable "post_img_route" {}
+variable "post_raw_data_route" {}
+variable "cloudwatch_log_retention_days" {}

@@ -167,6 +167,10 @@ module "infrastructure_lambdas" {
   terraform_destroy_trigger_description        = "After Actual Cost Budget has been exceeded, triggers a Github Actions pipeline to destroy non-persistent AWS resources"
   sandbox_function_testing_description         = "Testing sandbox for evaluating new functionality and debugging Python Lambdas"
 
+  api_gateway_id                               = module.api_gateway.id
+  api_gateway_stage                            = module.api_gateway.stage
+  post_img_route                               = "POST ${var.post_img_route}"
+  post_raw_data_route                          = "POST ${var.post_raw_data_route}"
   layer_name                                   = "${var.infrastructure_prefix}_PythonDependencies"
   layer_description                            = "Shared Python Dependencies for Infrastructure Lambdas."
   lambda_execution_role_name                   = aws_iam_role.lambda_execution_role_infra.name
