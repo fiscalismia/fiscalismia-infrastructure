@@ -18,6 +18,10 @@ resource "aws_lambda_function" "terraform_destroy_trigger" {
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn
   ]
+  # Layer versions are managed outside of terraform state via fiscalismia-lambdas/.github/workflows/lambda-deployment.yml
+  lifecycle {
+    ignore_changes = [layers]
+  }
 }
 resource "aws_lambda_function" "notification_message_sender" {
   function_name            = var.notification_message_sender_name
@@ -39,6 +43,10 @@ resource "aws_lambda_function" "notification_message_sender" {
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn
   ]
+  # Layer versions are managed outside of terraform state via fiscalismia-lambdas/.github/workflows/lambda-deployment.yml
+  lifecycle {
+    ignore_changes = [layers]
+  }
 }
 resource "aws_lambda_function" "apigw_route_throttler" {
   function_name            = var.apigw_route_throttler_name
@@ -60,6 +68,10 @@ resource "aws_lambda_function" "apigw_route_throttler" {
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn
   ]
+  # Layer versions are managed outside of terraform state via fiscalismia-lambdas/.github/workflows/lambda-deployment.yml
+  lifecycle {
+    ignore_changes = [layers]
+  }
 }
 resource "aws_lambda_function" "sandbox_function_testing" {
   function_name            = var.sandbox_function_testing_name
@@ -81,4 +93,8 @@ resource "aws_lambda_function" "sandbox_function_testing" {
   layers = [
     aws_lambda_layer_version.infrastructure_layer.arn
   ]
+  # Layer versions are managed outside of terraform state via fiscalismia-lambdas/.github/workflows/lambda-deployment.yml
+  lifecycle {
+    ignore_changes = [layers]
+  }
 }
