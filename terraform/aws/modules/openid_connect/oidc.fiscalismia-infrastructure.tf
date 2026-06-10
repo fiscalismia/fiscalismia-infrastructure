@@ -468,6 +468,21 @@ resource "aws_iam_policy" "github_actions_terraform_aws_deployment_logging" {
         ]
       },
       {
+        Sid    = "AllowChangingApiGatewayLogsOnUpdate"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogDelivery",
+          "logs:PutResourcePolicy",
+          "logs:UpdateLogDelivery",
+          "logs:DeleteLogDelivery",
+          "logs:CreateLogGroup",
+          "logs:DescribeResourcePolicies",
+          "logs:GetLogDelivery",
+          "logs:ListLogDeliveries",
+        ]
+        Resource = "*"
+      },
+      {
         Sid    = "CloudWatchLogsListOperations"
         Effect = "Allow"
         Action = [

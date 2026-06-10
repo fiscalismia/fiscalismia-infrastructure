@@ -131,7 +131,7 @@ resource "aws_iam_role_policy" "apigw_route_throttler_policy" {
         Resource = "arn:aws:apigateway:${var.region}::/apis/*"
       },
       {
-        Sid    = "AllowChangingApiGwLogsOnUpdate"
+        Sid    = "AllowChangingApiGatewayLogsOnUpdate"
         Effect = "Allow"
         Action = [
           "logs:CreateLogDelivery",

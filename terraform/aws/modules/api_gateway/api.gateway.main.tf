@@ -72,8 +72,10 @@ resource "aws_apigatewayv2_stage" "main_stage_route_config" {
   name        = var.default_stage
   description = "Default stage for Fiscalismia API"
   default_route_settings {
-    throttling_burst_limit = 5    # Max burst of 5 requests
-    throttling_rate_limit  = 2.0  # Sustained rate of 2 requests per second
+    data_trace_enabled       = false
+    detailed_metrics_enabled = false
+    throttling_burst_limit   = 10    # Max burst of 10 requests
+    throttling_rate_limit    = 3.0  # Sustained rate of 3 requests per second
   }
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gw_access_logs.arn
@@ -95,17 +97,18 @@ resource "aws_apigatewayv2_stage" "main_stage_route_config" {
       errorMessage       = "$context.error.message"
     })
   }
+  # Actual Route Settings overriding defaults
   route_settings {
     route_key                = "${var.post_img_route}"
     data_trace_enabled       = false
-    detailed_metrics_enabled = false
+    detailed_metrics_enabled = true
     throttling_burst_limit   = 5
     throttling_rate_limit    = 2.0
   }
   route_settings {
     route_key                = "${var.post_raw_data_route}"
     data_trace_enabled       = false
-    detailed_metrics_enabled = false
+    detailed_metrics_enabled = true
     throttling_burst_limit   = 5
     throttling_rate_limit    = 2.0
   }
