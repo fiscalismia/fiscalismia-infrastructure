@@ -1,0 +1,28 @@
+info:
+  name: send jpg photo
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: https:/api.telegram.org/bot{{TELEGRAM_API_TOKEN}}/sendPhoto
+  headers:
+    - name: Content-Type
+      value: multipart/form-data
+  body:
+    type: multipart-form
+    data:
+      - name: chat_id
+        type: text
+        value: "{{TELEGRAM_CHAT_ID}}"
+      - name: photo
+        type: file
+        value:
+          - /home/hangrybear/git/fiscalismia-infrastructure/bruno/imgfile_50pct.jpg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
