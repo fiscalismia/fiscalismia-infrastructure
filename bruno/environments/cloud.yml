@@ -4,3 +4,7 @@ variables:
     name: API_GW_ENDPOINT
   - secret: true
     name: API_GW_SECRET_KEY
+  - secret: true
+    name: TELEGRAM_API_TOKEN
+  - secret: true
+    name: TELEGRAM_CHAT_ID

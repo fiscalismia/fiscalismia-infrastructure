@@ -102,11 +102,6 @@ resource "aws_iam_role" "lambda_execution_role_infra" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_role_infra" {
-  role       = aws_iam_role.lambda_execution_role_infra.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
 resource "aws_iam_role_policy" "apigw_route_throttler_policy" {
   name = "ApiGatewayRouteThrottlerPolicy"
   role = aws_iam_role.lambda_execution_role_infra.name
@@ -194,4 +189,46 @@ resource "aws_iam_role_policy" "terraform_destroy_trigger_policy" {
       }
     ]
   })
+}
+
+resource "aws_iam_policy" "infra_lambda_query_parameter_store_access" {
+  name        = "InfrastructureLambda_ParameterStoreAccess"
+  path        = "/"
+  description = "IAM policy for allowing Infrastructure Lambdas Access to hardcoded Parameter Store SecureStrings"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "ParameterStoreReadAccess"
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter"
+        ]
+        Resource = [
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/notifications/telegram/FISCALISMIA_MSG_TELEGRAM_API_TOKEN",
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/notifications/telegram/ADMIN_TELEGRAM_CHAT_ID"
+        ]
+      },
+      {
+        Sid    = "ParameterStoreKMSDecrypt"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_role_infra" {
+  role       = aws_iam_role.lambda_execution_role_infra.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+resource "aws_iam_role_policy_attachment" "lambda_role_infra_parameterstore_access" {
+  role       = aws_iam_role.lambda_execution_role_infra.name
+  policy_arn = aws_iam_policy.infra_lambda_query_parameter_store_access.arn
 }

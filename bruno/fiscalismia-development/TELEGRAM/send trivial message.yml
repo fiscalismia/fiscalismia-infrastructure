@@ -1,0 +1,22 @@
+info:
+  name: send trivial message
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "https:/api.telegram.org/bot{{TELEGRAM_API_TOKEN}}/sendMessage?chat_id={{TELEGRAM_CHAT_ID}}&text={{$isoTimestamp}}: bruno trivial message"
+  params:
+    - name: chat_id
+      value: "{{TELEGRAM_CHAT_ID}}"
+      type: query
+    - name: text
+      value: "{{$isoTimestamp}}: bruno trivial message"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

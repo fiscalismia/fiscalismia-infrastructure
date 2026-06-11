@@ -1,0 +1,30 @@
+info:
+  name: send ascii bears msg
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: https:/api.telegram.org/bot{{TELEGRAM_API_TOKEN}}/sendMessage?chat_id={{TELEGRAM_CHAT_ID}}
+  headers:
+    - name: Content-Type
+      value: application/json
+  params:
+    - name: chat_id
+      value: "{{TELEGRAM_CHAT_ID}}"
+      type: query
+  body:
+    type: json
+    data: |-
+      {
+        "chat_id": "{{TELEGRAM_CHAT_ID}}",
+        "parse_mode": "HTML",
+        "text": "\n<b>ʕ•ᴥ•ʔ BEEP BEAR FRIENDS ʕ•ᴥ•ʔ</b>\n\n<code>ʕ•ᴥ•ʔ</code> idle\n<code>ʕっ•ᴥ•ʔっ⭐</code> star catch\n<code>⊂ʕ•ᴥ•⊂ʔ</code> hug\n<code>ʕっ•ᴥ•ʔっ</code> hug too\n<code>ฅʕ•ᴥ•ʔฅ</code> rawr\n<code>ʕ •ᴥ•ʔゝ☆</code> salute\n<code>ʕ •`ᴥ•´ʔ</code> hangry\n<code>┏ʕ •ᴥ•ʔ┛</code> dancing\n<code>ʕっ•ᴥ•ʔっ💕</code> loving\n<code>ʕง•ᴥ•ʔง</code> fight stance\n<code>ʕっ•ᴥ•ʔ⊃━☆ﾟ.*</code> casting magic\n<code>ʕノ•ᴥ•ʔノ ︵ ┻━┻</code> table flip\n<code>┬─┬ノʕ•ᴥ•ノʔ</code> table restore\n<code>ʕ－ᴥ－ʔ zZ</code> sleeping\n<code>ʕ◔ᴥ◔ʔ</code> eye roll\n<code>ʕ￣ᴥ￣ʔ</code> smug\n<code>ʕ*ᴥ*ʔ</code> starstruck\n<code>ʕ✿ᴥ✿ʔ</code> flower power\n<code>ʕ♡ᴥ♡ʔ</code> in love\n<code>ʕﾉ•ᴥ•ʔﾉ♡</code> love hug\n<code>ʕ&gt;ᴥ&lt;ʔ</code> squee\n<code>ʕ •́؈•̀)</code> retarded\n<code>ʕ;ᴥ;ʔ</code> crying\n<code>ʕxᴥxʔ</code> knocked out\n<code>ʕ•ᴥ•ʔ🎉</code> party\n<code>ʕ／•ᴥ•＼ʔ</code> hands up\n\n<i>boop a bear to copy it to your clipboard</i>\n"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
