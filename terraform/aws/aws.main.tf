@@ -210,11 +210,13 @@ module "cloudwatch_metric_alarms" {
   post_img_route                                       = "POST ${var.post_img_route}"
   post_raw_data_route                                  = "POST ${var.post_raw_data_route}"
 
-  apigw_count_exceeded_post_img_route_name             = "ApiGatewayCountExceeded-PostImgRoute"
-  apigw_count_exceeded_post_img_route_description      = "Tracks Count for public API Gateway Route for Image Upload from Frontend"
-  apigw_count_exceeded_post_img_route_threshold        = 30
+  post_img_lambda_name                                              = "${var.application_prefix}_ImageProcessing"
+  apigw_lambda_invocations_exceeded_post_img_route_name             = "ApiGatewayLambdaInvocationsExceeded-PostImgRoute"
+  apigw_lambda_invocations_exceeded_post_img_route_description      = "Tracks Lambda Invocation Count for public API Gateway Route for Image Upload from Frontend"
+  apigw_lambda_invocations_exceeded_post_img_route_threshold        = 30
 
-  apigw_count_exceeded_post_raw_data_route_name        = "ApiGatewayCountExceeded-RawDataEtlRoute"
-  apigw_count_exceeded_post_raw_data_route_description = "Tracks Count for public API Gateway Route for Admin ETL PSQL Process"
-  apigw_count_exceeded_post_raw_data_route_threshold   = 30
+  post_raw_data_lambda_name                                         = "${var.application_prefix}_RawDataETL"
+  apigw_lambda_invocations_exceeded_post_raw_data_route_name        = "ApiGatewayLambdaInvocationsExceeded-RawDataEtlRoute"
+  apigw_lambda_invocations_exceeded_post_raw_data_route_description = "Tracks Lambda Invocation Count for public API Gateway Route for Admin ETL PSQL Process"
+  apigw_lambda_invocations_exceeded_post_raw_data_route_threshold   = 15
 }
