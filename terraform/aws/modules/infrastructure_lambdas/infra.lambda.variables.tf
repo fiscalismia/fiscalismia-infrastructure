@@ -22,3 +22,4 @@ variable "api_gateway_stage" {}
 variable "post_img_route" {}
 variable "post_raw_data_route" {}
 variable "cloudwatch_log_retention_days" {}
+variable "sns_topic_notification_message_sending_name" {}

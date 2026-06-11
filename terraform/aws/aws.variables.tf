@@ -40,6 +40,24 @@ variable "lambda_function_system_log_level" {
   type = string
 }
 
+################### SIMPLE NOTIFICATION SERVICE #########################
+variable "sns_topic_budget_limit_exceeded_name" {
+  default = "BudgetLimitExceededAction"
+  type    = string
+}
+variable "sns_topic_apigw_route_throttling_name" {
+  default = "ApiGatewayRouteThrottling"
+  type    = string
+}
+variable "sns_topic_notification_message_sending_name" {
+  default = "NotificationMessageSending"
+  type    = string
+}
+variable "sns_topic_sandbox_sns_testing_name" {
+  default = "SandboxSnsTesting"
+  type    = string
+}
+
 ################### API GATEWAY #########################
 variable "default_stage" {
   default = "apigw"

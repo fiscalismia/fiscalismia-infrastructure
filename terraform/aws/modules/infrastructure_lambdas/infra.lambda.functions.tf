@@ -65,6 +65,7 @@ resource "aws_lambda_function" "apigw_route_throttler" {
       REST_API_STAGE                    = var.api_gateway_stage
       REST_API_S3_IMG_DOWNSCALE_ROUTE   = var.post_img_route
       REST_API_RAW_DATA_ETL_ROUTE       = var.post_raw_data_route
+      SNS_TOPIC_ARN_NOTIFICATION_SENDER = local.SNS_TOPIC_ARN_NOTIFICATION_SENDER
     }
   }
 

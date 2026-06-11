@@ -167,6 +167,7 @@ module "infrastructure_lambdas" {
   terraform_destroy_trigger_description        = "After Actual Cost Budget has been exceeded, triggers a Github Actions pipeline to destroy non-persistent AWS resources"
   sandbox_function_testing_description         = "Testing sandbox for evaluating new functionality and debugging Python Lambdas"
 
+  sns_topic_notification_message_sending_name  = var.sns_topic_notification_message_sending_name
   api_gateway_id                               = module.api_gateway.id
   api_gateway_stage                            = module.api_gateway.stage
   post_img_route                               = "POST ${var.post_img_route}"
@@ -194,10 +195,10 @@ module "cost_budget_alarms" {
 
 module "sns_topics" {
   source                                       = "./modules/sns_topic"
-  sns_topic_budget_limit_exceeded_name         = "BudgetLimitExceededAction"
-  sns_topic_apigw_route_throttling_name        = "ApiGatewayRouteThrottling"
-  sns_topic_notification_message_sending_name  = "NotificationMessageSending"
-  sns_topic_sandbox_sns_testing_name           = "SandboxSnsTesting"
+  sns_topic_budget_limit_exceeded_name         = var.sns_topic_budget_limit_exceeded_name
+  sns_topic_apigw_route_throttling_name        = var.sns_topic_apigw_route_throttling_name
+  sns_topic_notification_message_sending_name  = var.sns_topic_notification_message_sending_name
+  sns_topic_sandbox_sns_testing_name           = var.sns_topic_sandbox_sns_testing_name
   cloudwatch_log_retention_days                = 30
   apigw_route_throttler_arn                    = module.infrastructure_lambdas.apigw_route_throttler_arn
   notification_message_sender_arn              = module.infrastructure_lambdas.notification_message_sender_arn
