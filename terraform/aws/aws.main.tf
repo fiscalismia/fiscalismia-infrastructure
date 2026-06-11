@@ -199,6 +199,10 @@ module "sns_topics" {
   sns_topic_notification_message_sending_name  = "NotificationMessageSending"
   sns_topic_sandbox_sns_testing_name           = "SandboxSnsTesting"
   cloudwatch_log_retention_days                = 30
+  apigw_route_throttler_arn                    = module.infrastructure_lambdas.apigw_route_throttler_arn
+  notification_message_sender_arn              = module.infrastructure_lambdas.notification_message_sender_arn
+  terraform_destroy_trigger_arn                = module.infrastructure_lambdas.terraform_destroy_trigger_arn
+  sandbox_function_testing_arn                 = module.infrastructure_lambdas.sandbox_function_testing_arn
 }
 
 module "cloudwatch_metric_alarms" {

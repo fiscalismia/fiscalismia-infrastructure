@@ -27,3 +27,19 @@ variable "lambda_success_sample_rate" {
     error_message = "Sample rate must be between 0 and 100."
   }
 }
+variable "apigw_route_throttler_arn" {
+  description = "ARN of the Route Throttler Lambda function added as SNS topic subscription."
+  type        = string
+}
+variable "notification_message_sender_arn" {
+  description = "ARN of the Notification Sender Lambda function added as SNS topic subscription."
+  type        = string
+}
+variable "terraform_destroy_trigger_arn" {
+  description = "ARN of the Terraform Destroy Trigger Lambda function added as SNS topic subscription."
+  type        = string
+}
+variable "sandbox_function_testing_arn" {
+  description = "ARN of the Sandbox Testing Lambda function added as SNS topic subscription."
+  type        = string
+}
