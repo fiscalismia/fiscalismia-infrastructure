@@ -5,14 +5,10 @@ info:
 
 http:
   method: POST
-  url: https:/api.telegram.org/bot{{TELEGRAM_API_TOKEN}}/sendMessage?chat_id={{TELEGRAM_CHAT_ID}}
+  url: https:/api.telegram.org/bot{{TELEGRAM_API_TOKEN}}/sendMessage
   headers:
     - name: Content-Type
       value: application/json
-  params:
-    - name: chat_id
-      value: "{{TELEGRAM_CHAT_ID}}"
-      type: query
   body:
     type: json
     data: |
