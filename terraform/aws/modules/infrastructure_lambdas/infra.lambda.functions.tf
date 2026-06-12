@@ -61,11 +61,13 @@ resource "aws_lambda_function" "apigw_route_throttler" {
 
   environment {
     variables = {
-      REST_API_ID                       = var.api_gateway_id
-      REST_API_STAGE                    = var.api_gateway_stage
-      REST_API_S3_IMG_DOWNSCALE_ROUTE   = var.post_img_route
-      REST_API_RAW_DATA_ETL_ROUTE       = var.post_raw_data_route
-      SNS_TOPIC_ARN_NOTIFICATION_SENDER = local.SNS_TOPIC_ARN_NOTIFICATION_SENDER
+      REST_API_ID                               = var.api_gateway_id
+      REST_API_STAGE                            = var.api_gateway_stage
+      REST_API_S3_IMG_DOWNSCALE_ROUTE           = var.post_img_route
+      REST_API_RAW_DATA_ETL_ROUTE               = var.post_raw_data_route
+      SNS_TOPIC_ARN_NOTIFICATION_SENDER         = local.SNS_TOPIC_ARN_NOTIFICATION_SENDER
+      POST_IMG_ROUTE_CLOUDWATCH_ALARM_NAME      = var.post_img_route_cloudwatch_alarm_name
+      RAW_DATA_ETL_ROUTE_CLOUDWATCH_ALARM_NAME  = var.raw_data_etl_route_cloudwatch_alarm_name
     }
   }
 

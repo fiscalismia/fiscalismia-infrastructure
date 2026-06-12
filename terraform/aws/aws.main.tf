@@ -168,6 +168,8 @@ module "infrastructure_lambdas" {
   sandbox_function_testing_description         = "Testing sandbox for evaluating new functionality and debugging Python Lambdas"
 
   sns_topic_notification_message_sending_name  = var.sns_topic_notification_message_sending_name
+  post_img_route_cloudwatch_alarm_name         = var.post_img_route_cloudwatch_alarm_name
+  raw_data_etl_route_cloudwatch_alarm_name     = var.raw_data_etl_route_cloudwatch_alarm_name
   api_gateway_id                               = module.api_gateway.id
   api_gateway_stage                            = module.api_gateway.stage
   post_img_route                               = "POST ${var.post_img_route}"
@@ -216,12 +218,12 @@ module "cloudwatch_metric_alarms" {
   post_raw_data_route                                  = "POST ${var.post_raw_data_route}"
 
   post_img_lambda_name                                              = "${var.application_prefix}_ImageProcessing"
-  apigw_lambda_invocations_exceeded_post_img_route_name             = "ApiGatewayLambdaInvocationsExceeded-PostImgRoute"
+  apigw_lambda_invocations_exceeded_post_img_route_name             = var.post_img_route_cloudwatch_alarm_name
   apigw_lambda_invocations_exceeded_post_img_route_description      = "Tracks Lambda Invocation Count for public API Gateway Route for Image Upload from Frontend"
-  apigw_lambda_invocations_exceeded_post_img_route_threshold        = 30
+  apigw_lambda_invocations_exceeded_post_img_route_threshold        = 20
 
   post_raw_data_lambda_name                                         = "${var.application_prefix}_RawDataETL"
-  apigw_lambda_invocations_exceeded_post_raw_data_route_name        = "ApiGatewayLambdaInvocationsExceeded-RawDataEtlRoute"
+  apigw_lambda_invocations_exceeded_post_raw_data_route_name        = var.raw_data_etl_route_cloudwatch_alarm_name
   apigw_lambda_invocations_exceeded_post_raw_data_route_description = "Tracks Lambda Invocation Count for public API Gateway Route for Admin ETL PSQL Process"
   apigw_lambda_invocations_exceeded_post_raw_data_route_threshold   = 15
 }

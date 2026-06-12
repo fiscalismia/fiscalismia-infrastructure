@@ -23,3 +23,5 @@ variable "post_img_route" {}
 variable "post_raw_data_route" {}
 variable "cloudwatch_log_retention_days" {}
 variable "sns_topic_notification_message_sending_name" {}
+variable "post_img_route_cloudwatch_alarm_name" {}
+variable "raw_data_etl_route_cloudwatch_alarm_name" {}

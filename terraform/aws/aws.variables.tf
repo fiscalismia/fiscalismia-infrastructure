@@ -57,7 +57,14 @@ variable "sns_topic_sandbox_sns_testing_name" {
   default = "SandboxSnsTesting"
   type    = string
 }
-
+variable "post_img_route_cloudwatch_alarm_name" {
+  default ="ApiGatewayLambdaInvocationsExceeded-PostImgRoute"
+  type    = string
+}
+variable "raw_data_etl_route_cloudwatch_alarm_name" {
+  default ="ApiGatewayLambdaInvocationsExceeded-RawDataEtlRoute"
+  type    = string
+}
 ################### API GATEWAY #########################
 variable "default_stage" {
   default = "apigw"
