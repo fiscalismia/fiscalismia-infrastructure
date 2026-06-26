@@ -31,18 +31,6 @@ resource "aws_sns_topic_policy" "budget_limit_exceeded" {
         }
       },
       {
-        Sid    = "AllowCloudwatchSNSDelivery"
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "logs:PutMetricFilter",
-          "logs:PutRetentionPolicy"
-        ]
-        Resource = "arn:aws:logs:*:*:*"
-      },
-      {
         Sid    = "AllowBudgetsToPublish"
         Effect = "Allow"
         Principal = {

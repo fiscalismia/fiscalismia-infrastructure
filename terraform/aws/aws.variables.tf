@@ -65,6 +65,15 @@ variable "raw_data_etl_route_cloudwatch_alarm_name" {
   default ="ApiGatewayLambdaInvocationsExceeded-RawDataEtlRoute"
   type    = string
 }
+################### COST/BUDGET ALARMS #########################
+variable "cost_budget_alarm_total_actual_name" {
+  default = "TotalBudgetActual-InfrastructureKillswitch"
+  type    = string
+}
+variable "cost_budget_alarm_total_forecast_name" {
+  default = "TotalBudgetForecast-Notifications"
+  type    = string
+}
 ################### API GATEWAY #########################
 variable "default_stage" {
   default = "apigw"

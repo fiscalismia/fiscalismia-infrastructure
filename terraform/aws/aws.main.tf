@@ -151,9 +151,13 @@ module "infrastructure_lambdas" {
   terraform_destroy_trigger_description        = "After Actual Cost Budget has been exceeded, triggers a Github Actions pipeline to destroy non-persistent AWS resources"
   sandbox_function_testing_description         = "Testing sandbox for evaluating new functionality and debugging Python Lambdas"
 
+  # ENVIRONMENT VARIABLES PASSED THROUGH
   sns_topic_notification_message_sending_name  = var.sns_topic_notification_message_sending_name
   post_img_route_cloudwatch_alarm_name         = var.post_img_route_cloudwatch_alarm_name
   raw_data_etl_route_cloudwatch_alarm_name     = var.raw_data_etl_route_cloudwatch_alarm_name
+  cost_budget_alarm_total_actual_name          = var.cost_budget_alarm_total_actual_name
+  cost_budget_alarm_total_forecast_name        = var.cost_budget_alarm_total_forecast_name
+
   api_gateway_id                               = module.api_gateway.id
   api_gateway_stage                            = module.api_gateway.stage
   post_img_route                               = "POST ${var.post_img_route}"
@@ -173,8 +177,8 @@ module "infrastructure_lambdas" {
 
 module "cost_budget_alarms" {
   source                                = "./modules/cost_budget"
-  cost_budget_alarm_total_actual_name   = "TotalBudgetActual-InfrastructureKillswitch"
-  cost_budget_alarm_total_forecast_name = "TotalBudgetForecast-Notifications"
+  cost_budget_alarm_total_actual_name   = var.cost_budget_alarm_total_actual_name
+  cost_budget_alarm_total_forecast_name = var.cost_budget_alarm_total_forecast_name
   sns_topic_arn_budget_limit_exceeded   = module.sns_topics.budget_limit_exceeded_arn
   budget_alarm_notification_email  = var.budget_alarm_notification_email
 }

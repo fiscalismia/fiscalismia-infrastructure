@@ -25,3 +25,5 @@ variable "cloudwatch_log_retention_days" {}
 variable "sns_topic_notification_message_sending_name" {}
 variable "post_img_route_cloudwatch_alarm_name" {}
 variable "raw_data_etl_route_cloudwatch_alarm_name" {}
+variable "cost_budget_alarm_total_actual_name" {}
+variable "cost_budget_alarm_total_forecast_name" {}

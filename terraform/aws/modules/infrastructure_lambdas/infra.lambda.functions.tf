@@ -12,6 +12,8 @@ resource "aws_lambda_function" "terraform_destroy_trigger" {
   environment {
     variables = {
       SNS_TOPIC_ARN_NOTIFICATION_SENDER         = local.SNS_TOPIC_ARN_NOTIFICATION_SENDER
+      COST_BUDGET_ALARM_TOTAL_ACTUAL_NAME       = var.cost_budget_alarm_total_actual_name
+      COST_BUDGET_ALARM_TOTAL_FORECAST_NAME     = var.cost_budget_alarm_total_forecast_name
     }
   }
   
