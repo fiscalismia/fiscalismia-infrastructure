@@ -1,28 +1,37 @@
+data "aws_caller_identity" "current" {}
 
-resource "aws_iam_role" "sns_cloudwatch_feedback_role" {
-  name = "CloudwatchLogging-SNSDelivery-FeedbackRole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+resource "aws_sns_topic_policy" "budget_policy" {
+  arn = aws_sns_topic.apigw_route_throttling.arn
+
+  policy = jsonencode({
+    Version = "2008-10-17"
+    Id      = "__default_policy_ID"
     Statement = [
       {
+        Sid    = "__default_statement_ID"
         Effect = "Allow"
         Principal = {
-          Service = "sns.amazonaws.com"
+          AWS = "*"
         }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-# Policy for SNS to write logs to CloudWatch
-resource "aws_iam_role_policy" "sns_cloudwatch_feedback_policy" {
-  name = "CloudwatchLogging-SNSDelivery-FeedbackPolicy"
-  role = aws_iam_role.sns_cloudwatch_feedback_role.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
+        Action = [
+          "SNS:GetTopicAttributes",
+          "SNS:SetTopicAttributes",
+          "SNS:AddPermission",
+          "SNS:RemovePermission",
+          "SNS:DeleteTopic",
+          "SNS:Subscribe",
+          "SNS:ListSubscriptionsByTopic",
+          "SNS:Publish"
+        ]
+        Resource = "${aws_sns_topic.budget_limit_exceeded_action.arn}"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceOwner" = data.aws_caller_identity.current.account_id
+          }
+        }
+      },
       {
+        Sid    = "AllowCloudwatchSNSDelivery"
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
@@ -32,6 +41,20 @@ resource "aws_iam_role_policy" "sns_cloudwatch_feedback_policy" {
           "logs:PutRetentionPolicy"
         ]
         Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Sid    = "AllowBudgetsToPublish"
+        Effect = "Allow"
+        Principal = {
+          Service = "budgets.amazonaws.com"
+        }
+        Action   = "SNS:Publish"
+        Resource = "${aws_sns_topic.budget_limit_exceeded_action.arn}"
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
       }
     ]
   })
