@@ -13,6 +13,7 @@ resource "aws_budgets_budget" "total_actual_destruction" {
   time_period_end   = "2050-01-31_00:00"
   time_unit         = "MONTHLY"
 
+  # Email Notification and Lambda Destruction Invocation
   notification {
     comparison_operator        = "GREATER_THAN"
     threshold                  = 80
