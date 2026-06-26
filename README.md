@@ -129,7 +129,7 @@ terraform apply \
 
 Create `terraform/aws/terraform.tfvars` file and change any desired variables by overwriting the default values within `variables.tf`
 ```bash
-forecasted_budget_notification_email  = "example@domain.com"
+budget_alarm_notification_email  = "example@domain.com"
 ```
 
 4. Terraform for dynamic AWS resources provisioned and destroyed via pipeline

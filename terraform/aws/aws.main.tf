@@ -176,7 +176,7 @@ module "cost_budget_alarms" {
   cost_budget_alarm_total_actual_name   = "TotalBudgetActual-InfrastructureKillswitch"
   cost_budget_alarm_total_forecast_name = "TotalBudgetForecast-Notifications"
   sns_topic_arn_budget_limit_exceeded   = module.sns_topics.budget_limit_exceeded_arn
-  forecasted_budget_notification_email  = var.forecasted_budget_notification_email
+  budget_alarm_notification_email  = var.budget_alarm_notification_email
 }
 
 module "sns_topics" {

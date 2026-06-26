@@ -48,7 +48,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}/terraform/aws
         terraform init
         terraform plan \
-          -var='forecasted_budget_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
+          -var='budget_alarm_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
           -target=module.route_53_dns \
           -target=module.api_gateway \
           -target=module.lambda_image_processing \

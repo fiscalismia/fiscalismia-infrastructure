@@ -38,7 +38,7 @@ resource "aws_budgets_budget" "total_forecasted_notifaction" {
     threshold                  = 80
     threshold_type             = "PERCENTAGE"
     notification_type          = "FORECASTED"
-    subscriber_email_addresses = [var.forecasted_budget_notification_email]
+    subscriber_email_addresses = [var.budget_alarm_notification_email]
   }
   
   # SNS notification (for Lambda/Telegram) at 100% threshold
