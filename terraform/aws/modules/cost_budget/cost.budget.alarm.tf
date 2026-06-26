@@ -24,7 +24,7 @@ resource "aws_budgets_budget" "total_actual" {
 
 # Invokes email sending that only notifies the user via mail
 resource "aws_budgets_budget" "total_forecasted_mail" {
-  name              = var.cost_budget_alarm_total_forecast_name
+  name              = var.cost_budget_alarm_total_forecast_mail_name
   budget_type       = "COST"
   limit_amount      = local.FORECASTED_VALUE
   limit_unit        = "USD"
@@ -43,7 +43,7 @@ resource "aws_budgets_budget" "total_forecasted_mail" {
 
 # Invokes destruction lambda, that only notifies the user via SNS
 resource "aws_budgets_budget" "total_forecasted_telegram_notification" {
-  name              = var.cost_budget_alarm_total_forecast_name
+  name              = var.cost_budget_alarm_total_forecast_telegram_name
   budget_type       = "COST"
   limit_amount      = local.FORECASTED_VALUE
   limit_unit        = "USD"

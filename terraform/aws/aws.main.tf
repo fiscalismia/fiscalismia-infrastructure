@@ -172,11 +172,12 @@ module "infrastructure_lambdas" {
 }
 
 module "cost_budget_alarms" {
-  source                                = "./modules/cost_budget"
-  cost_budget_alarm_total_actual_name   = "TotalBudgetActual-InfrastructureKillswitch"
-  cost_budget_alarm_total_forecast_name = "TotalBudgetForecast-EmailNotification"
-  sns_topic_arn_budget_limit_exceeded   = module.sns_topics.budget_limit_exceeded_arn
-  forecasted_budget_notification_email  = var.forecasted_budget_notification_email
+  source                                         = "./modules/cost_budget"
+  cost_budget_alarm_total_actual_name            = "TotalBudgetActual-InfrastructureKillswitch"
+  cost_budget_alarm_total_forecast_mail_name     = "TotalBudgetForecast-EmailNotification"
+  cost_budget_alarm_total_forecast_telegram_name = "TotalBudgetForecast-TelegramSNSNotification"
+  sns_topic_arn_budget_limit_exceeded            = module.sns_topics.budget_limit_exceeded_arn
+  forecasted_budget_notification_email           = var.forecasted_budget_notification_email
 }
 
 module "sns_topics" {
