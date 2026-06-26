@@ -9,6 +9,12 @@ resource "aws_lambda_function" "terraform_destroy_trigger" {
   memory_size              = 256  # MB
   runtime                  = var.infrastructure_runtime
 
+  environment {
+    variables = {
+      SNS_TOPIC_ARN_NOTIFICATION_SENDER         = local.SNS_TOPIC_ARN_NOTIFICATION_SENDER
+    }
+  }
+  
   # Advanced logging configuration
   logging_config {
     log_format            = "JSON"
