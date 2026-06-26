@@ -2,6 +2,10 @@
 - Centralize a resource list of versions, binaries and dependencies to update during security passes, currently known:
 + think about updating binaries that are hardcoded to a specific version, currently known: AWS_SIGNING_HELPER_VERSION="1.8.0"
 + requirements.txt in Lambda Layers
++ all github actions workflow versions
++ terraform providers "~>" defining max version
++ RUNTIME_ENV + PYTHON_V + DOCKER_IMG in lambda github actions pipelines
++ 
 
 ### Medium Prio
 - Unify hc endpoints across containers, baking in commit and build-time and environment if possible, following example in go build

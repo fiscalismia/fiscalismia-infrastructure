@@ -16,5 +16,5 @@ variable "default_region" {
 variable "unix_distro" {
   description   = "The Linux image to use for all servers"
   type          = string
-  default       = "fedora-43"
+  default       = "fedora-44"
 }
