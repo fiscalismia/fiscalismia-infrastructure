@@ -18,6 +18,7 @@ resource "aws_budgets_budget" "total_actual_destruction" {
     threshold                  = 80
     threshold_type             = "PERCENTAGE"
     notification_type          = "ACTUAL"
+    subscriber_email_addresses = [var.budget_alarm_notification_email]
     subscriber_sns_topic_arns  = [var.sns_topic_arn_budget_limit_exceeded]
   }
 }
