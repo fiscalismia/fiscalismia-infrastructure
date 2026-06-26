@@ -74,6 +74,31 @@ jobs:
             > ~/.ssh/${KEY_NAME}
         done
 
+    - name: Destroy only AWS resources
+      if: inputs.destroy_aws == true && inputs.destroy_hcloud == false
+      run: |
+        cd ${GITHUB_WORKSPACE}/terraform/aws/
+        terraform init
+        terraform plan -destroy \
+          -var='forecasted_budget_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
+          -target=module.route_53_dns \
+          -target=module.api_gateway \
+          -target=module.lambda_image_processing \
+          -target=module.lambda_raw_data_etl \
+          -target=module.infrastructure_lambdas \
+          -target=module.cost_budget_alarms \
+          -target=module.sns_topics \
+          -target=module.cloudwatch_metric_alarms
+
+    - name: Destroy only HCLOUD resources
+      if: inputs.destroy_aws == false && inputs.destroy_hcloud == true
+      env:
+        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      run: |
+        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud/
+        terraform init
+        terraform plan -destroy
+
     - name: Destroy AWS and Hetzner Cloud resources
       if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
       env:
@@ -94,5 +119,4 @@ jobs:
 
         cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud/
         terraform init
-        # terraform destroy --auto-approve
         terraform plan -destroy
