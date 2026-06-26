@@ -81,7 +81,7 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}/terraform/aws/
         terraform init
-        terraform destroy \
+        terraform plan -destroy \
           -var='forecasted_budget_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
           -target=module.route_53_dns \
           -target=module.api_gateway \
@@ -90,9 +90,9 @@ jobs:
           -target=module.infrastructure_lambdas \
           -target=module.cost_budget_alarms \
           -target=module.sns_topics \
-          -target=module.cloudwatch_metric_alarms \
-          -auto-approve
+          -target=module.cloudwatch_metric_alarms
 
         cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud/
         terraform init
-        terraform destroy --auto-approve
+        # terraform destroy --auto-approve
+        terraform plan -destroy

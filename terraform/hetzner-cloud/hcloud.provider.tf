@@ -3,7 +3,7 @@ terraform {
     hcloud = {
       # See https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs
       source  = "hetznercloud/hcloud"
-      version = "~> 1.64.0"
+      version = "~> 1.66.0"
     }
     cloudinit = {
       # See https://registry.terraform.io/providers/hashicorp/cloudinit/latest
