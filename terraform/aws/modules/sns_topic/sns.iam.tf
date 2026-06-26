@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
-resource "aws_sns_topic_policy" "budget_policy" {
-  arn = aws_sns_topic.apigw_route_throttling.arn
+resource "aws_sns_topic_policy" "budget_limit_exceeded" {
+  arn = aws_sns_topic.budget_limit_exceeded_action.arn
 
   policy = jsonencode({
     Version = "2008-10-17"
