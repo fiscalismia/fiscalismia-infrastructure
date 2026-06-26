@@ -6,7 +6,6 @@ resource "hcloud_server" "unix_vps" {
   server_type                = var.server_type
   location                   = var.location
   ssh_keys                   = [var.ssh_key_name]
-  allow_deprecated_images    = false
   shutdown_before_deletion   = false
   backups                    = false
   firewall_ids               = var.firewall_ids
