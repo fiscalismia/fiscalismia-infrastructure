@@ -9,8 +9,6 @@ module "route_53_dns" {
   fastapi_subdomain                     = var.fastapi_subdomain              # MAIN Fastapi
   monitoring_subdomain                  = var.monitoring_subdomain           # Prometheus & Grafana
   golang_monitoring_subdomains          = var.golang_monitoring_subdomains   # Golang Unified Healthcheck
-  ainac_woodpecker_ci_subdomains        = var.ainac_woodpecker_ci_subdomains # Woodpecker CI Instance
-  ainac_ci_instance_static_ipv6         = "2a01:4f8:c014:6fdd::1" # For Route 53 DNS Type AAAA Record
   loadbalancer_instance_ipv4            = local.hcloud_fiscalismia_loadbalancer_ipv4
 }
 
@@ -81,20 +79,6 @@ module "s3_infrastructure_storage" {
   data_expiration                       = false # do NOT delete
   data_expiration_days                  = null
   lambda_execution_role_arns            = [aws_iam_role.lambda_execution_role_infra.arn]
-}
-
-# Backend Terraform State Bucket for AinAC Hetzner Infrastructure
-module "s3_ainac_terraform_backend" {
-  source                                = "./modules/s3"
-  bucket_name                           = "ainac-tf-backend-state-bucket"
-  fqdn                                  = null
-  demo_fqdn                             = null
-  data_infrequent_access                = false # do NOT move to IA
-  data_infrequent_access_days           = null
-  data_archival                         = false # do NOT archive
-  data_archival_days                    = null
-  data_expiration                       = false # do NOT delete
-  data_expiration_days                  = null
 }
 
 # endpoint to connect fiscalismia containers (file upload) to lambdas for further processing

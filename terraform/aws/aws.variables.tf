@@ -173,8 +173,3 @@ variable "golang_monitoring_subdomains" {
   description = "Subdomain for golang unified healthcheck"
   type        = string
 }
-variable "ainac_woodpecker_ci_subdomains" {
-  default     = "ainac.ci"
-  description = "Subdomain for Woodpecker ci build and deploy OAuth 2.0 redirect url"
-  type        = string
-}
