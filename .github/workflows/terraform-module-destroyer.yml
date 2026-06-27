@@ -48,8 +48,15 @@ jobs:
       run: |
         echo "===== RECEIVED DESTRUCTION EVENT INVOCATION ====="
         echo "client_payload destroy_aws_resources=${{ github.event.client_payload.destroy_aws_resources }}"
+        
+        # Initializing Terraform
         cd ${GITHUB_WORKSPACE}/terraform/aws/
         terraform init
+
+        # Setting pre-destroy state as job output
+        terraform state list >> ${GITHUB_WORKSPACE}/pre_destroy.state
+
+        # Run actual destruction
         terraform plan -destroy \
           -var='budget_alarm_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
           -target=module.route_53_dns \
@@ -60,3 +67,24 @@ jobs:
           -target=module.cost_budget_alarms \
           -target=module.sns_topics \
           -target=module.cloudwatch_metric_alarms
+
+    - name: List destroyed resources
+      if: ${{ github.event.action == 'aws_infrastructure_destroyer' && github.event.client_payload.destroy_aws_resources == true }}
+      run: |
+        echo "===== COMPUTING TERRAFORM STATE DELTA ====="
+        
+        # Initializing Terraform
+        cd ${GITHUB_WORKSPACE}/terraform/aws/
+        terraform init
+
+        # Setting post-destroy state to compare
+        terraform state list >> ${GITHUB_WORKSPACE}/post_destroy.state
+
+        # Compare diffs between destruction snapshots
+        echo "Comparing destruction delta with diff"
+        diff --minimal --color=always ${GITHUB_WORKSPACE}/pre_destroy.state ${GITHUB_WORKSPACE}/post_destroy.state
+
+        echo "Comparing debug delta with diff"
+        cat ${GITHUB_WORKSPACE}/pre_destroy.state | head -n 20 >> ${GITHUB_WORKSPACE}/pre_destroy.state
+        diff --minimal --color=always ${GITHUB_WORKSPACE}/pre_destroy.state ${GITHUB_WORKSPACE}/post_destroy.state
+
