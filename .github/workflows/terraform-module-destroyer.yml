@@ -37,10 +37,11 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Handle incompatible fallback event
-      if: github.event.action != 'module_destroyer'
+      if: ${{ github.event.action == 'module_destroyer' && github.event.client_payload.destroy_aws != true }}
       run: |
         echo "===== RECEIVED INCOMPATIBLE EVENT INVOCATION ====="
         echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws }}"
+        echo "No changes executed."
 
     - name: Destroy AWS resources
       if: ${{ github.event.action == 'module_destroyer' && github.event.client_payload.destroy_aws == true }}
