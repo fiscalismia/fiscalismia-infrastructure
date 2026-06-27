@@ -1,0 +1,28 @@
+info:
+  name: tf destroy webhook
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://api.github.com/repos/fiscalismia/fiscalismia-infrastructure/dispatches
+  headers:
+    - name: Accept
+      value: application/vnd.github+json
+    - name: Authorization
+      value: Bearer {{GITHUB_DISPATCH_TOKEN}}
+  body:
+    type: json
+    data: |-
+      {
+        "event_type":"test",
+        "client_payload":{
+          "destroy_aws": true
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

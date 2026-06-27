@@ -1,25 +1,17 @@
-# See https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event
-# See https://docs.github.com/en/webhooks/webhook-events-and-payloads#workflow_dispatch
-# The fine-grained token must have the following permission set: "Actions" repository permissions (write)
-
 name: TerraformModuleDestroyer Pipeline
 
 on:
-  workflow_dispatch:
-    inputs:
-      destroy_aws:
-        description: 'Should AWS modules be destroyed?'
-        required: true
-        default: false
-        type: boolean
-      destroy_hcloud:
-        description: 'Should Hetzner modules be destroyed?'
-        required: true
-        default: false
-        type: boolean
+  # WEBHOOK INVOCATION VIA GITHUB API
+  # See https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#create-a-repository-dispatch-event
+  # See https://www.howtogeek.com/devops/how-to-trigger-github-actions-remotely-using-webhooks/
+  # The fine-grained personal access token scoped to the org and repo, must have the following permission set: 
+  # - Repository "Actions" repository permissions (read+write)
+  # - Repository "Contents" repository permissions (read+write)
+  repository_dispatch:
+    types: [module_destroyer, test]
 
 jobs:
-  destroy-aws-and-hcloud:
+  destroy-aws-infrastructure:
     runs-on: ubuntu-latest
 
     permissions:
@@ -44,39 +36,20 @@ jobs:
         role-session-name: TerraformModuleDestroyer_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Query SSH public keys for Hcloud servers from AWS Secrets Manager
-      env:
-        SSH_KEY_SECRET_ID: fiscalismia-ssh-keys-hcloud
+    - name: Handle test event
+      if: github.event.action == 'test'
       run: |
-        set -euo pipefail
-        mkdir -p ~/.ssh/
-        echo "Querying SSH public keys from AWS secret $SSH_KEY_SECRET_ID"
-        # INFO: sed escapes and replaces literal newlines
-        # since the ssh-keys are saved as is without json escapes
-        SECRET_JSON=$(aws secretsmanager get-secret-value \
-          --secret-id ${SSH_KEY_SECRET_ID} \
-          --output text \
-          --query SecretString \
-          | sed ':a;N;$!ba;s/\n/\\n/g')
+        echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws }}"
 
-        KEY_NAMES=(
-          "fiscalismia-infrastructure-master-key-hcloud.pub"
-          "fiscalismia-demo-instance-key-hcloud.pub"
-          "fiscalismia-production-instances-key-hcloud.pub"
-          "fiscalismia-loadbalancer-instance-key-hcloud.pub"
-          "fiscalismia-monitoring-instance-key-hcloud.pub"
-          "fiscalismia-nat-gateway-instance-key-hcloud.pub"
-        )
-
-        for KEY_NAME in "${KEY_NAMES[@]}"; do
-          echo "Extracting ${KEY_NAME}"
-          echo "${SECRET_JSON}" | jq --raw-output --arg k "${KEY_NAME}" '.[$k]' \
-            > ~/.ssh/${KEY_NAME}
-        done
-
-    - name: Destroy only AWS resources
-      if: inputs.destroy_aws == true && inputs.destroy_hcloud == false
+    - name: Handle module_destroyer event
+      if: github.event.action == 'module_destroyer'
       run: |
+        echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws }}"
+
+    - name: Destroy AWS resources
+      if: github.event.action == 'module_destroyer' && ${{ github.event.client_payload.destroy_aws }} == true
+      run: |
+        echo "===== RECEIVED DESTRUCTION EVENT INVOCATION ====="
         cd ${GITHUB_WORKSPACE}/terraform/aws/
         terraform init
         terraform plan -destroy \
@@ -89,34 +62,3 @@ jobs:
           -target=module.cost_budget_alarms \
           -target=module.sns_topics \
           -target=module.cloudwatch_metric_alarms
-
-    - name: Destroy only HCLOUD resources
-      if: inputs.destroy_aws == false && inputs.destroy_hcloud == true
-      env:
-        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-      run: |
-        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud/
-        terraform init
-        terraform plan -destroy
-
-    - name: Destroy AWS and Hetzner Cloud resources
-      if: inputs.destroy_aws == true && inputs.destroy_hcloud == true
-      env:
-        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-      run: |
-        cd ${GITHUB_WORKSPACE}/terraform/aws/
-        terraform init
-        terraform plan -destroy \
-          -var='budget_alarm_notification_email=${{ secrets.BUDGET_NOTIFICATION_EMAIL }}' \
-          -target=module.route_53_dns \
-          -target=module.api_gateway \
-          -target=module.lambda_image_processing \
-          -target=module.lambda_raw_data_etl \
-          -target=module.infrastructure_lambdas \
-          -target=module.cost_budget_alarms \
-          -target=module.sns_topics \
-          -target=module.cloudwatch_metric_alarms
-
-        cd ${GITHUB_WORKSPACE}/terraform/hetzner-cloud/
-        terraform init
-        terraform plan -destroy
