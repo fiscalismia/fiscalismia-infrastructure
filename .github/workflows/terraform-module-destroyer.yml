@@ -8,7 +8,7 @@ on:
   # - Repository "Actions" repository permissions (read+write)
   # - Repository "Contents" repository permissions (read+write)
   repository_dispatch:
-    types: [module_destroyer]
+    types: [aws_infrastructure_destroyer]
 
 jobs:
   destroy-aws-infrastructure:
@@ -37,14 +37,14 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Handle incompatible fallback event
-      if: ${{ github.event.action == 'module_destroyer' && github.event.client_payload.destroy_aws_resources != true }}
+      if: ${{ github.event.action == 'aws_infrastructure_destroyer' && github.event.client_payload.destroy_aws_resources != true }}
       run: |
         echo "===== RECEIVED INCOMPATIBLE EVENT INVOCATION ====="
         echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws_resources }}"
         echo "No changes executed."
 
     - name: Destroy AWS resources
-      if: ${{ github.event.action == 'module_destroyer' && github.event.client_payload.destroy_aws_resources == true }}
+      if: ${{ github.event.action == 'aws_infrastructure_destroyer' && github.event.client_payload.destroy_aws_resources == true }}
       run: |
         echo "===== RECEIVED DESTRUCTION EVENT INVOCATION ====="
         echo "client_payload destroy_aws_resources=${{ github.event.client_payload.destroy_aws_resources }}"
