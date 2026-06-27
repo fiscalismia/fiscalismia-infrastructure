@@ -15,9 +15,9 @@ http:
     type: json
     data: |-
       {
-        "event_type":"test",
+        "event_type":"module_destroyer",
         "client_payload":{
-          "destroy_aws": false
+          "destroy_aws": true
         }
       }
 

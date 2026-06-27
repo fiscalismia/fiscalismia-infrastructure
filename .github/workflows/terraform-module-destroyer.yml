@@ -50,6 +50,7 @@ jobs:
       if: ${{ github.event.action == 'module_destroyer' && github.event.client_payload.destroy_aws == true }}
       run: |
         echo "===== RECEIVED DESTRUCTION EVENT INVOCATION ====="
+        echo "client_payload destroy_aws=${{ github.event.client_payload.destroy_aws }}"
         cd ${GITHUB_WORKSPACE}/terraform/aws/
         terraform init
         terraform plan -destroy \
