@@ -17,7 +17,7 @@ http:
       {
         "event_type":"test",
         "client_payload":{
-          "destroy_aws": true
+          "destroy_aws": false
         }
       }
 

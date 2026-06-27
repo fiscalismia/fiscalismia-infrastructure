@@ -25,7 +25,7 @@ jobs:
       # https://github.com/actions/checkout
 
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3.1.2
+      uses: hashicorp/setup-terraform@v4.0.1
       # https://github.com/hashicorp/setup-terraform
 
     - name: Configure AWS Credentials with OIDC JWT Token for STS Access to Terraform Pipeline Role
@@ -47,7 +47,7 @@ jobs:
         echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws }}"
 
     - name: Destroy AWS resources
-      if: github.event.action == 'module_destroyer' && ${{ github.event.client_payload.destroy_aws }} == true
+      if: ${{ github.event.action == 'module_destroyer' && github.event.client_payload.destroy_aws == true }}
       run: |
         echo "===== RECEIVED DESTRUCTION EVENT INVOCATION ====="
         cd ${GITHUB_WORKSPACE}/terraform/aws/
