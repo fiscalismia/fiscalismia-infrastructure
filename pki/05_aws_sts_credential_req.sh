@@ -113,15 +113,15 @@ echo "Extracting Anthropic API Key from AWS Parameter Store"
 ANTHROPIC_KEY=$(aws ssm get-parameter \
   --profile hetzner-pki \
   --region eu-central-1 \
-  --name /fastapi/fiscalismia/ANTHROPIC_API_KEY \
+  --name /fastapi/fiscalismia/ANTHROPIC_PLAYWRIGHT_API_KEY \
   --with-decryption \
   --query Parameter.Value \
   --output text)
 if [[ -z "$ANTHROPIC_KEY" ]]; then
-  echo "ERROR: Failed to retrieve ANTHROPIC_API_KEY from Parameter Store"
+  echo "ERROR: Failed to retrieve ANTHROPIC_PLAYWRIGHT_API_KEY from Parameter Store"
   exit 1
 fi
-echo "ANTHROPIC_API_KEY=${ANTHROPIC_KEY}" >> "$SECRET_RAM_DIR/$WEBSCRAPER_SECRET"
+echo "ANTHROPIC_PLAYWRIGHT_API_KEY=${ANTHROPIC_KEY}" >> "$SECRET_RAM_DIR/$WEBSCRAPER_SECRET"
 
 unset ANTHROPIC_KEY
 
