@@ -208,6 +208,7 @@ resource "aws_iam_policy" "infra_lambda_query_parameter_store_access" {
         Resource = [
           "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/notifications/telegram/FISCALISMIA_MSG_TELEGRAM_API_TOKEN",
           "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/notifications/telegram/ADMIN_TELEGRAM_CHAT_ID"
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/github/webhooks/TERRAFORM_DESTROY_GITHUB_WEBHOOK"
         ]
       },
       {
