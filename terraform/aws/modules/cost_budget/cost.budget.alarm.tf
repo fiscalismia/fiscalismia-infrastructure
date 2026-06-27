@@ -10,7 +10,7 @@ resource "aws_budgets_budget" "total_actual_destruction" {
   limit_amount      = local.ACTUAL_VALUE
   limit_unit        = "USD"
   time_period_start = "2025-11-01_00:00"
-  time_period_end   = "2050-01-31_00:00"
+  time_period_end   = "2050-01-31_23:59"
   time_unit         = "MONTHLY"
 
   # Email Notification and Lambda Destruction Invocation
@@ -31,7 +31,7 @@ resource "aws_budgets_budget" "total_forecasted_notifaction" {
   limit_amount      = local.FORECASTED_VALUE
   limit_unit        = "USD"
   time_period_start = "2025-11-01_00:00"
-  time_period_end   = "2050-01-31_00:00"
+  time_period_end   = "2050-01-31_23:59"
   time_unit         = "MONTHLY"
 
   # Email notification at 80% threshold
