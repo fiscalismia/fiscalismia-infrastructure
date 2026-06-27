@@ -1,3 +1,8 @@
+resource "aws_uxc_account_customizations" "fiscalismia" {
+  # Valid values are none, red, darkBlue, lightBlue, green, yellow, orange, pink, purple, and teal.
+  account_color = "orange"
+}
+
 module "route_53_dns" {
   source                                = "./modules/route_53"
   demo_subdomain                        = var.demo_subdomain                 # demo frontend
