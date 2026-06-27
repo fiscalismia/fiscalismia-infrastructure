@@ -8,7 +8,7 @@ on:
   # - Repository "Actions" repository permissions (read+write)
   # - Repository "Contents" repository permissions (read+write)
   repository_dispatch:
-    types: [module_destroyer, test]
+    types: [module_destroyer]
 
 jobs:
   destroy-aws-infrastructure:
@@ -36,14 +36,10 @@ jobs:
         role-session-name: TerraformModuleDestroyer_STSSession
         aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Handle test event
-      if: github.event.action == 'test'
+    - name: Handle incompatible fallback event
+      if: github.event.action != 'module_destroyer'
       run: |
-        echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws }}"
-
-    - name: Handle module_destroyer event
-      if: github.event.action == 'module_destroyer'
-      run: |
+        echo "===== RECEIVED INCOMPATIBLE EVENT INVOCATION ====="
         echo "Destroy AWS flag is: ${{ github.event.client_payload.destroy_aws }}"
 
     - name: Destroy AWS resources
