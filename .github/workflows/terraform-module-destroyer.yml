@@ -1,7 +1,7 @@
 name: TerraformModuleDestroyer Pipeline
 
 on:
-  # WEBHOOK INVOCATION VIA GITHUB API
+  # WEBHOOK INVOCATION VIA GITHUB API in fiscalismia-lambdas/functions/python/Infrastructure_TerraformDestroyTrigger
   # See https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#create-a-repository-dispatch-event
   # See https://www.howtogeek.com/devops/how-to-trigger-github-actions-remotely-using-webhooks/
   # The fine-grained personal access token scoped to the org and repo, must have the following permission set: 
