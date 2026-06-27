@@ -15,9 +15,9 @@ http:
     type: json
     data: |-
       {
-        "event_type":"test",
+        "event_type":"aws_infrastructure_destroyer",
         "client_payload":{
-          "destroy_aws": true
+          "destroy_aws_resources": true
         }
       }
 
